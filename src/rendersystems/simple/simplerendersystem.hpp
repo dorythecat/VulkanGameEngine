@@ -13,6 +13,7 @@
 #include "../../utils/device/device.hpp"
 #include "../../utils/pipeline/pipeline.hpp"
 #include "../../utils/gameobject/gameobject.hpp"
+#include "../../utils/camera/camera.hpp"
 
 namespace Engine {
     class SimpleRenderSystem {
@@ -23,7 +24,7 @@ namespace Engine {
         SimpleRenderSystem(const SimpleRenderSystem&) = delete;
         SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameObject> &gameObjects);
+        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameObject> &gameObjects, const Camera &camera);
     private:
         Device &device;
         std::unique_ptr<Pipeline> pipeline;

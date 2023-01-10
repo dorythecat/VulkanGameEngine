@@ -4,14 +4,21 @@ namespace Engine {
     Application::Application() {
         loadGameObjects();
     }
-    Application::~Application() {}
+    Application::~Application() = default;
     void Application::run() {
         SimpleRenderSystem simpleRenderSystem{device, renderer.getSwapChainRenderPass()};
+        Camera camera{};
+
         while (!window.shouldClose()) {
             glfwPollEvents();
+
+            float aspectRatio = renderer.getAspectRatio();
+            // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
+            camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 10.0f);
+
             if (auto commandBuffer = renderer.beginFrame()) {
                 renderer.beginSwapChainRenderPass(commandBuffer);
-                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects);
+                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
                 renderer.endSwapChainRenderPass(commandBuffer);
                 renderer.endFrame();
             }
@@ -21,7 +28,6 @@ namespace Engine {
 
     std::unique_ptr<Model> createCubeModel(Device& device, glm::vec3 offset) {
         std::vector<Model::Vertex> vertices{
-
                 // left face (white)
                 {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
                 {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
@@ -70,10 +76,7 @@ namespace Engine {
                 {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
                 {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
 
-        };
-        for (auto& v : vertices) {
-            v.position += offset;
-        }
+        }; for (auto& v : vertices) v.position += offset;
         return std::make_unique<Model>(device, vertices);
     }
 
@@ -81,7 +84,7 @@ namespace Engine {
         std::shared_ptr<Model> cubeModel = createCubeModel(device, glm::vec3{0.0f, 0.0f, 0.0f});
         auto cube = GameObject::createGameObject();
         cube.model = cubeModel;
-        cube.transform.position = glm::vec3{0.0f, 0.0f, 0.5f};
+        cube.transform.position = glm::vec3{0.0f, 0.0f, 2.5f};
         cube.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
         gameObjects.push_back(std::move(cube));
     }

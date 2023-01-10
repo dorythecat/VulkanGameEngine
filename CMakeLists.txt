@@ -19,5 +19,26 @@ if(MSVC)
     SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup")
 endif()
 
-add_executable(Game_Engine src/main.cpp src/utils/window/window.hpp src/utils/window/window.cpp src/utils/window/window.cpp src/application.cpp src/application.hpp src/utils/pipeline/pipeline.cpp src/utils/pipeline/pipeline.hpp src/utils/device/device.cpp src/utils/device/device.hpp src/utils/swapchain/swapchain.cpp src/utils/swapchain/swapchain.hpp src/utils/model/model.cpp src/utils/model/model.hpp src/utils/gameobject/gameobject.cpp src/utils/gameobject/gameobject.hpp src/utils/renderer/renderer.cpp src/utils/renderer/renderer.hpp src/rendersystems/simple/simplerendersystem.cpp src/rendersystems/simple/simplerendersystem.hpp)
+add_executable(Game_Engine src/main.cpp
+                           src/utils/window/window.hpp
+                           src/utils/window/window.cpp
+                           src/utils/window/window.cpp
+                           src/application.cpp
+                           src/application.hpp
+                           src/utils/pipeline/pipeline.cpp
+                           src/utils/pipeline/pipeline.hpp
+                           src/utils/device/device.cpp
+                           src/utils/device/device.hpp
+                           src/utils/swapchain/swapchain.cpp
+                           src/utils/swapchain/swapchain.hpp
+                           src/utils/model/model.cpp
+                           src/utils/model/model.hpp
+                           src/utils/gameobject/gameobject.cpp
+                           src/utils/gameobject/gameobject.hpp
+                           src/utils/renderer/renderer.cpp
+                           src/utils/renderer/renderer.hpp
+                           src/rendersystems/simple/simplerendersystem.cpp
+                           src/rendersystems/simple/simplerendersystem.hpp
+                           src/utils/camera/camera.cpp
+                           src/utils/camera/camera.hpp)
 target_link_libraries(Game_Engine glfw glm Vulkan::Vulkan )#TracyClient)
