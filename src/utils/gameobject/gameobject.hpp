@@ -19,15 +19,46 @@ namespace Engine {
         glm::vec3 scale{1.0f, 1.0f, 1.0f};
         glm::vec3 rotation{0.0f, 0.0f, 0.0f};
 
+        // Matrix corrsponds to Translate * Rx * Ry * Rz * Scale
+        // Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
+        // https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
         glm::mat4 mat4() const {
-            auto transform = glm::translate(glm::mat4(1.0f), position);
+            const float s1 = glm::sin(rotation.x);
+            const float c1 = glm::cos(rotation.x);
 
-            transform = glm::rotate(transform, rotation.x, {1.0f, 0.0f, 0.0f});
-            transform = glm::rotate(transform, rotation.y, {0.0f, 1.0f, 0.0f});
-            transform = glm::rotate(transform, rotation.z, {0.0f, 0.0f, 1.0f});
+            const float s2 = glm::sin(rotation.y);
+            const float c2 = glm::cos(rotation.y);
 
-            transform = glm::scale(transform, scale);
-            return transform;
+            const float s3 = glm::sin(rotation.z);
+            const float c3 = glm::cos(rotation.z);
+
+            const float c3s2 = c3 * s2;
+            const float s3s2 = s3 * s2;
+
+            const float xs1 = scale.x * s1;
+            const float xc1 = scale.x * c1;
+
+            const float ys1 = scale.y * s1;
+            const float yc1 = scale.y * c1;
+
+            const float zc2 = scale.z * c2;
+
+            return glm::mat4{{
+                            scale.x * c2 * c3,
+                            xc1 * s3 + xs1 * c3s2,
+                            xs1 * s3 - xc1 * c3s2,
+                            0.0f,
+                    }, {
+                            scale.y * -c2 * s3,
+                            yc1 * c3 - ys1 * s3s2,
+                            ys1 * c3 + yc1 * s3s2,
+                            0.0f,
+                    }, {
+                            scale.z * s2,
+                            zc2 * -s1,
+                            zc2 * c1,
+                            0.0f,
+                    }, {position.x, position.y, position.z, 1.0f}};
         }
     };
 
