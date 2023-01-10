@@ -2,8 +2,7 @@
 
 namespace Engine {
     struct SimplePushConstantData {
-        glm::mat2 transform = glm::mat2(1.0f);
-        glm::vec2 offset;
+        glm::mat4 transform{1.0f};
         alignas(16) glm::vec3 color;
     };
 
@@ -47,12 +46,11 @@ namespace Engine {
         pipeline->bind(commandBuffer);
 
         for (auto &obj : gameObjects) {
-            obj.transform2D.rotation = glm::mod(obj.transform2D.rotation + 0.01f, glm::two_pi<float>());
+            obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.01f, glm::two_pi<float>());
 
             SimplePushConstantData push{};
-            push.offset = obj.transform2D.position;
             push.color = obj.color;
-            push.transform = obj.transform2D.mat2();
+            push.transform = obj.transform.mat4();
 
             vkCmdPushConstants(commandBuffer,
                                pipelineLayout,

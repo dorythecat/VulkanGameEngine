@@ -1,6 +1,8 @@
 #ifndef GAMEOBJECT_HPP
 #define GAMEOBJECT_HPP
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <memory>
 
 #include "../model/model.hpp"
@@ -12,17 +14,20 @@
 // TODO: Update to the third dimension
 // 2D is plain, long live 3D
 namespace Engine {
-    struct Transform2DComponent {
-        glm::vec2 position{};
-        glm::vec2 scale{};
-        float rotation = 0.0f;
+    struct TransformComponent {
+        glm::vec3 position{0.0f, 0.0f, 0.0f};
+        glm::vec3 scale{1.0f, 1.0f, 1.0f};
+        glm::vec3 rotation{0.0f, 0.0f, 0.0f};
 
-        glm::mat2 mat2() {
-            const float s = glm::sin(rotation);
-            const float c = glm::cos(rotation);
-            glm::mat2 rotMat{{c, s}, {-s, c}};
-            glm::mat2 scaleMat{{scale.x, 0.0f}, {0.0f, scale.y}};
-            return rotMat * scaleMat;
+        glm::mat4 mat4() const {
+            auto transform = glm::translate(glm::mat4(1.0f), position);
+
+            transform = glm::rotate(transform, rotation.x, {1.0f, 0.0f, 0.0f});
+            transform = glm::rotate(transform, rotation.y, {0.0f, 1.0f, 0.0f});
+            transform = glm::rotate(transform, rotation.z, {0.0f, 0.0f, 1.0f});
+
+            transform = glm::scale(transform, scale);
+            return transform;
         }
     };
 
@@ -33,7 +38,7 @@ namespace Engine {
         std::shared_ptr<Model> model{};
         glm::vec3 color{};
 
-        Transform2DComponent transform2D{};
+        TransformComponent transform{};
 
         static GameObject createGameObject() {
             static id_t currentId = 0;
@@ -49,7 +54,7 @@ namespace Engine {
     private:
         id_t id;
 
-        explicit GameObject(id_t objId) : id(objId) {}
+        GameObject(id_t objId) : id(objId) {}
     };
 }
 

@@ -8,7 +8,7 @@
 #include "../device/device.hpp"
 
 // TODO: Add support for importing .obj, .stl and .3mf files
-// This are the ones I care about, rest can be added later, or never, I don't care LULZ
+// This are the ones I care about, rest can be added later, or never, I don't care, LULZ
 
 // TODO: Add support for textures
 // TODO: Add support for normals
@@ -17,7 +17,7 @@ namespace Engine {
     class Model {
     public:
         struct Vertex {
-            glm::vec2 position;
+            glm::vec3 position;
             glm::vec3 color;
 
             static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
