@@ -20,15 +20,30 @@ namespace Engine {
         assert(vertexCount >= 3 && "Vertex count must be at least 3!");
 
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+
+        // For more information on staging buffers, see https://vulkan-tutorial.com/Vertex_buffers/Staging_buffer
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
         device.createBuffer(bufferSize,
-                            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                            stagingBuffer,
+                            stagingBufferMemory);
+
+        void *data;
+        vkMapMemory(device.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices.data(), (size_t)bufferSize);
+        vkUnmapMemory(device.device(), stagingBufferMemory);
+
+        device.createBuffer(bufferSize,
+                            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                             vertexBuffer,
                             vertexBufferMemory);
-        void *data;
-        vkMapMemory(device.device(), vertexBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices.data(), (size_t)bufferSize);
-        vkUnmapMemory(device.device(), vertexBufferMemory);
+        device.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+        vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
+        vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
     }
 
     void Model::createIndexBuffer(const std::vector<uint32_t> &indices) {
@@ -37,15 +52,30 @@ namespace Engine {
         if(!hasIndexBuffer) return;
 
         VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+
+        // For more information on staging buffers, see https://vulkan-tutorial.com/Vertex_buffers/Staging_buffer
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        device.createBuffer(bufferSize,
+                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                            stagingBuffer,
+                            stagingBufferMemory);
+
+        void *data;
+        vkMapMemory(device.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices.data(), (size_t)bufferSize);
+        vkUnmapMemory(device.device(), stagingBufferMemory);
+
         device.createBuffer(bufferSize,
                             VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                             indexBuffer,
                             indexBufferMemory);
-        void *data;
-        vkMapMemory(device.device(), indexBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, indices.data(), (size_t)bufferSize);
-        vkUnmapMemory(device.device(), indexBufferMemory);
+        device.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+        vkDestroyBuffer(device.device(), stagingBuffer, nullptr);
+        vkFreeMemory(device.device(), stagingBufferMemory, nullptr);
     }
 
     void Model::bind(VkCommandBuffer commandBuffer) {
