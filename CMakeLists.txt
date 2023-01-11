@@ -40,5 +40,7 @@ add_executable(Game_Engine src/main.cpp
                            src/rendersystems/simple/simplerendersystem.cpp
                            src/rendersystems/simple/simplerendersystem.hpp
                            src/utils/camera/camera.cpp
-                           src/utils/camera/camera.hpp)
+                           src/utils/camera/camera.hpp
+                           src/utils/input/keyboard_movement_controller/keyboardmovementcontroller.cpp
+                           src/utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp src/utils/constants/constants.hpp)
 target_link_libraries(Game_Engine glfw glm Vulkan::Vulkan )#TracyClient)

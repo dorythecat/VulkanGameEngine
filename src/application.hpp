@@ -15,6 +15,7 @@
 #include "utils/device/device.hpp"
 #include "utils/gameobject/gameobject.hpp"
 #include "utils/renderer/renderer.hpp"
+#include "utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp"
 
 #include "rendersystems/simple/simplerendersystem.hpp"
 

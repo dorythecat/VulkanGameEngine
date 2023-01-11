@@ -10,13 +10,21 @@ namespace Engine {
         Camera camera{};
         camera.setViewTarget(glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
 
+        auto cameraObject = GameObject::createGameObject();
+        KeyboardMovementController cameraController{};
+
         auto currentTime = std::chrono::high_resolution_clock::now();
         while (!window.shouldClose()) {
             glfwPollEvents();
 
             auto newTime = std::chrono::high_resolution_clock::now();
-            float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+            float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
             currentTime = newTime;
+
+            glm::min(deltaTime, 0.0333f); // Make the maximum time between frames 1/30 seconds, so the minimum framerate is 30 FPS
+
+            cameraController.moveInPlaneXZ(window.getWindow(), deltaTime, cameraObject);
+            camera.setViewXYZ(cameraObject.transform.position, cameraObject.transform.rotation);
 
             float aspectRatio = renderer.getAspectRatio();
             // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
