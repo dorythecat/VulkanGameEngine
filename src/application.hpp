@@ -7,6 +7,7 @@
 #include <glm/gtc/constants.hpp>
 
 #include <memory>
+#include <chrono>
 #include <vector>
 #include <array>
 
