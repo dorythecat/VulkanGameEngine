@@ -53,14 +53,11 @@ namespace Engine {
                             attrib.vertices[offset + 2]
                     };
 
-                    auto colorIndex = offset + 2;
-                    if(colorIndex < attrib.colors.size()) {
-                        vertex.color = {
-                                attrib.colors[colorIndex - 2],
-                                attrib.colors[colorIndex - 1],
-                                attrib.colors[colorIndex]
-                        };
-                    } else vertex.color = {1.0f, 1.0f, 1.0f};
+                    vertex.color = {
+                            attrib.colors[offset],
+                            attrib.colors[offset + 1],
+                            attrib.colors[offset + 2]
+                    };
                 }
 
                 if(index.normal_index >= 0) {
