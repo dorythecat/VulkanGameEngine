@@ -16,6 +16,7 @@
 #include "utils/gameobject/gameobject.hpp"
 #include "utils/renderer/renderer.hpp"
 #include "utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp"
+#include "utils/descriptors/descriptors.hpp"
 
 #include "rendersystems/simple/simplerendersystem.hpp"
 
@@ -37,6 +38,8 @@ namespace Engine {
         Device device{window};
         Renderer renderer{window, device};
         std::vector<GameObject> gameObjects;
+
+        std::unique_ptr<DescriptorPool> globalPool{};
 
         void loadGameObjects();
     };

@@ -14,23 +14,24 @@
 #include "../../utils/pipeline/pipeline.hpp"
 #include "../../utils/gameobject/gameobject.hpp"
 #include "../../utils/camera/camera.hpp"
+#include "../../utils/frameinfo/frameinfo.hpp"
 
 namespace Engine {
     class SimpleRenderSystem {
     public:
-        SimpleRenderSystem(Device &device, VkRenderPass renderPass);
+        SimpleRenderSystem(Device &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
         ~SimpleRenderSystem();
 
         SimpleRenderSystem(const SimpleRenderSystem&) = delete;
         SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameObject> &gameObjects, const Camera &camera);
+        void renderGameObjects(FrameInfo &frameInfo, std::vector<GameObject> &gameObjects);
     private:
         Device &device;
         std::unique_ptr<Pipeline> pipeline;
         VkPipelineLayout pipelineLayout;
 
-        void createPipelineLayout();
+        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void createPipeline(VkRenderPass renderPass);
     };
 }
