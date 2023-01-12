@@ -11,6 +11,7 @@
 
 #include "../utils.hpp"
 #include "../device/device.hpp"
+#include "../buffer/buffer.hpp"
 
 // TODO: Add support for importing .obj, .stl and .3mf files
 // This are the ones I care about, rest can be added later, or never, I don't care, LULZ
@@ -58,13 +59,11 @@ namespace Engine {
     private:
         Device device;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        std::unique_ptr<Buffer> vertexBuffer;
         uint32_t vertexCount;
 
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+        std::unique_ptr<Buffer> indexBuffer;
         uint32_t indexCount;
 
         void createVertexBuffer(const std::vector<Vertex> &vertices);
