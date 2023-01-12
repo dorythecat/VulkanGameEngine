@@ -1,4 +1,18 @@
+#define TINYOBJLOADER_IMPLEMENTATION
+// #define TINYOBJLOADER_USE_MAPBOX_EARCUT
+
 #include "model.hpp"
+
+namespace std {
+    template<>
+    struct hash<Engine::Model::Vertex> {
+        size_t operator()(Engine::Model::Vertex const &vertex) const {
+            size_t seed = 0;
+            hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.texCoord);
+            return seed;
+        }
+    };
+}
 
 namespace Engine {
     Model::Model(Device &device, const Model::Builder &builder) : device(device) {
@@ -13,6 +27,72 @@ namespace Engine {
             vkDestroyBuffer(device.device(), indexBuffer, nullptr);
             vkFreeMemory(device.device(), indexBufferMemory, nullptr);
         }
+    }
+
+    void Model::Builder::loadModel (const std::string &path) {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+
+        if(!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str()))
+            throw std::runtime_error(warn + err);
+
+        vertices.clear();
+        indices.clear();
+
+        std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+        for(const auto &shape : shapes) {
+            for(const auto &index : shape.mesh.indices) {
+                Vertex vertex{};
+                if(index.vertex_index >= 0) {
+                    auto offset = 3 * index.vertex_index;
+                    vertex.position = {
+                            attrib.vertices[offset],
+                            attrib.vertices[offset + 1],
+                            attrib.vertices[offset + 2]
+                    };
+
+                    auto colorIndex = offset + 2;
+                    if(colorIndex < attrib.colors.size()) {
+                        vertex.color = {
+                                attrib.colors[colorIndex - 2],
+                                attrib.colors[colorIndex - 1],
+                                attrib.colors[colorIndex]
+                        };
+                    } else vertex.color = {1.0f, 1.0f, 1.0f};
+                }
+
+                if(index.normal_index >= 0) {
+                    auto offset = 3 * index.normal_index;
+                    vertex.normal = {
+                            attrib.normals[offset],
+                            attrib.normals[offset + 1],
+                            attrib.normals[offset + 2]
+                    };
+                }
+
+                if(index.texcoord_index >= 0) {
+                    auto offset = 2 * index.texcoord_index;
+                    vertex.texCoord = {
+                            attrib.texcoords[offset],
+                            attrib.texcoords[offset + 1]
+                    };
+                }
+
+                if(uniqueVertices.count(vertex) == 0) {
+                    uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+                    vertices.push_back(vertex);
+                }
+                indices.push_back(uniqueVertices[vertex]);
+            }
+        }
+    }
+
+    std::unique_ptr<Model> Model::createModelFromFile(Device &device, const std::string &path) {
+        Builder builder{};
+        builder.loadModel(path);
+        return std::make_unique<Model>(device, builder);
     }
 
     void Model::createVertexBuffer(const std::vector<Vertex> &vertices) {
