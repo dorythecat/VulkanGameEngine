@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <memory>
+#include <unordered_map>
 
 #include "../model/model.hpp"
 
@@ -26,6 +27,7 @@ namespace Engine {
     class GameObject {
     public:
         using id_t = unsigned int;
+        using Map = std::unordered_map<id_t, GameObject>;
 
         std::shared_ptr<Model> model{};
         glm::vec3 color{};

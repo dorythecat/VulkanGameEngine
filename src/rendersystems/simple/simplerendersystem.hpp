@@ -25,7 +25,7 @@ namespace Engine {
         SimpleRenderSystem(const SimpleRenderSystem&) = delete;
         SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-        void renderGameObjects(FrameInfo &frameInfo, std::vector<GameObject> &gameObjects);
+        void renderGameObjects(FrameInfo &frameInfo);
     private:
         Device &device;
         std::unique_ptr<Pipeline> pipeline;

@@ -37,7 +37,7 @@ namespace Engine {
         Window window{WIDTH, HEIGHT, "Vulkan test window"};
         Device device{window};
         Renderer renderer{window, device};
-        std::vector<GameObject> gameObjects;
+        GameObject::Map gameObjects;
 
         std::unique_ptr<DescriptorPool> globalPool{};
 

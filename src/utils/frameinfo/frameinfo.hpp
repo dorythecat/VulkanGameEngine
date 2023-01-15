@@ -10,8 +10,9 @@ namespace Engine {
         int frameIndex;
         float frameTime;
         VkCommandBuffer commandBuffer;
-        Camera camera;
+        Camera &camera;
         VkDescriptorSet globalDescriptorSet;
+        GameObject::Map &gameObjects;
     };
 }
 

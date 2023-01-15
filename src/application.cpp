@@ -82,7 +82,8 @@ namespace Engine {
                                     deltaTime,
                                     commandBuffer,
                                     camera,
-                                    globalDescriptorSets[frameIndex]};
+                                    globalDescriptorSets[frameIndex],
+                                    gameObjects};
 
                 // Update cycle
                 GlobalUbo ubo{};
@@ -92,7 +93,7 @@ namespace Engine {
 
                 // Render cycle
                 renderer.beginSwapChainRenderPass(frameInfo.commandBuffer);
-                simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
+                simpleRenderSystem.renderGameObjects(frameInfo);
                 renderer.endSwapChainRenderPass(frameInfo.commandBuffer);
                 renderer.endFrame();
             }
@@ -106,13 +107,13 @@ namespace Engine {
         sphereFlat.model = sphereFlatModel;
         sphereFlat.transform.position = glm::vec3{-2.5f, 0.0f, 5.0f};
         sphereFlat.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
-        gameObjects.push_back(std::move(sphereFlat));
+        gameObjects.emplace(sphereFlat.getId(), std::move(sphereFlat));
 
         std::shared_ptr<Model> sphereSmoothModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_smooth.obj");
         auto sphereSmooth = GameObject::createGameObject();
         sphereSmooth.model = sphereSmoothModel;
         sphereSmooth.transform.position = glm::vec3{2.5f, 0.0f, 5.0f};
         sphereSmooth.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
-        gameObjects.push_back(std::move(sphereSmooth));
+        gameObjects.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
     }
 }
