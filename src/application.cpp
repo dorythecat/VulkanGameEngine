@@ -2,9 +2,16 @@
 
 namespace Engine {
     struct GlobalUbo {
-        glm::mat4 projectionMatrix{1.0f};
-        glm::mat4 viewMatrix{1.0f};
-        glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
+        glm::mat4 projectionMatrix{1.0f}; // 64 bytes
+        glm::mat4 viewMatrix{1.0f}; // 64 bytes
+        // glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
+        glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.05f};
+
+        // Alignment requirements need to be met
+        // (See https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout)
+        glm::vec3 lightPosition = glm::vec3{0.0f, -1.0f, 5.0f}; // 12 bytes
+        uint32_t padding; // 4 bytes
+        glm::vec4 lightColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}; // 16 bytes
     };
 
     Application::Application() {
@@ -31,8 +38,9 @@ namespace Engine {
         }
 
         auto globalSetLayout = DescriptorSetLayout::Builder(device)
-                .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT)
-                .build();
+                .addBinding(0,
+                            VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT).build();
 
         std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < globalDescriptorSets.size(); i++) {
@@ -93,11 +101,18 @@ namespace Engine {
     }
 
     void Application::loadGameObjects () {
-        std::shared_ptr<Model> cubeModel = Model::createModelFromFile(device, "../res/models/cube/cube.obj");
-        auto gameObject = GameObject::createGameObject();
-        gameObject.model = cubeModel;
-        gameObject.transform.position = glm::vec3{0.0f, 0.0f, 2.5f};
-        gameObject.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
-        gameObjects.push_back(std::move(gameObject));
+        std::shared_ptr<Model> sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
+        auto sphereFlat = GameObject::createGameObject();
+        sphereFlat.model = sphereFlatModel;
+        sphereFlat.transform.position = glm::vec3{-2.5f, 0.0f, 5.0f};
+        sphereFlat.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
+        gameObjects.push_back(std::move(sphereFlat));
+
+        std::shared_ptr<Model> sphereSmoothModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_smooth.obj");
+        auto sphereSmooth = GameObject::createGameObject();
+        sphereSmooth.model = sphereSmoothModel;
+        sphereSmooth.transform.position = glm::vec3{2.5f, 0.0f, 5.0f};
+        sphereSmooth.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
+        gameObjects.push_back(std::move(sphereSmooth));
     }
 }
