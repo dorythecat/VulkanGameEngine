@@ -17,9 +17,9 @@ namespace Engine {
 
     Application::Application() {
         globalPool = DescriptorPool::Builder(device)
-                .setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
-                .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
-                .build();
+                     .setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
+                     .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
+                     .build();
         loadGameObjects();
     }
     Application::~Application() {
@@ -78,7 +78,7 @@ namespace Engine {
 
             float aspectRatio = renderer.getAspectRatio();
             // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
-            camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 10.0f);
+            camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 100.0f);
 
             if (auto commandBuffer = renderer.beginFrame()) {
                 int frameIndex = renderer.getCurrentFrameIndex();
@@ -102,11 +102,11 @@ namespace Engine {
                 renderer.endSwapChainRenderPass(frameInfo.commandBuffer);
                 renderer.endFrame();
             }
-        }
-        vkDeviceWaitIdle(device.device()); // Wait for all the resource to be freed before destroying them
+        } vkDeviceWaitIdle(device.device()); // Wait for all the resource to be freed before destroying them
     }
 
     void Application::loadGameObjects () {
+        // Flat shaded sphere (left)
         std::shared_ptr<Model> sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
         auto sphereFlat = GameObject::createGameObject();
         sphereFlat.model = sphereFlatModel;
@@ -114,6 +114,7 @@ namespace Engine {
         sphereFlat.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
         gameObjects.emplace(sphereFlat.getId(), std::move(sphereFlat));
 
+        // Smooth shaded sphere (right)
         std::shared_ptr<Model> sphereSmoothModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_smooth.obj");
         auto sphereSmooth = GameObject::createGameObject();
         sphereSmooth.model = sphereSmoothModel;

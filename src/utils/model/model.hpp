@@ -13,12 +13,12 @@
 #include "../device/device.hpp"
 #include "../buffer/buffer.hpp"
 
-// TODO: Add support for importing .stl and .3mf files
+// TODO(Dory): Add support for importing .stl and .3mf files
 // This are the ones I care about, rest can be added later, or never, I don't care, LULZ
 
-// TODO: Add support for textures
-// TODO: Add support for normals
-// TODO: Add support for tangents and bitangents
+// TODO(Dory): Add support for textures
+// TODO(Dory): Add support for normals
+// TODO(Dory): Add support for tangents and bitangents
 namespace Engine {
     class Model {
     public:

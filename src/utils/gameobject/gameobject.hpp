@@ -8,7 +8,7 @@
 
 #include "../model/model.hpp"
 
-// TODO: Update to an ECS system
+// TODO(Dory): Update to an ECS system
 // GameObject systems are outdated and are too object-oriented for my taste
 // That's what you get with a sassy engineer :P
 namespace Engine {

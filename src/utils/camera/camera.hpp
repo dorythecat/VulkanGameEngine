@@ -4,6 +4,11 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/matrix_clip_space.hpp"
+
+#include <cassert>
+#include <limits>
 
 namespace Engine {
     class Camera {
@@ -19,8 +24,8 @@ namespace Engine {
                            glm::vec3 up = glm::vec3{0.0f, -1.0f, 0.0f});
         void setViewXYZ(glm::vec3 position, glm::vec3 rotation);
 
-        const glm::mat4 getProjectionMatrix () const { return projectionMatrix; }
-        const glm::mat4 getViewMatrix () const { return viewMatrix; }
+        glm::mat4 getProjectionMatrix () const { return projectionMatrix; }
+        glm::mat4 getViewMatrix () const { return viewMatrix; }
 
     private:
         glm::mat4 projectionMatrix{1.0f};

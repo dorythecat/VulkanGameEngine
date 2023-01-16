@@ -1,6 +1,7 @@
 #include "renderer.hpp"
 
-// TODO: Add error codes TO ALL CODE
+// TODO(Dory): Add error codes TO ALL CODE to make debugging easier and faster
+// That is gonna take a looong time...
 namespace Engine {
     Renderer::Renderer(Window &window, Device &device) : window(window), device(device) {
         recreateSwapChain();

@@ -5,6 +5,10 @@
 
 namespace Engine {
     void Camera::setOrthographicProjection(float left, float right, float top, float bottom, float near, float far) {
+        // TODO(Dory): We should probably check for more assertion cases here, mainly to avoid 1.0f / 0.0f and similar
+        assert(far > near && "Far plane cannot be closer than the near plane!");
+        assert(far - near > std::numeric_limits<float>::epsilon() && "Near and far planes cannot be equal!");
+
         const float rl = 1.0f / (right - left);
         const float bt = 1.0f / (bottom - top);
         const float fn = 1.0f / (far - near);
@@ -21,15 +25,21 @@ namespace Engine {
     }
 
     void Camera::setPerspectiveProjection(float fov, float aspect, float near, float far) {
-        assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
-        const float tanHalfFov = glm::tan(fov / 2.0f);
+        assert(fov > std::numeric_limits<float>::epsilon() && "Field of view cannot be zero or negative!");
+        assert(aspect > std::numeric_limits<float>::epsilon() && "Aspect ratio cannot be zero or negative!");
+        assert(near > std::numeric_limits<float>::epsilon() && "Near plane cannot be zero or negative!");
+        assert(far > std::numeric_limits<float>::epsilon() && "Far plane cannot be zero or negative!");
 
+        assert(far > near && "Far plane cannot be closer than the near plane!");
+        assert(far - near > std::numeric_limits<float>::epsilon() && "Near and far planes cannot be equal!");
+
+        const float tanHalfFov = 1.0f / glm::tan(fov / 2.0f);
         const float ffn = far / (far - near);
 
         projectionMatrix = glm::mat4{0.0f};
 
-        projectionMatrix[0][0] = 1.0f / (aspect * tanHalfFov);
-        projectionMatrix[1][1] = 1.0f / tanHalfFov;
+        projectionMatrix[0][0] = tanHalfFov / aspect;
+        projectionMatrix[1][1] = tanHalfFov;
         projectionMatrix[2][2] = ffn;
         projectionMatrix[2][3] = 1.0f;
         projectionMatrix[3][2] = near * -ffn;
@@ -40,19 +50,12 @@ namespace Engine {
         const glm::vec3 u{glm::normalize(glm::cross(w, up))};
         const glm::vec3 v{glm::cross(w, u)};
 
-        viewMatrix = glm::mat4{1.0f};
-        viewMatrix[0][0] = u.x;
-        viewMatrix[1][0] = u.y;
-        viewMatrix[2][0] = u.z;
-        viewMatrix[0][1] = v.x;
-        viewMatrix[1][1] = v.y;
-        viewMatrix[2][1] = v.z;
-        viewMatrix[0][2] = w.x;
-        viewMatrix[1][2] = w.y;
-        viewMatrix[2][2] = w.z;
-        viewMatrix[3][0] = -glm::dot(u, position);
-        viewMatrix[3][1] = -glm::dot(v, position);
-        viewMatrix[3][2] = -glm::dot(w, position);
+        viewMatrix = glm::mat4{{u.x, v.x, w.x, 0.0f},
+                            {u.y, v.y, w.y, 0.0f},
+                            {u.z, v.z, w.z, 0.0f},
+                            {-glm::dot(u, position),-glm::dot(v, position),
+                                -glm::dot(w, position),1.0f}
+        };
     }
 
     void Camera::setViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
@@ -76,18 +79,11 @@ namespace Engine {
         const glm::vec3 v{-c2 * s3, c1 * c3 - s1 * s3s2, s1 * c3 + c1 * s3s2};
         const glm::vec3 w{s2, -c2 * s1, c1 * c2};
 
-        viewMatrix = glm::mat4{1.0f};
-        viewMatrix[0][0] = u.x;
-        viewMatrix[1][0] = u.y;
-        viewMatrix[2][0] = u.z;
-        viewMatrix[0][1] = v.x;
-        viewMatrix[1][1] = v.y;
-        viewMatrix[2][1] = v.z;
-        viewMatrix[0][2] = w.x;
-        viewMatrix[1][2] = w.y;
-        viewMatrix[2][2] = w.z;
-        viewMatrix[3][0] = -glm::dot(u, position);
-        viewMatrix[3][1] = -glm::dot(v, position);
-        viewMatrix[3][2] = -glm::dot(w, position);
+        viewMatrix = glm::mat4{{u.x, v.x, w.x, 0.0f},
+                               {u.y, v.y, w.y, 0.0f},
+                               {u.z, v.z, w.z, 0.0f},
+                               {-glm::dot(u, position),-glm::dot(v, position),
+                                -glm::dot(w, position),1.0f}
+        };
     }
 }
