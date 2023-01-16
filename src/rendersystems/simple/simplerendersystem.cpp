@@ -41,8 +41,8 @@ namespace Engine {
         pipelineConfig.renderPass = renderPass;
         pipelineConfig.pipelineLayout = pipelineLayout;
         pipeline = std::make_unique<Pipeline>(device,
-                                              "../res/shaders/compiled/vert.spv",
-                                              "../res/shaders/compiled/frag.spv",
+                                              "../res/shaders/compiled/standard.vert.spv",
+                                              "../res/shaders/compiled/standard.frag.spv",
                                               pipelineConfig);
     }
     void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo) {
