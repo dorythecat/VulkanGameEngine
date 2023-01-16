@@ -43,7 +43,7 @@ namespace Engine {
         VkFormat findDepthFormat();
 
         VkResult acquireNextImage(uint32_t *imageIndex);
-        VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
+        VkResult submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex);
 
     private:
         VkFormat swapChainImageFormat;
@@ -80,9 +80,9 @@ namespace Engine {
         void createSyncObjects();
 
         // Helper functions
-        VkSurfaceFormatKHR chooseSwapSurfaceFormat(
+        static VkSurfaceFormatKHR chooseSwapSurfaceFormat(
                 const std::vector<VkSurfaceFormatKHR> &availableFormats);
-        VkPresentModeKHR chooseSwapPresentMode(
+        static VkPresentModeKHR chooseSwapPresentMode(
                 const std::vector<VkPresentModeKHR> &availablePresentModes);
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
     };

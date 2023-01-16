@@ -62,10 +62,9 @@ namespace Engine {
                 imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
                 VK_NULL_HANDLE,
                 imageIndex);
-
         return result;
     }
-    VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex) {
+    VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex) {
         if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
             vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
         imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
@@ -117,8 +116,7 @@ namespace Engine {
         VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
 
         uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-        if (swapChainSupport.capabilities.maxImageCount > 0 &&
-            imageCount > swapChainSupport.capabilities.maxImageCount)
+        if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
             imageCount = swapChainSupport.capabilities.maxImageCount;
 
         VkSwapchainCreateInfoKHR createInfo = {};
@@ -250,7 +248,6 @@ namespace Engine {
         for (size_t i = 0; i < imageCount(); i++) {
             std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
 
-            VkExtent2D swapChainExtent = getSwapChainExtent();
             VkFramebufferCreateInfo framebufferInfo = {};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
             framebufferInfo.renderPass = renderPass;
@@ -270,7 +267,6 @@ namespace Engine {
     }
     void SwapChain::createDepthResources() {
         swapChainDepthFormat = findDepthFormat();
-        VkExtent2D swapChainExtent = getSwapChainExtent();
 
         depthImages.resize(imageCount());
         depthImageMemorys.resize(imageCount());
@@ -293,11 +289,10 @@ namespace Engine {
             imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
             imageInfo.flags = 0;
 
-            device.createImageWithInfo(
-                    imageInfo,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                    depthImages[i],
-                    depthImageMemorys[i]);
+            device.createImageWithInfo(imageInfo,
+                              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                   depthImages[i],
+                                   depthImageMemorys[i]);
 
             VkImageViewCreateInfo viewInfo{};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -343,22 +338,25 @@ namespace Engine {
         return availableFormats[0];
     }
     VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) {
-        // for (const auto &availablePresentMode : availablePresentModes) {
-        //     if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-        //         std::cout << "Present mode: Mailbox" << std::endl;
-        //         return availablePresentMode;
-        //     }
-        // }
-
-        // for (const auto &availablePresentMode : availablePresentModes) {
-        //   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-        //     std::cout << "Present mode: Immediate" << std::endl;
-        //     return availablePresentMode;
-        //   }
-        // }
-
-        std::cout << "Present mode: V-Sync" << std::endl;
-        return VK_PRESENT_MODE_FIFO_KHR;
+        for (const auto &availablePresentMode : availablePresentModes) {
+            switch (availablePresentMode) {
+                case VK_PRESENT_MODE_FIFO_KHR:
+                    std::cout << "Present mode: Standard V-Sync" << std::endl;
+                    break;
+                case VK_PRESENT_MODE_MAILBOX_KHR:
+                    std::cout << "Present mode: Mailbox" << std::endl;
+                    break;
+                case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
+                    std::cout << "Present mode: Relaxed V-Sync" << std::endl;
+                    break;
+                case VK_PRESENT_MODE_IMMEDIATE_KHR:
+                    std::cout << "Present mode: Immediate" << std::endl;
+                    break;
+                case VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:break;
+                case VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:break;
+                case VK_PRESENT_MODE_MAX_ENUM_KHR:break;
+            } return availablePresentMode;
+        }
     }
     VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) return capabilities.currentExtent;
