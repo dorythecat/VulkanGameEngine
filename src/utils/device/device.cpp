@@ -109,7 +109,7 @@ namespace Engine {
         if (physicalDevice == VK_NULL_HANDLE) throw std::runtime_error("Failed to find a suitable GPU!");
 
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-        std::cout << "physical device: " << properties.deviceName << std::endl;
+        std::cout << "Physical device: " << properties.deviceName << std::endl;
     }
 
     void Device::createLogicalDevice() {
@@ -161,8 +161,7 @@ namespace Engine {
         VkCommandPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
-        poolInfo.flags =
-                VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
         if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
             throw std::runtime_error("Failed to create command pool!");
@@ -223,15 +222,11 @@ namespace Engine {
                     layerFound = true;
                     break;
                 }
-            }
-
-            if (!layerFound) return false;
-        }
-
-        return true;
+            } if (!layerFound) return false;
+        } return true;
     }
 
-    std::vector<const char *> Device::getRequiredExtensions() {
+    std::vector<const char *> Device::getRequiredExtensions() const {
         uint32_t glfwExtensionCount = 0;
         const char **glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -261,7 +256,7 @@ namespace Engine {
         for (const auto &required : requiredExtensions) {
             std::cout << "\t" << required << std::endl;
             if (available.find(required) == available.end())
-                throw std::runtime_error("Missing required glfw extension");
+                throw std::runtime_error("Missing required glfw extension!");
         }
     }
 
@@ -284,7 +279,7 @@ namespace Engine {
         return requiredExtensions.empty();
     }
 
-    QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
+    QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) const {
         QueueFamilyIndices indices;
 
         uint32_t queueFamilyCount = 0;
@@ -304,9 +299,7 @@ namespace Engine {
             if (queueFamily.queueCount > 0 && presentSupport) {
                 indices.presentFamily = i;
                 indices.presentFamilyHasValue = true;
-            }
-            if (indices.isComplete()) break;
-
+            } if (indices.isComplete()) break;
             i++;
         }
 
@@ -335,8 +328,7 @@ namespace Engine {
                     surface_,
                     &presentModeCount,
                     details.presentModes.data());
-        }
-        return details;
+        } return details;
     }
 
     VkFormat Device::findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
@@ -344,11 +336,9 @@ namespace Engine {
             VkFormatProperties props;
             vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
 
-            // TODO: Why the fuck is this not merged together into an OR???
-            if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) return format;
-            else  if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) return format;
-        }
-        throw std::runtime_error("Failed to find supported format!");
+            if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features ||
+                tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) return format;
+        } throw std::runtime_error("Failed to find supported format!");
     }
 
     uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
@@ -357,7 +347,6 @@ namespace Engine {
         for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
             if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
                 return i;
-
         throw std::runtime_error("Failed to find suitable memory type!");
     }
 
@@ -386,7 +375,6 @@ namespace Engine {
 
         if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
             throw std::runtime_error("Failed to allocate vertex buffer memory!");
-
         vkBindBufferMemory(device_, buffer, bufferMemory, 0);
     }
 
@@ -460,11 +448,10 @@ namespace Engine {
         endSingleTimeCommands(commandBuffer);
     }
 
-    void Device::createImageWithInfo(
-            const VkImageCreateInfo &imageInfo,
-            VkMemoryPropertyFlags properties,
-            VkImage &image,
-            VkDeviceMemory &imageMemory) {
+    void Device::createImageWithInfo(const VkImageCreateInfo &imageInfo,
+                                     VkMemoryPropertyFlags properties,
+                                     VkImage &image,
+                                     VkDeviceMemory &imageMemory) {
         if (vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS)
             throw std::runtime_error("Failed to create image!");
 

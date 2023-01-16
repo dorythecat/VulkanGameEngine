@@ -13,7 +13,7 @@
 #include "../device/device.hpp"
 #include "../buffer/buffer.hpp"
 
-// TODO: Add support for importing .obj, .stl and .3mf files
+// TODO: Add support for importing .stl and .3mf files
 // This are the ones I care about, rest can be added later, or never, I don't care, LULZ
 
 // TODO: Add support for textures

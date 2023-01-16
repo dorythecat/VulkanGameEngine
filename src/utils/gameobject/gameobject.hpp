@@ -11,9 +11,6 @@
 // TODO: Update to an ECS system
 // GameObject systems are outdated and are too object-oriented for my taste
 // That's what you get with a sassy engineer :P
-
-// TODO: Update to the third dimension
-// 2D is plain, long live 3D
 namespace Engine {
     struct TransformComponent {
         glm::vec3 position{0.0f, 0.0f, 0.0f};

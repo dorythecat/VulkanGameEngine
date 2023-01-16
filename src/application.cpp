@@ -1,4 +1,5 @@
 #include "application.hpp"
+#include "rendersystems/billboard/billboardrendersystem.hpp"
 
 namespace Engine {
     struct GlobalUbo {
@@ -53,6 +54,9 @@ namespace Engine {
         SimpleRenderSystem simpleRenderSystem{device,
                                               renderer.getSwapChainRenderPass(),
                                               globalSetLayout->getDescriptorSetLayout()};
+        BillboardRenderSystem billboardRenderSystem{device,
+                                                    renderer.getSwapChainRenderPass(),
+                                                    globalSetLayout->getDescriptorSetLayout()};
         Camera camera{};
         camera.setViewTarget(glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
 
@@ -94,6 +98,7 @@ namespace Engine {
                 // Render cycle
                 renderer.beginSwapChainRenderPass(frameInfo.commandBuffer);
                 simpleRenderSystem.renderGameObjects(frameInfo);
+                billboardRenderSystem.render(frameInfo);
                 renderer.endSwapChainRenderPass(frameInfo.commandBuffer);
                 renderer.endFrame();
             }

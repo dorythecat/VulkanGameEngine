@@ -1463,9 +1463,7 @@ namespace tinyobj {
                                     const int material_id, const std::string &name,
                                     bool triangulate, const std::vector<real_t> &v,
                                     std::string *warn) {
-        if (prim_group.IsEmpty()) {
-            return false;
-        }
+        if (prim_group.IsEmpty()) return false;
 
         shape->name = name;
 
@@ -1479,9 +1477,7 @@ namespace tinyobj {
 
                 if (npolys < 3) {
                     // Face must have 3+ vertices.
-                    if (warn) {
-                        (*warn) += "Degenerated face found\n.";
-                    }
+                    if (warn) (*warn) += "Degenerated face found\n.";
                     continue;
                 }
 
@@ -1501,9 +1497,7 @@ namespace tinyobj {
                             ((3 * vi2 + 2) >= v.size()) || ((3 * vi3 + 2) >= v.size())) {
                             // Invalid triangle.
                             // FIXME(syoyo): Is it ok to simply skip this invalid triangle?
-                            if (warn) {
-                                (*warn) += "Face with invalid vertex index found.\n";
-                            }
+                            if (warn) (*warn) += "Face with invalid vertex index found.\n";
                             continue;
                         }
 
@@ -1628,9 +1622,7 @@ namespace tinyobj {
           }
           real_t length_n = GetLength(n);
           //Check if zero length normal
-          if(length_n <= 0) {
-            continue;
-          }
+          if(length_n <= 0) continue;
           //Negative is to flip the normal to the correct direction
           real_t inv_length = -real_t(1.0) / length_n;
           n.x *= inv_length;
@@ -1640,11 +1632,8 @@ namespace tinyobj {
           TinyObjPoint axis_w, axis_v, axis_u;
           axis_w = n;
           TinyObjPoint a;
-          if(std::abs(axis_w.x) > real_t(0.9999999)) {
-            a = TinyObjPoint(0,1,0);
-          } else {
-            a = TinyObjPoint(1,0,0);
-          }
+          if(std::abs(axis_w.x) > real_t(0.9999999)) a = TinyObjPoint(0,1,0);
+          else a = TinyObjPoint(1,0,0);
           axis_v = Normalize(cross(axis_w, a));
           axis_u = cross(axis_w, axis_v);
           using Point = std::array<real_t, 2>;
@@ -1727,7 +1716,8 @@ namespace tinyobj {
                             size_t vi1 = size_t(i1.v_idx);
                             size_t vi2 = size_t(i2.v_idx);
 
-                            if (((3 * vi0 + 2) >= v.size()) || ((3 * vi1 + 2) >= v.size()) ||
+                            if (((3 * vi0 + 2) >= v.size()) ||
+                                ((3 * vi1 + 2) >= v.size()) ||
                                 ((3 * vi2 + 2) >= v.size())) {
                                 // Invalid triangle.
                                 // FIXME(syoyo): Is it ok to simply skip this invalid triangle?
@@ -2172,10 +2162,8 @@ namespace tinyobj {
                 token += 1;
                 material.dissolve = parseReal(&token);
 
-                if (has_tr) {
-                    warn_ss << "Both `d` and `Tr` parameters defined for \"" << material.name
+                if (has_tr) warn_ss << "Both `d` and `Tr` parameters defined for \"" << material.name
                             << "\". Use the value of `d` for dissolve (line " << line_no << " in .mtl.)\n";
-                }
                 has_d = true;
                 continue;
             }
@@ -2262,9 +2250,7 @@ namespace tinyobj {
                     material.diffuse[0] = static_cast<real_t>(0.6);
                     material.diffuse[1] = static_cast<real_t>(0.6);
                     material.diffuse[2] = static_cast<real_t>(0.6);
-                }
-
-                continue;
+                } continue;
             }
 
             // specular texture
@@ -2411,7 +2397,6 @@ namespace tinyobj {
             ss << "Material file [ " << matId << " ] not found in a path : " << m_mtlBaseDir << "\n";
             if (warn) *warn += ss.str();
             return false;
-
         } else {
             std::string filepath = matId;
             std::ifstream matIStream(filepath.c_str());
@@ -2422,8 +2407,7 @@ namespace tinyobj {
             }
 
             std::stringstream ss;
-            ss << "Material file [ " << filepath
-               << " ] not found in a path : " << m_mtlBaseDir << "\n";
+            ss << "Material file [ " << filepath << " ] not found in a path : " << m_mtlBaseDir << "\n";
             if (warn) *warn += ss.str();
 
             return false;
@@ -2638,10 +2622,8 @@ namespace tinyobj {
                     if (!parseTriple(&token, static_cast<int>(v.size() / 3),
                                      static_cast<int>(vn.size() / 3),
                                      static_cast<int>(vt.size() / 2), &vi, context)) {
-                        if (err) {
-                            *err += "Failed to parse `l' line (e.g. a zero value for vertex index. Line " +
-                                      toString(line_num) + ").\n";
-                        }
+                        if (err) *err += "Failed to parse `l' line (e.g. a zero value for vertex index. Line " +
+                                         toString(line_num) + ").\n";
                         return false;
                     }
 
@@ -2700,10 +2682,8 @@ namespace tinyobj {
                     if (!parseTriple(&token, static_cast<int>(v.size() / 3),
                                      static_cast<int>(vn.size() / 3),
                                      static_cast<int>(vt.size() / 2), &vi, context)) {
-                        if (err) {
-                            *err += "Failed to parse `f' line (e.g. a zero value for vertex index or invalid relative vertex index). Line " +
-                                      toString(line_num) + ").\n";
-                        }
+                        if (err) *err += "Failed to parse `f' line (e.g. a zero value for vertex index or invalid relative vertex index). Line " +
+                                         toString(line_num) + ").\n";
                         return false;
                     }
 
@@ -2731,10 +2711,7 @@ namespace tinyobj {
                 std::map<std::string, int>::const_iterator it =
                         material_map.find(namebuf);
                 if (it != material_map.end()) newMaterialId = it->second;
-                else {
-                    // { error!! material not found }
-                    if (warn) *warn += "material [ '" + namebuf + "' ] not found in .mtl\n";
-                }
+                else if (warn) *warn += "material [ '" + namebuf + "' ] not found in .mtl\n";
 
                 if (newMaterialId != material) {
                     // Create per-face material. Thus we don't add `shape` to `shapes` at
@@ -2778,7 +2755,6 @@ namespace tinyobj {
                             bool ok = (*readMatFn)(filenames[s].c_str(), materials,
                                                    &material_map, &warn_mtl, &err_mtl);
                             if (warn && (!warn_mtl.empty())) *warn += warn_mtl;
-
                             if (err && (!err_mtl.empty())) *err += err_mtl;
 
                             if (ok) {
@@ -2789,8 +2765,7 @@ namespace tinyobj {
                         }
 
                         if (!found && warn) {
-                            *warn +=
-                                    "Failed to load material file(s). Use default "
+                            *warn +="Failed to load material file(s). Use default "
                                     "material.\n";
                         }
                     }
@@ -3085,10 +3060,7 @@ namespace tinyobj {
                 std::map<std::string, int>::const_iterator it =
                         material_map.find(namebuf);
                 if (it != material_map.end()) newMaterialId = it->second;
-                else {
-                    // { warn!! material not found }
-                    if (warn && (!callback.usemtl_cb)) (*warn) += "material [ " + namebuf + " ] not found in .mtl\n";
-                }
+                else if (warn && (!callback.usemtl_cb)) (*warn) += "material [ " + namebuf + " ] not found in .mtl\n";
 
                 if (newMaterialId != material_id) material_id = newMaterialId;
 
@@ -3124,13 +3096,8 @@ namespace tinyobj {
                             bool ok = (*readMatFn)(filenames[s].c_str(), &materials,
                                                    &material_map, &warn_mtl, &err_mtl);
 
-                            if (warn && (!warn_mtl.empty())) {
-                                (*warn) += warn_mtl;  // This should be warn message.
-                            }
-
-                            if (err && (!err_mtl.empty())) {
-                                (*err) += err_mtl;
-                            }
+                            if (warn && (!warn_mtl.empty())) (*warn) += warn_mtl;  // This should be warn message.
+                            if (err && (!err_mtl.empty())) (*err) += err_mtl;
 
                             if (ok) {
                                 found = true;
@@ -3139,18 +3106,8 @@ namespace tinyobj {
                             }
                         }
 
-                        if (!found) {
-                            if (warn) {
-                                (*warn) +=
-                                        "Failed to load material file(s). Use default "
-                                        "material.\n";
-                            }
-                        } else {
-                            if (callback.mtllib_cb) {
-                                callback.mtllib_cb(user_data, &materials.at(0),
-                                                   static_cast<int>(materials.size()));
-                            }
-                        }
+                        if (!found && warn) (*warn) += "Failed to load material file(s). Use default material.\n";
+                        else if (callback.mtllib_cb) callback.mtllib_cb(user_data, &materials.at(0), static_cast<int>(materials.size()));
                     }
                 }
 
@@ -3173,15 +3130,10 @@ namespace tinyobj {
                     if (names.size() > 1) {
                         // create const char* array.
                         names_out.resize(names.size() - 1);
-                        for (size_t j = 0; j < names_out.size(); j++) {
-                            names_out[j] = names[j + 1].c_str();
-                        }
-                        callback.group_cb(user_data, &names_out.at(0),
-                                          static_cast<int>(names_out.size()));
+                        for (size_t j = 0; j < names_out.size(); j++) names_out[j] = names[j + 1].c_str();
+                        callback.group_cb(user_data, &names_out.at(0), static_cast<int>(names_out.size()));
 
-                    } else {
-                        callback.group_cb(user_data, NULL, 0);
-                    }
+                    } else callback.group_cb(user_data, NULL, 0);
                 }
 
                 continue;
@@ -3196,9 +3148,7 @@ namespace tinyobj {
                 ss << token;
                 std::string object_name = ss.str();
 
-                if (callback.object_cb) {
-                    callback.object_cb(user_data, object_name.c_str());
-                }
+                if (callback.object_cb) callback.object_cb(user_data, object_name.c_str());
 
                 continue;
             }
@@ -3244,10 +3194,7 @@ namespace tinyobj {
             // Ignore unknown command.
         }
 
-        if (err) {
-            (*err) += errss.str();
-        }
-
+        if (err) (*err) += errss.str();
         return true;
     }
 
@@ -3261,12 +3208,8 @@ namespace tinyobj {
             // the base directory of .obj file
             //
             size_t pos = filename.find_last_of("/\\");
-            if (pos != std::string::npos) {
-                mtl_search_path = filename.substr(0, pos);
-            }
-        } else {
-            mtl_search_path = config.mtl_search_path;
-        }
+            if (pos != std::string::npos) mtl_search_path = filename.substr(0, pos);
+        } else mtl_search_path = config.mtl_search_path;
 
         valid_ = LoadObj(&attrib_, &shapes_, &materials_, &warning_, &error_,
                          filename.c_str(), mtl_search_path.c_str(),

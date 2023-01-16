@@ -39,7 +39,7 @@ namespace Engine {
 
         float getAspectRatio() const { return swapChain->extentAspectRatio(); }
 
-        void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
+        void endSwapChainRenderPass(VkCommandBuffer commandBuffer) const;
     private:
         Window &window;
         Device &device;

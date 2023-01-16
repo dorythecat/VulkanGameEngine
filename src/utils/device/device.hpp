@@ -23,7 +23,7 @@ namespace Engine {
 
         bool graphicsFamilyHasValue = false;
         bool presentFamilyHasValue = false;
-        bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
+        bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
     };
 
     class Device {
@@ -99,10 +99,10 @@ namespace Engine {
 
         // helper functions
         bool isDeviceSuitable(VkPhysicalDevice device);
-        std::vector<const char *> getRequiredExtensions();
+        std::vector<const char *> getRequiredExtensions() const;
         bool checkValidationLayerSupport();
-        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-        void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
+        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) const;
+        static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
         void hasGflwRequiredInstanceExtensions();
         bool checkDeviceExtensionSupport(VkPhysicalDevice device);
         SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);

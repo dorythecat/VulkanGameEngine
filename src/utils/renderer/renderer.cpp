@@ -54,7 +54,7 @@ namespace Engine {
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = swapChain->getRenderPass();
-        renderPassInfo.framebuffer = swapChain->getFrameBuffer(currentImageIndex);
+        renderPassInfo.framebuffer = swapChain->getFrameBuffer(static_cast<int>(currentImageIndex));
 
         renderPassInfo.renderArea.offset = {0, 0};
         renderPassInfo.renderArea.extent = swapChain->getSwapChainExtent();
@@ -78,7 +78,7 @@ namespace Engine {
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
     }
-    void Renderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) {
+    void Renderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) const {
         assert(isFrameStarted && "Cannot end the render pass outside of a frame!");
         assert(commandBuffer == getCurrentCommandBuffer() && "Cannot end the render pass on a command buffer from another frame!");
 
@@ -92,7 +92,7 @@ namespace Engine {
             allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
             allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
             allocInfo.commandPool = device.getCommandPool();
-            allocInfo.commandBufferCount = (uint32_t) commandBuffers.size();
+            allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
             if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
                 throw std::runtime_error("Failed to allocate command buffers!");
