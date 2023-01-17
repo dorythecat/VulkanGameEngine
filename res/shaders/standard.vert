@@ -26,7 +26,7 @@ layout (push_constant) uniform PushConstant {
 
 void main() {
     vec4 worldPos = push.modelMatrix * vec4(position, 1.0);
-    gl_Position = globalUbo.viewMatrix * globalUbo.projMatrix * worldPos;
+    gl_Position = globalUbo.viewMatrix * (globalUbo.projMatrix * worldPos);
 
     fragPos = worldPos.xyz;
     fragNormal = normalize(mat3(push.normalMatrix) * normal);
