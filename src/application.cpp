@@ -61,6 +61,7 @@ namespace Engine {
         camera.setViewTarget(glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
 
         auto cameraObject = GameObject::createGameObject();
+        cameraObject.transform.position.z = -2.5f;
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -93,7 +94,8 @@ namespace Engine {
                 GlobalUbo ubo{};
                 ubo.projectionMatrix = frameInfo.camera.getProjectionMatrix();
                 ubo.viewMatrix = frameInfo.camera.getViewMatrix();
-                uboBuffers[frameIndex]->writeToBuffer(&ubo);
+                uboBuffers[frameInfo.frameIndex]->writeToBuffer(&ubo);
+                uboBuffers[frameInfo.frameIndex]->flush();
 
                 // Render cycle
                 renderer.beginSwapChainRenderPass(frameInfo.commandBuffer);
