@@ -238,7 +238,10 @@ namespace Engine {
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-        if (vkCreateRenderPass(device.device(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+        if (vkCreateRenderPass(device.device(),
+                               &renderPassInfo,
+                               nullptr,
+                               &renderPass) != VK_SUCCESS)
             throw std::runtime_error("Failed to create render pass!");
     }
     void SwapChain::createFramebuffers() {
@@ -255,11 +258,10 @@ namespace Engine {
             framebufferInfo.height = swapChainExtent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(
-                    device.device(),
-                    &framebufferInfo,
-                    nullptr,
-                    &swapChainFramebuffers[i]) != VK_SUCCESS)
+            if (vkCreateFramebuffer(device.device(),
+                                    &framebufferInfo,
+                                    nullptr,
+                                    &swapChainFramebuffers[i]) != VK_SUCCESS)
                 throw std::runtime_error("Failed to create framebuffer!");
         }
     }
@@ -288,9 +290,9 @@ namespace Engine {
             imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
             device.createImageWithInfo(imageInfo,
-                              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                   depthImages[i],
-                                   depthImageMemorys[i]);
+                                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                       depthImages[i],
+                                       depthImageMemorys[i]);
 
             VkImageViewCreateInfo viewInfo{};
             viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -303,7 +305,10 @@ namespace Engine {
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
 
-            if (vkCreateImageView(device.device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS)
+            if (vkCreateImageView(device.device(),
+                                  &viewInfo,
+                                  nullptr,
+                                  &depthImageViews[i]) != VK_SUCCESS)
                 throw std::runtime_error("Failed to create texture image view!");
         }
     }
@@ -337,30 +342,30 @@ namespace Engine {
     VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) {
         for (const auto &availablePresentMode : availablePresentModes) {
             switch (availablePresentMode) {
+                case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
+                    std::cout << "Present mode: Relaxed V-Sync" << std::endl; // Like V-Sync, but on steroids, preferred method
+                    return availablePresentMode;
                 case VK_PRESENT_MODE_FIFO_KHR:
-                    std::cout << "Present mode: Standard V-Sync" << std::endl;
+                    std::cout << "Present mode: Standard V-Sync" << std::endl; // Just standard V-Sync, all devices should support this
                     return availablePresentMode;
                 case VK_PRESENT_MODE_MAILBOX_KHR:
-                    std::cout << "Present mode: Mailbox" << std::endl;
-                    return availablePresentMode;
-                case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
-                    std::cout << "Present mode: Relaxed V-Sync" << std::endl;
+                    std::cout << "Present mode: Mailbox" << std::endl; // Heavy on performance, at least no tearing
                     return availablePresentMode;
                 case VK_PRESENT_MODE_IMMEDIATE_KHR:
-                    std::cout << "Present mode: Immediate" << std::endl;
+                    std::cout << "Present mode: Immediate" << std::endl; // Causes visible tearing
                     return availablePresentMode;
                 case VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:
-                    std::cout << "Present mode: VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR" << std::endl;
-                    return availablePresentMode;
+                    std::cout << "Present mode: VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR" << std::endl; // Don't know what this is
+                    break;
                 case VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:
-                    std::cout << "Present mode: VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR" << std::endl;
-                    return availablePresentMode;
+                    std::cout << "Present mode: VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR" << std::endl; // Don't know what this is
+                    break;
                 case VK_PRESENT_MODE_MAX_ENUM_KHR:
-                    std::cout << "Present mode: VK_PRESENT_MODE_MAX_ENUM_KHR" << std::endl;
-                    return availablePresentMode;
+                    std::cout << "Present mode: VK_PRESENT_MODE_MAX_ENUM_KHR" << std::endl; // Don't know what this is
+                    break;
             }
         }
-        // This should never happen, but this is partly to avoid Warning C4715 when compiling
+        // This should never happen, but this is partly to avoid Warning C4715 when compiling.
         throw std::runtime_error("Failed to find supported presentation mode!");
     }
     VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
@@ -377,9 +382,8 @@ namespace Engine {
         }
     }
     VkFormat SwapChain::findDepthFormat() {
-        return device.findSupportedFormat(
-                {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-                VK_IMAGE_TILING_OPTIMAL,
-                VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+        return device.findSupportedFormat({VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+                                          VK_IMAGE_TILING_OPTIMAL,
+                                          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     }
 }
