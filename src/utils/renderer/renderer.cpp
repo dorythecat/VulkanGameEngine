@@ -18,7 +18,9 @@ namespace Engine {
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             recreateSwapChain();
             return nullptr;
-        } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+        }
+
+        if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
             throw std::runtime_error("Failed to acquire swap chain image!");
 
         isFrameStarted = true;

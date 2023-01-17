@@ -33,10 +33,12 @@ namespace Engine {
             throw std::runtime_error("Failed to create pipeline layout!");
     }
     void BillboardRenderSystem::createPipeline(VkRenderPass renderPass) {
-        assert(pipelineLayout != NULL && "Cannot create pipeline before pipeline layout");
+        assert(pipelineLayout != NULL && "Cannot create pipeline before pipeline layout!");
 
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfo(pipelineConfig);
+        pipelineConfig.attributeDescriptions.clear();
+        pipelineConfig.bindingDescriptions.clear();
         pipelineConfig.renderPass = renderPass;
         pipelineConfig.pipelineLayout = pipelineLayout;
         pipeline = std::make_unique<Pipeline>(device,

@@ -48,20 +48,18 @@ namespace Engine {
         createSyncObjects();
     }
     VkResult SwapChain::acquireNextImage(uint32_t *imageIndex) {
-        vkWaitForFences(
-                device.device(),
-                1,
-                &inFlightFences[currentFrame],
-                VK_TRUE,
-                std::numeric_limits<uint64_t>::max());
+        vkWaitForFences(device.device(),
+                     1,
+                       &inFlightFences[currentFrame],
+                        VK_TRUE,
+                       std::numeric_limits<uint64_t>::max());
 
-        VkResult result = vkAcquireNextImageKHR(
-                device.device(),
-                swapChain,
-                std::numeric_limits<uint64_t>::max(),
-                imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
-                VK_NULL_HANDLE,
-                imageIndex);
+        VkResult result = vkAcquireNextImageKHR(device.device(),
+                                             swapChain,
+                                               std::numeric_limits<uint64_t>::max(),
+                                             imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
+                                                 VK_NULL_HANDLE,
+                                                      imageIndex);
         return result;
     }
     VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex) {
@@ -334,7 +332,6 @@ namespace Engine {
         for (const auto &availableFormat : availableFormats)
             if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && // VK_FORMAT_B8G8R8A8_UNORM for no gamma correction
                 availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) return availableFormat;
-
         return availableFormats[0];
     }
     VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) {
@@ -370,13 +367,12 @@ namespace Engine {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) return capabilities.currentExtent;
         else {
             VkExtent2D actualExtent = windowExtent;
-            actualExtent.width = std::max(
-                    capabilities.minImageExtent.width,
-                    std::min(capabilities.maxImageExtent.width, actualExtent.width));
-            actualExtent.height = std::max(
-                    capabilities.minImageExtent.height,
-                    std::min(capabilities.maxImageExtent.height, actualExtent.height));
-
+            actualExtent.width = std::max(capabilities.minImageExtent.width,
+                                          std::min(capabilities.maxImageExtent.width,
+                                                   actualExtent.width));
+            actualExtent.height = std::max(capabilities.minImageExtent.height,
+                                           std::min(capabilities.maxImageExtent.height,
+                                                    actualExtent.height));
             return actualExtent;
         }
     }
