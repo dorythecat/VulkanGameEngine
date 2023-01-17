@@ -44,7 +44,7 @@ set(SHADER_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/res/shaders/compiled) # Where 
 # I don't think we need all of these, but it's better to have them than not
 file(GLOB SHADERS
         ${SHADER_SOURCE_DIR}/*.vert
-        ${SHADER_SOURCE_DIR}/*.frag
+        ${SHADER_SOURCE_DIR}/*.frag)
         # ${SHADER_SOURCE_DIR}/*.comp
         # ${SHADER_SOURCE_DIR}/*.geom
         # ${SHADER_SOURCE_DIR}/*.tesc
