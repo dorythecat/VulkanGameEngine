@@ -342,21 +342,29 @@ namespace Engine {
             switch (availablePresentMode) {
                 case VK_PRESENT_MODE_FIFO_KHR:
                     std::cout << "Present mode: Standard V-Sync" << std::endl;
-                    break;
+                    return availablePresentMode;
                 case VK_PRESENT_MODE_MAILBOX_KHR:
                     std::cout << "Present mode: Mailbox" << std::endl;
-                    break;
+                    return availablePresentMode;
                 case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
                     std::cout << "Present mode: Relaxed V-Sync" << std::endl;
-                    break;
+                    return availablePresentMode;
                 case VK_PRESENT_MODE_IMMEDIATE_KHR:
                     std::cout << "Present mode: Immediate" << std::endl;
-                    break;
-                case VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:break;
-                case VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:break;
-                case VK_PRESENT_MODE_MAX_ENUM_KHR:break;
-            } return availablePresentMode;
+                    return availablePresentMode;
+                case VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:
+                    std::cout << "Present mode: VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR" << std::endl;
+                    return availablePresentMode;
+                case VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:
+                    std::cout << "Present mode: VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR" << std::endl;
+                    return availablePresentMode;
+                case VK_PRESENT_MODE_MAX_ENUM_KHR:
+                    std::cout << "Present mode: VK_PRESENT_MODE_MAX_ENUM_KHR" << std::endl;
+                    return availablePresentMode;
+            }
         }
+        // This should never happen, but this is partly to avoid Warning C4715 when compiling
+        throw std::runtime_error("Failed to find supported presentation mode!");
     }
     VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) return capabilities.currentExtent;

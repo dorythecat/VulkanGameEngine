@@ -80,10 +80,8 @@ namespace Engine {
         void createSyncObjects();
 
         // Helper functions
-        static VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-                const std::vector<VkSurfaceFormatKHR> &availableFormats);
-        static VkPresentModeKHR chooseSwapPresentMode(
-                const std::vector<VkPresentModeKHR> &availablePresentModes);
+        static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
+        static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
     };
 }
