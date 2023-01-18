@@ -48,19 +48,18 @@ namespace Engine {
     void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo) {
         pipeline->bind(frameInfo.commandBuffer);
 
-        vkCmdBindDescriptorSets(
-                frameInfo.commandBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                pipelineLayout,
-                0,
-                1,
-                &frameInfo.globalDescriptorSet,
-                0,
-                nullptr);
+        vkCmdBindDescriptorSets(frameInfo.commandBuffer,
+                                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                pipelineLayout,
+                                0,
+                                1,
+                                &frameInfo.globalDescriptorSet,
+                                0,
+                                nullptr);
 
         for (auto &kv : frameInfo.gameObjects) {
-            auto &obj = kv.second;
-            if (obj.model == nullptr) continue;
+            auto &obj = kv.second; // Extract the second element of the pair (the GameObject)
+            if (obj.model == nullptr) continue; // Skip if the model is a null pointer
 
             SimplePushConstantData push{};
             push.modelMatrix = obj.transform.mat4();

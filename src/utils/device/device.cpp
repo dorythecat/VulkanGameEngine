@@ -99,24 +99,22 @@ namespace Engine {
         std::vector<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
-        for (const auto &device : devices) {
-            if (isPreferredDevice(device)) {
-                physicalDevice = device;
-                preferredDevice = true;
-                break;
-            }
-        }
+        std::unordered_map<uint32_t, VkPhysicalDevice> scores;
 
         for (const auto &device : devices) {
-            if (isSuitableDevice(device)) physicalDevice = device;
-            if (physicalDevice != VK_NULL_HANDLE) break;
+            uint32_t score = rateDeviceSuitability(device);
+            scores[score] = device;
         }
 
-        if (physicalDevice == VK_NULL_HANDLE) throw std::runtime_error("Failed to find a suitable GPU!");
-
+        if (scores.empty()) throw std::runtime_error("Failed to find a suitable GPU!");
+        // Find the greatest index in the map
+        auto best = std::max_element(scores.begin(),
+                                     scores.end(),
+                                     [] (std::pair<const uint32_t, VkPhysicalDevice> a,
+                                             const std::pair<uint32_t, VkPhysicalDevice>& b)->bool{ return a.first < b.first; });
+        physicalDevice = best->second;
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-        if (preferredDevice) std::cout << "Preferred device found: " << properties.deviceName << std::endl;
-        else std::cout << "Suitable device found: " << properties.deviceName << std::endl;
+        std::cout << "Found device: " << properties.deviceName << " with suitability score " << best->first << std::endl;
     }
 
     void Device::createLogicalDevice() {
@@ -176,33 +174,53 @@ namespace Engine {
 
     void Device::createSurface() { window.createWindowSurface(instance, &surface_); }
 
-    bool Device::isPreferredDevice(VkPhysicalDevice device) {
-        if (!isSuitableDevice(device)) return false;
-
-        auto props = VkPhysicalDeviceProperties{};
-        vkGetPhysicalDeviceProperties(device, &props);
-
-        return props.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
-               props.apiVersion >= VK_API_VERSION_1_3;
-    }
-    bool Device::isSuitableDevice(VkPhysicalDevice device) {
+    uint32_t Device::rateDeviceSuitability(VkPhysicalDevice device) {
+        uint32_t score = 0;
         QueueFamilyIndices indices = findQueueFamilies(device);
 
         bool extensionsSupported = checkDeviceExtensionSupport(device);
-        bool swapChainAdequate = false;
+        bool swapChainAdequate;
         if (extensionsSupported) {
             SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
             swapChainAdequate = !(swapChainSupport.formats.empty() ||
                                   swapChainSupport.presentModes.empty());
         }
 
-        VkPhysicalDeviceFeatures supportedFeatures;
+        VkPhysicalDeviceFeatures supportedFeatures{};
         vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+        vkGetPhysicalDeviceProperties(device, &properties);
 
-        return indices.isComplete() &&
-               extensionsSupported &&
-               swapChainAdequate &&
-               supportedFeatures.samplerAnisotropy;
+        if (!indices.isComplete() ||
+            !extensionsSupported ||
+            !swapChainAdequate ||
+            !supportedFeatures.samplerAnisotropy) return 0;
+
+        switch (properties.deviceType) {
+            case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+                score += 1000;
+                break;
+            case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+                score += 500;
+                break;
+            case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
+                score += 250;
+                break;
+            case VK_PHYSICAL_DEVICE_TYPE_CPU:
+                score += 100;
+                break;
+            case VK_PHYSICAL_DEVICE_TYPE_OTHER: throw std::runtime_error("Unknown device type!");
+            case VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM: throw std::runtime_error("Invalid device type!");
+        }
+
+        switch(properties.apiVersion) {
+            case VK_API_VERSION_1_0: score += 50; break;
+            case VK_API_VERSION_1_1: score += 100; break;
+            case VK_API_VERSION_1_2: score += 200; break;
+            case VK_API_VERSION_1_3: score += 300; break;
+        }
+
+        score += properties.limits.maxImageDimension2D;
+        return score;
     }
 
     void Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
@@ -369,12 +387,11 @@ namespace Engine {
         throw std::runtime_error("Failed to find suitable memory type!");
     }
 
-    void Device::createBuffer(
-            VkDeviceSize size,
-            VkBufferUsageFlags usage,
-            VkMemoryPropertyFlags properties,
-            VkBuffer &buffer,
-            VkDeviceMemory &bufferMemory) {
+    void Device::createBuffer(VkDeviceSize size,
+                              VkBufferUsageFlags usage,
+                              VkMemoryPropertyFlags properties,
+                              VkBuffer &buffer,
+                              VkDeviceMemory &bufferMemory) {
         VkBufferCreateInfo bufferInfo{};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         bufferInfo.size = size;

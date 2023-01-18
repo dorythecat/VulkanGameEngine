@@ -15,6 +15,6 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
 } globalUbo;
 
 void main() {
-    if(sqrt(dot(fragOffset, fragOffset)) >= 1.0) discard;
+    if(sqrt(dot(fragOffset, fragOffset)) + 0.5 >= 1.0) discard;
     outColor = vec4(globalUbo.ambientLightColor.rgb, 1.0);
 }

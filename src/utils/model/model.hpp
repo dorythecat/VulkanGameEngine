@@ -55,7 +55,7 @@ namespace Engine {
         static std::unique_ptr<Model> createModelFromFile(Device &device, const std::string &path);
 
         void bind(VkCommandBuffer commandBuffer);
-        void draw(VkCommandBuffer commandBuffer);
+        void draw(VkCommandBuffer commandBuffer) const;
     private:
         Device device;
 

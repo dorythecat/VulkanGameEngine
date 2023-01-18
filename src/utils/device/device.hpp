@@ -4,8 +4,10 @@
 #include <vector>
 #include <cstring>
 #include <iostream>
+#include <algorithm>
 #include <set>
 #include <unordered_set>
+#include <unordered_map>
 #include <vulkan/vulkan.h>
 
 #include "../window/window.hpp"
@@ -88,8 +90,6 @@ namespace Engine {
         VkQueue graphicsQueue_;
         VkQueue presentQueue_;
 
-        bool preferredDevice = false;
-
         void createInstance();
         void setupDebugMessenger();
         void createSurface();
@@ -98,8 +98,7 @@ namespace Engine {
         void createCommandPool();
 
         // helper functions
-        bool isPreferredDevice(VkPhysicalDevice device);
-        bool isSuitableDevice(VkPhysicalDevice device);
+        uint32_t rateDeviceSuitability(VkPhysicalDevice device);
         std::vector<const char *> getRequiredExtensions() const;
         bool checkValidationLayerSupport();
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) const;

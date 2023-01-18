@@ -1,13 +1,13 @@
 #version 460
 
-const vec2 OFFSETS[6] = vec2[](
-    vec2(-1.0, -1.0),
-    vec2(-1.0, 1.0),
-    vec2(1.0, -1.0),
-    vec2(1.0, -1.0),
-    vec2(-1.0, 1.0),
-    vec2(1.0, 1.0)
-);
+const float offsets[12] = {
+    -0.5, -0.5,
+    0.5, -0.5,
+    -0.5, 0.5,
+    -0.5, 0.5,
+    0.5, -0.5,
+    0.5, 0.5,
+};
 
 layout (location = 0) out vec2 fragOffset;
 
@@ -21,10 +21,10 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
     vec4 lightColor;
 } globalUbo;
 
-const float radius = 0.05;
+const float radius = 1;
 
 void main() {
-    fragOffset = OFFSETS[gl_VertexIndex];
+    fragOffset = vec2(offsets[gl_VertexIndex * 2], offsets[gl_VertexIndex * 2 + 1]);
     vec3 cameraRightWorld = {globalUbo.viewMatrix[0][0], globalUbo.viewMatrix[1][0], globalUbo.viewMatrix[2][0]};
     vec3 cameraUpWorld = {globalUbo.viewMatrix[0][1], globalUbo.viewMatrix[1][1], globalUbo.viewMatrix[2][1]};
 

@@ -113,7 +113,7 @@ namespace Engine {
         VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
         VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
 
-        uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+        uint32_t imageCount = 3; // Number of images in the swap chain
         if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
             imageCount = swapChainSupport.capabilities.maxImageCount;
 

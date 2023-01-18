@@ -21,7 +21,7 @@ namespace Engine {
     }
     Model::~Model() = default;
 
-    void Model::Builder::loadModel (const std::string &path) {
+    void Model::Builder::loadModel(const std::string &path) {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
@@ -147,7 +147,7 @@ namespace Engine {
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
         if(hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
     }
-    void Model::draw(VkCommandBuffer commandBuffer) {
+    void Model::draw(VkCommandBuffer commandBuffer) const {
         if(hasIndexBuffer) vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
         else vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
     }
@@ -168,7 +168,6 @@ namespace Engine {
         attributeDescriptions.push_back({3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord)});
 
         // Verbose form of the above
-
         /*
 
         attributeDescriptions[0].binding = 0;

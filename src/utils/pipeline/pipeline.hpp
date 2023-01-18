@@ -13,15 +13,15 @@ namespace Engine {
     struct PipelineConfigInfo {
         std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
-        VkPipelineViewportStateCreateInfo viewportInfo;
-        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
-        VkPipelineRasterizationStateCreateInfo rasterizationInfo;
-        VkPipelineMultisampleStateCreateInfo multisampleInfo;
-        VkPipelineColorBlendAttachmentState colorBlendAttachment;
-        VkPipelineColorBlendStateCreateInfo colorBlendInfo;
-        VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+        VkPipelineViewportStateCreateInfo viewportInfo{};
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
+        VkPipelineMultisampleStateCreateInfo multisampleInfo{};
+        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+        VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
+        VkPipelineDepthStencilStateCreateInfo depthStencilInfo{};
         std::vector<VkDynamicState> dynamicStateEnables;
-        VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo{};
         VkPipelineLayout pipelineLayout = NULL;
         VkRenderPass renderPass = NULL;
         uint32_t subpass = 0;
@@ -33,11 +33,10 @@ namespace Engine {
 
     class Pipeline {
     public:
-        Pipeline(
-                Device &device,
-                const std::string &vertFilepath,
-                const std::string &fragFilepath,
-                const PipelineConfigInfo& configInfo);
+        Pipeline(Device &device,
+                 const std::string &vertFilepath,
+                 const std::string &fragFilepath,
+                 const PipelineConfigInfo& configInfo);
         ~Pipeline();
 
         Pipeline(const Pipeline&) = delete;
