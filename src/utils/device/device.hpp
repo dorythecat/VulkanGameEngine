@@ -45,9 +45,9 @@ namespace Engine {
         Device(Device &&) = delete;
         Device& operator=(Device &&) = delete;
 
-        VkCommandPool getCommandPool() { return commandPool; }
+        VkCommandPool getCommandPool() const { return commandPool; }
         VkDevice device() { return device_; }
-        VkSurfaceKHR surface() { return surface_; }
+        VkSurfaceKHR surface() const { return surface_; }
         VkQueue graphicsQueue() { return graphicsQueue_; }
         VkQueue presentQueue() { return presentQueue_; }
 
@@ -66,14 +66,12 @@ namespace Engine {
         VkCommandBuffer beginSingleTimeCommands();
         void endSingleTimeCommands(VkCommandBuffer commandBuffer);
         void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-        void copyBufferToImage(
-                VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
+        void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
 
-        void createImageWithInfo(
-                const VkImageCreateInfo &imageInfo,
-                VkMemoryPropertyFlags properties,
-                VkImage &image,
-                VkDeviceMemory &imageMemory);
+        void createImageWithInfo(const VkImageCreateInfo &imageInfo,
+                                 VkMemoryPropertyFlags properties,
+                                 VkImage &image,
+                                 VkDeviceMemory &imageMemory);
 
     private:
         const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
@@ -90,6 +88,8 @@ namespace Engine {
         VkQueue graphicsQueue_;
         VkQueue presentQueue_;
 
+        bool preferredDevice = false;
+
         void createInstance();
         void setupDebugMessenger();
         void createSurface();
@@ -98,7 +98,8 @@ namespace Engine {
         void createCommandPool();
 
         // helper functions
-        bool isDeviceSuitable(VkPhysicalDevice device);
+        bool isPreferredDevice(VkPhysicalDevice device);
+        bool isSuitableDevice(VkPhysicalDevice device);
         std::vector<const char *> getRequiredExtensions() const;
         bool checkValidationLayerSupport();
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) const;

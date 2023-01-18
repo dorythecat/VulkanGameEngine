@@ -100,16 +100,23 @@ namespace Engine {
         vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
         for (const auto &device : devices) {
-            if (isDeviceSuitable(device)) {
+            if (isPreferredDevice(device)) {
                 physicalDevice = device;
+                preferredDevice = true;
                 break;
             }
+        }
+
+        for (const auto &device : devices) {
+            if (isSuitableDevice(device)) physicalDevice = device;
+            if (physicalDevice != VK_NULL_HANDLE) break;
         }
 
         if (physicalDevice == VK_NULL_HANDLE) throw std::runtime_error("Failed to find a suitable GPU!");
 
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-        std::cout << "Physical device: " << properties.deviceName << std::endl;
+        if (preferredDevice) std::cout << "Preferred device found: " << properties.deviceName << std::endl;
+        else std::cout << "Suitable device found: " << properties.deviceName << std::endl;
     }
 
     void Device::createLogicalDevice() {
@@ -169,21 +176,33 @@ namespace Engine {
 
     void Device::createSurface() { window.createWindowSurface(instance, &surface_); }
 
-    bool Device::isDeviceSuitable(VkPhysicalDevice device) {
+    bool Device::isPreferredDevice(VkPhysicalDevice device) {
+        if (!isSuitableDevice(device)) return false;
+
+        auto props = VkPhysicalDeviceProperties{};
+        vkGetPhysicalDeviceProperties(device, &props);
+
+        return props.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
+               props.apiVersion >= VK_API_VERSION_1_3;
+    }
+    bool Device::isSuitableDevice(VkPhysicalDevice device) {
         QueueFamilyIndices indices = findQueueFamilies(device);
 
         bool extensionsSupported = checkDeviceExtensionSupport(device);
-
         bool swapChainAdequate = false;
         if (extensionsSupported) {
             SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
-            swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+            swapChainAdequate = !(swapChainSupport.formats.empty() ||
+                                  swapChainSupport.presentModes.empty());
         }
 
         VkPhysicalDeviceFeatures supportedFeatures;
         vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-        return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+        return indices.isComplete() &&
+               extensionsSupported &&
+               swapChainAdequate &&
+               supportedFeatures.samplerAnisotropy;
     }
 
     void Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
