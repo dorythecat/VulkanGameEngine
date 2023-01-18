@@ -4,6 +4,25 @@
 #include <limits>
 
 namespace Engine {
+    void Camera::setOrthographicProjection(float right, float top, float near, float far) {
+        // TODO(Dory): We should probably check for more assertion cases here, mainly to avoid 1.0f / 0.0f and similar
+        assert(far > near && "Far plane cannot be closer than the near plane!");
+        assert(far - near > std::numeric_limits<float>::epsilon() && "Near and far planes cannot be equal!");
+
+        const float r = 1.0f / right;
+        const float b = 1.0f / top;
+        const float fn = -1.0f / (far - near);
+
+        projectionMatrix = glm::mat4{0.0f};
+
+        projectionMatrix[0][0] = r;
+        projectionMatrix[1][1] = b;
+        projectionMatrix[2][2] = 2.0f * fn;
+
+        projectionMatrix[3][2] = (far + near) * fn;
+        projectionMatrix[3][3] = 1.0f;
+    }
+
     void Camera::setOrthographicProjection(float left, float right, float top, float bottom, float near, float far) {
         // TODO(Dory): We should probably check for more assertion cases here, mainly to avoid 1.0f / 0.0f and similar
         assert(far > near && "Far plane cannot be closer than the near plane!");
@@ -13,7 +32,7 @@ namespace Engine {
         const float bt = 1.0f / (bottom - top);
         const float fn = 1.0f / (far - near);
 
-        projectionMatrix = glm::mat4{1.0f};
+        projectionMatrix = glm::mat4{0.0f};
 
         projectionMatrix[0][0] = 2.0f * rl;
         projectionMatrix[1][1] = 2.0f * bt;
@@ -22,6 +41,7 @@ namespace Engine {
         projectionMatrix[3][0] = (right + left) * -rl;
         projectionMatrix[3][1] = (bottom + top) * -bt;
         projectionMatrix[3][2] = near * -fn;
+        projectionMatrix[3][3] = 1.0f;
     }
 
     void Camera::setPerspectiveProjection(float fov, float aspect, float near, float far) {
@@ -53,8 +73,7 @@ namespace Engine {
         viewMatrix = glm::mat4{{u.x, v.x, w.x, 0.0f},
                             {u.y, v.y, w.y, 0.0f},
                             {u.z, v.z, w.z, 0.0f},
-                            {-glm::dot(u, position),-glm::dot(v, position),
-                                -glm::dot(w, position),1.0f}
+                            {-glm::dot(u, position),-glm::dot(v, position),-glm::dot(w, position),1.0f}
         };
     }
 

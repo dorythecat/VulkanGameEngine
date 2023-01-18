@@ -13,6 +13,7 @@
 namespace Engine {
     class Camera {
     public:
+        void setOrthographicProjection(float right, float top, float near, float far);
         void setOrthographicProjection (float left, float right, float top, float bottom, float near, float far);
         void setPerspectiveProjection (float fov, float aspect, float near, float far);
 

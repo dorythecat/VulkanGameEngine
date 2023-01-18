@@ -78,6 +78,7 @@ namespace Engine {
             camera.setViewXYZ(cameraObject.transform.position, cameraObject.transform.rotation);
 
             float aspectRatio = renderer.getAspectRatio();
+            // camera.setOrthographicProjection(aspectRatio, -1.0f, -1.0f, 1.0f);
             // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
             camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 100.0f);
 
