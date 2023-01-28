@@ -21,22 +21,31 @@ namespace Engine {
         glm::mat3 normal() const;
     };
 
+    struct PointLightComponent {
+        float intensity = 1.0f;
+    };
+
     class GameObject {
     public:
         using id_t = unsigned int;
         using Map = std::unordered_map<id_t, GameObject>;
 
-        std::shared_ptr<Model> model{};
         glm::vec3 color{};
 
+        // Required components
         TransformComponent transform{};
 
-        static GameObject createGameObject();
+        // Optional components
+        std::shared_ptr<Model> model{};
+        std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
         GameObject(const GameObject &) = delete;
         GameObject &operator=(const GameObject &) = delete;
         GameObject(GameObject &&) = default;
         GameObject &operator=(GameObject &&) = default;
+
+        static GameObject createGameObject();
+        static GameObject createPointLight(float intensity = 1.0f, float radius = 0.1f, glm::vec3 color = {1.0f, 1.0f, 1.0f});
 
         id_t getId() const { return id; }
     private:

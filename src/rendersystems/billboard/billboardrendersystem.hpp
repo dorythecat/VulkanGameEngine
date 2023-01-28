@@ -25,6 +25,7 @@ namespace Engine {
         BillboardRenderSystem(const BillboardRenderSystem&) = delete;
         BillboardRenderSystem& operator=(const BillboardRenderSystem&) = delete;
 
+        void update(FrameInfo &frameInfo, GlobalUbo &ubo);
         void render(FrameInfo &frameInfo);
     private:
         Device &device;

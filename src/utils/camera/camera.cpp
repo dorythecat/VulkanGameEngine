@@ -53,56 +53,27 @@ namespace Engine {
         assert(far > near && "Far plane cannot be closer than the near plane!");
         assert(far - near > std::numeric_limits<float>::epsilon() && "Near and far planes cannot be equal!");
 
-        const float tanHalfFov = 1.0f / glm::tan(fov / 2.0f);
-        const float ffn = far / (far - near);
+        projectionMatrix = glm::perspective(fov, aspect, near, far);
 
-        projectionMatrix = glm::mat4{0.0f};
-
-        projectionMatrix[0][0] = tanHalfFov / aspect;
-        projectionMatrix[1][1] = tanHalfFov;
-        projectionMatrix[2][2] = ffn;
-        projectionMatrix[2][3] = 1.0f;
-        projectionMatrix[3][2] = near * -ffn;
-    }
-
-    void Camera::setViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up) {
-        const glm::vec3 w{glm::normalize(direction)};
-        const glm::vec3 u{glm::normalize(glm::cross(w, up))};
-        const glm::vec3 v{glm::cross(w, u)};
-
-        viewMatrix = glm::mat4{{u.x, v.x, w.x, 0.0f},
-                            {u.y, v.y, w.y, 0.0f},
-                            {u.z, v.z, w.z, 0.0f},
-                            {-glm::dot(u, position),-glm::dot(v, position),-glm::dot(w, position),1.0f}
-        };
+        // IDK why, but these two values are inverted in the perspective projection matrix from GLM
+        // TODO(Dory): Check if this is a bug in GLM or if I'm just doing something wrong
+        projectionMatrix[2][2] *= -1.0f;
+        projectionMatrix[2][3] *= -1.0f;
     }
 
     void Camera::setViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
-        setViewDirection(position, target - position, up);
+        viewMatrix = glm::lookAt(position, target, up);
+    }
+
+    void Camera::setViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up) {
+        setViewTarget(position, position + direction, up);
     }
 
     void Camera::setViewXYZ(glm::vec3 position, glm::vec3 rotation) {
-        const float s1 = glm::sin(rotation.x);
-        const float c1 = glm::cos(rotation.x);
-
-        const float s2 = glm::sin(rotation.y);
-        const float c2 = glm::cos(rotation.y);
-
-        const float s3 = glm::sin(rotation.z);
-        const float c3 = glm::cos(rotation.z);
-
-        const float c3s2 = c3 * s2;
-        const float s3s2 = s3 * s2;
-
-        const glm::vec3 u{c2 * c3, c1 * s3 + s1 * c3s2, s1 * s3 - c1 * c3s2};
-        const glm::vec3 v{-c2 * s3, c1 * c3 - s1 * s3s2, s1 * c3 + c1 * s3s2};
-        const glm::vec3 w{s2, -c2 * s1, c1 * c2};
-
-        viewMatrix = glm::mat4{{u.x, v.x, w.x, 0.0f},
-                               {u.y, v.y, w.y, 0.0f},
-                               {u.z, v.z, w.z, 0.0f},
-                               {-glm::dot(u, position),-glm::dot(v, position),
-                                -glm::dot(w, position),1.0f}
-        };
+        viewMatrix = glm::mat4{1.0f};
+        viewMatrix = glm::rotate(viewMatrix, -rotation.x, glm::vec3{1.0f, 0.0f, 0.0f});
+        viewMatrix = glm::rotate(viewMatrix, -rotation.y, glm::vec3{0.0f, 1.0f, 0.0f});
+        viewMatrix = glm::rotate(viewMatrix, -rotation.z, glm::vec3{0.0f, 0.0f, 1.0f});
+        viewMatrix = glm::translate(viewMatrix, -position);
     }
 }

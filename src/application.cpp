@@ -2,19 +2,6 @@
 #include "rendersystems/billboard/billboardrendersystem.hpp"
 
 namespace Engine {
-    struct GlobalUbo {
-        glm::mat4 projectionMatrix{1.0f}; // 64 bytes
-        glm::mat4 viewMatrix{1.0f}; // 64 bytes
-        // glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
-        glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.05f};
-
-        // Alignment requirements need to be met
-        // (See https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout)
-        glm::vec3 lightPosition = glm::vec3{0.0f, -1.0f, 5.0f}; // 12 bytes
-        uint32_t padding; // 4 bytes
-        glm::vec4 lightColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}; // 16 bytes
-    };
-
     Application::Application() {
         globalPool = DescriptorPool::Builder(device)
                      .setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -72,7 +59,8 @@ namespace Engine {
             float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
             currentTime = newTime;
 
-            glm::min(deltaTime, 0.0333f); // Make the maximum time between frames 1/30 seconds, so the minimum framerate is 30 FPS
+            // Make the maximum time between frames 1/30 seconds, so the minimum framerate is 30 FPS
+            deltaTime = glm::min(deltaTime, 0.0333f);
 
             cameraController.moveInPlaneXZ(window.getWindow(), deltaTime, cameraObject);
             camera.setViewXYZ(cameraObject.transform.position, cameraObject.transform.rotation);
@@ -95,6 +83,7 @@ namespace Engine {
                 GlobalUbo ubo{};
                 ubo.projectionMatrix = frameInfo.camera.getProjectionMatrix();
                 ubo.viewMatrix = frameInfo.camera.getViewMatrix();
+                billboardRenderSystem.update(frameInfo, ubo);
                 uboBuffers[frameInfo.frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameInfo.frameIndex]->flush();
 
@@ -124,5 +113,26 @@ namespace Engine {
         sphereSmooth.transform.position = glm::vec3{2.5f, 0.0f, 5.0f};
         sphereSmooth.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
         gameObjects.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
+
+        // Point lights
+        std::vector<glm::vec3> lightColors{
+                {1.0f, 0.1f, 0.1f},
+                {0.1f, 0.1f, 1.0f},
+                {0.1f, 1.0f, 0.1f},
+                {1.0f, 1.0f, 0.1f},
+                {0.1f, 1.0f, 1.0f},
+                {1.0f, 1.0f, 1.0f}
+        };
+
+        for (int i = 0; i < lightColors.size(); i++) {
+            auto pointLight = GameObject::createPointLight(1.0f);
+            pointLight.color = lightColors[i];
+            auto rotateLight = glm::rotate(
+                    glm::mat4(1.f),
+                    (i * glm::two_pi<float>()) / lightColors.size(),
+                    {0.f, -1.f, 0.f});
+            pointLight.transform.position = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+            gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+        }
     }
 }
