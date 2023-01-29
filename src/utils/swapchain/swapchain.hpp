@@ -3,9 +3,11 @@
 
 #include <vulkan/vulkan.h>
 
+#include <limits>
 #include <string>
 #include <vector>
 #include <array>
+#include <memory>
 
 #include "../device/device.hpp"
 

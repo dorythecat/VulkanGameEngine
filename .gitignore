@@ -1,4 +1,4 @@
 .git/
 .idea/
 cmake-build-debug/
-camke-build-release/
+cmake-build-release/

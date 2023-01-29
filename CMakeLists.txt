@@ -5,6 +5,19 @@ set(CMAKE_CXX_STANDARD 23) # I do believe this can run with just C++17, or even 
 
 message(STATUS "using ${CMAKE_GENERATOR}")
 
+# This isn't really necessary, but it's nice to have to avoid errors
+if(NOT CMAKE_BUILD_TYPE)
+    message(WARNING "No build type selected, defaulting to Debug")
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+# For knowing what these do, and where I have gotten this information, check the awesome article at https://interrupt.memfault.com/blog/best-and-worst-gcc-clang-compiler-flags (I know it's for embedded systems, but it's still a  pretty good article)
+# For more info on all of these warning flags, check out https://gcc.gnu.org/onlinedocs/gcc-3.4.0/gcc/Warning-Options.html
+# For more information of all of these optimization flags, check out https://gcc.gnu.org/onlinedocs/gcc-12.2.0/gcc/Optimize-Options.html
+set(CMAKE_CXX_FLAGS "-static -Wall -Wextra -Wundef -Wdouble-promotion -Wformat=2 -fno-common -Wconversion -pedantic -Wno-unused-parameter") # Bundle the necessary static libraries, as well as enable some useful warnings, and disable some nasty ones
+set(CMAKE_CXX_FLAGS_DEBUG "-g3 -Og") # Enable debug symbols and optimisations for debug builds
+set(CMAKE_CXX_FLAGS_RELEASE "-O3") # Enable full optimisations for release builds
+
 # GLFW settings
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "GLFW lib only")
 set(GLFW_INSTALL OFF CACHE BOOL "GLFW lib only")

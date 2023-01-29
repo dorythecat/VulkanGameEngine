@@ -31,7 +31,7 @@ namespace Engine {
                             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT).build();
 
         std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
-        for (int i = 0; i < globalDescriptorSets.size(); i++) {
+        for (unsigned int i = 0; i < globalDescriptorSets.size(); i++) {
             auto bufferInfo = uboBuffers[i]->descriptorInfo();
             DescriptorWriter(*globalSetLayout, *globalPool)
                 .writeBuffer(0, &bufferInfo)
@@ -124,12 +124,12 @@ namespace Engine {
                 {1.0f, 1.0f, 1.0f}
         };
 
-        for (int i = 0; i < lightColors.size(); i++) {
+        for (unsigned int i = 0; i < lightColors.size(); i++) {
             auto pointLight = GameObject::createPointLight(1.0f);
             pointLight.color = lightColors[i];
             auto rotateLight = glm::rotate(
                     glm::mat4(1.f),
-                    (i * glm::two_pi<float>()) / lightColors.size(),
+                    (static_cast<float>(i) * glm::two_pi<float>()) / static_cast<float>(lightColors.size()),
                     {0.f, -1.f, 0.f});
             pointLight.transform.position = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
             gameObjects.emplace(pointLight.getId(), std::move(pointLight));

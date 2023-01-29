@@ -15,12 +15,12 @@ namespace Engine {
             vkDestroyImageView(device.device(), imageView, nullptr);
         swapChainImageViews.clear();
 
-        if (swapChain != NULL) {
+        if (swapChain != nullptr) {
             vkDestroySwapchainKHR(device.device(), swapChain, nullptr);
-            swapChain = NULL;
+            swapChain = nullptr;
         }
 
-        for (int i = 0; i < depthImages.size(); i++) {
+        for (unsigned int i = 0; i < depthImages.size(); i++) {
             vkDestroyImageView(device.device(), depthImageViews[i], nullptr);
             vkDestroyImage(device.device(), depthImages[i], nullptr);
             vkFreeMemory(device.device(), depthImageMemorys[i], nullptr);
@@ -49,17 +49,17 @@ namespace Engine {
     }
     VkResult SwapChain::acquireNextImage(uint32_t *imageIndex) {
         vkWaitForFences(device.device(),
-                     1,
-                       &inFlightFences[currentFrame],
+                        1,
+                        &inFlightFences[currentFrame],
                         VK_TRUE,
-                       std::numeric_limits<uint64_t>::max());
+                        std::numeric_limits<uint64_t>::max());
 
         VkResult result = vkAcquireNextImageKHR(device.device(),
                                              swapChain,
-                                               std::numeric_limits<uint64_t>::max(),
-                                             imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
-                                                 VK_NULL_HANDLE,
-                                                      imageIndex);
+                                             std::numeric_limits<uint64_t>::max(),
+                                             imageAvailableSemaphores[currentFrame], // must be a not signaled semaphore
+                                             VK_NULL_HANDLE,
+                                             imageIndex);
         return result;
     }
     VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex) {
@@ -272,7 +272,7 @@ namespace Engine {
         depthImageMemorys.resize(imageCount());
         depthImageViews.resize(imageCount());
 
-        for (int i = 0; i < depthImages.size(); i++) {
+        for (unsigned int i = 0; i < depthImages.size(); i++) {
             VkImageCreateInfo imageInfo{};
             imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             imageInfo.imageType = VK_IMAGE_TYPE_2D;
