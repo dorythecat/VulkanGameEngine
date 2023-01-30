@@ -9,7 +9,7 @@
 namespace Engine {
     class Window {
     public:
-        Window(int width, int height, const char* title);
+        Window(unsigned int width, unsigned int height, const char* title);
         ~Window();
 
         Window(const Window&) = delete;
@@ -21,9 +21,13 @@ namespace Engine {
         void resetWindowResizedFlag() { framebufferResized = false; }
         GLFWwindow* getWindow() const { return window; }
 
+        unsigned int getWidth() const { return width; }
+        unsigned int getHeight() const { return height; }
+        // float getAspectRatio() const { return static_cast<float>(width) / static_cast<float>(height); }
+
         void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
     private:
-        int width, height;
+        unsigned int width, height;
         bool framebufferResized = false;
 
         const char *window_title = "Vulkan test window";

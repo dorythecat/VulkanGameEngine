@@ -1,5 +1,6 @@
 #include "simplerendersystem.hpp"
 
+// TODO(Dory): Abstract rendersystems to be more generic. There's a lot of reused code between these two...
 namespace Engine {
     struct SimplePushConstantData {
         glm::mat4 modelMatrix{1.0f};
@@ -31,10 +32,10 @@ namespace Engine {
         pipelineLayoutInfo.pushConstantRangeCount = 1;
         pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
         if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create pipeline layout!");
+            throw std::runtime_error("Failed to create the pipeline layout!");
     }
     void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
-        assert(pipelineLayout != NULL && "Cannot create pipeline before pipeline layout!");
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before the pipeline layout is created!");
 
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfo(pipelineConfig);

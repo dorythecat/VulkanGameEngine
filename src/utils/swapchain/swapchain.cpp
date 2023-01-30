@@ -1,11 +1,13 @@
 #include "swapchain.hpp"
 
+#include <utility>
+
 namespace Engine {
     SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent} {
         init();
     }
     SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent, std::shared_ptr<SwapChain> previous) :
-    device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+    device{deviceRef}, windowExtent{extent}, oldSwapChain{std::move(previous)} {
         init();
 
         oldSwapChain = nullptr; // Clean up, since we no longer need it, and we can free its memory
@@ -149,7 +151,10 @@ namespace Engine {
 
         createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
-        if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS)
+        if (vkCreateSwapchainKHR(device.device(),
+                                 &createInfo,
+                                 nullptr,
+                                 &swapChain) != VK_SUCCESS)
             throw std::runtime_error("Failed to create swap chain!");
 
         // we only specified a minimum number of images in the swap chain, so the implementation is
@@ -177,7 +182,10 @@ namespace Engine {
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
 
-            if (vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS)
+            if (vkCreateImageView(device.device(),
+                                  &viewInfo,
+                                  nullptr,
+                                  &swapChainImageViews[i]) != VK_SUCCESS)
                 throw std::runtime_error("Failed to create texture image view!");
         }
     }

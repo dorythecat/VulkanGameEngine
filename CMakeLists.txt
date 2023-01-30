@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(Game_Engine VERSION 0.0.20.1)
+project(Game_Engine VERSION 0.0.0.0) # I have totally forgotten to change this, as of lately. For now I'm gonna put it at zero and ignore it until I complete at least the basic engine
 
 set(CMAKE_CXX_STANDARD 23) # I do believe this can run with just C++17, or even just C++11, but, oh well, doesn't hurt having extra room for activities, right?
 

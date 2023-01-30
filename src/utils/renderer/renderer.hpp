@@ -23,12 +23,12 @@ namespace Engine {
         bool isFrameInProgress() const { return isFrameStarted; }
 
         VkCommandBuffer getCurrentCommandBuffer() const {
-            assert(isFrameStarted && "Cannot get command buffer outside of a render pass!");
+            assert(isFrameStarted && "Cannot get the command buffer outside of a render pass!");
             return commandBuffers[currentFrameIndex];
         }
 
-        int getCurrentFrameIndex() const {
-            assert(isFrameStarted && "Cannot get frame index outside of a render pass!");
+        size_t getCurrentFrameIndex() const {
+            assert(isFrameStarted && "Cannot get the frame index outside of a render pass!");
             return currentFrameIndex;
         }
 
@@ -37,7 +37,7 @@ namespace Engine {
 
         void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
-        float getAspectRatio() const { return swapChain->extentAspectRatio(); }
+        float getAspectRatio() const { return swapChain->getExtentAspectRatio(); }
 
         void endSwapChainRenderPass(VkCommandBuffer commandBuffer) const;
     private:
@@ -47,7 +47,7 @@ namespace Engine {
         std::vector<VkCommandBuffer> commandBuffers;
 
         uint32_t currentImageIndex = 0;
-        int currentFrameIndex = 0;
+        size_t currentFrameIndex = 0;
         bool isFrameStarted = false;
 
         void createCommandBuffers();

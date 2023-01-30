@@ -23,8 +23,9 @@
 namespace Engine {
     class Application {
     public:
-        static constexpr int WIDTH = 800;
-        static constexpr int HEIGHT = 600;
+        static constexpr unsigned int WIDTH = 800;
+        static constexpr unsigned int HEIGHT = 600;
+        static constexpr const char* TITLE = "Vulkan Game Engine Test Window";
 
         Application();
         ~Application();
@@ -34,7 +35,7 @@ namespace Engine {
 
         void run();
     private:
-        Window window{WIDTH, HEIGHT, "Vulkan test window"};
+        Window window{WIDTH, HEIGHT, TITLE};
         Device device{window};
         Renderer renderer{window, device};
         GameObject::Map gameObjects;

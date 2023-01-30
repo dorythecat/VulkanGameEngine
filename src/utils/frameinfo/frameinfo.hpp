@@ -27,11 +27,11 @@ namespace Engine {
     };
 
     struct FrameInfo {
-        int frameIndex = 0;
+        size_t frameIndex = 0;
         float frameTime = 0.0f;
-        VkCommandBuffer commandBuffer;
+        VkCommandBuffer commandBuffer{};
         Camera &camera;
-        VkDescriptorSet globalDescriptorSet;
+        VkDescriptorSet globalDescriptorSet{};
         GameObject::Map &gameObjects;
     };
 }

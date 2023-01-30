@@ -1,6 +1,7 @@
 #ifndef GAME_ENGINE_DEVICE_HPP
 #define GAME_ENGINE_DEVICE_HPP
 
+#include <cassert>
 #include <vector>
 #include <cstring>
 #include <iostream>
@@ -20,8 +21,8 @@ namespace Engine {
     };
 
     struct QueueFamilyIndices {
-        uint32_t graphicsFamily;
-        uint32_t presentFamily;
+        uint32_t graphicsFamily{};
+        uint32_t presentFamily{};
 
         bool graphicsFamilyHasValue = false;
         bool presentFamilyHasValue = false;
@@ -76,12 +77,16 @@ namespace Engine {
                                  VkDeviceMemory &imageMemory);
 
     private:
-        const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-        const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+        const std::vector<const char *> validationLayers = {
+                "VK_LAYER_KHRONOS_validation",
+        };
+        const std::vector<const char *> deviceExtensions = {
+                VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        };
 
         VkInstance instance;
         VkDebugUtilsMessengerEXT debugMessenger;
-        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+        VkPhysicalDevice physicalDevice = nullptr;
         Window &window;
         VkCommandPool commandPool;
 
@@ -97,9 +102,9 @@ namespace Engine {
         void createLogicalDevice();
         void createCommandPool();
 
-        // helper functions
+        // Helper functions
         uint32_t rateDeviceSuitability(VkPhysicalDevice device);
-        std::vector<const char *> getRequiredExtensions() const;
+        std::vector<const char*> getRequiredExtensions() const;
         bool checkValidationLayerSupport();
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) const;
         static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);

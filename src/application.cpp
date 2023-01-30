@@ -71,7 +71,7 @@ namespace Engine {
             camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 100.0f);
 
             if (auto commandBuffer = renderer.beginFrame()) {
-                int frameIndex = renderer.getCurrentFrameIndex();
+                size_t frameIndex = renderer.getCurrentFrameIndex();
                 FrameInfo frameInfo{frameIndex,
                                     deltaTime,
                                     commandBuffer,

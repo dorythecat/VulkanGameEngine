@@ -21,7 +21,7 @@ namespace Engine {
         }
 
         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-            throw std::runtime_error("Failed to acquire swap chain image!");
+            throw std::runtime_error("Failed to acquire the swap chain image!");
 
         isFrameStarted = true;
 
@@ -29,7 +29,7 @@ namespace Engine {
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-            throw std::runtime_error("Failed to begin recording command buffer!");
+            throw std::runtime_error("Failed to begin recording to the command buffer!");
 
         return commandBuffer;
     }
@@ -38,13 +38,13 @@ namespace Engine {
 
         auto commandBuffer = getCurrentCommandBuffer();
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-            throw std::runtime_error("Failed to record command buffer!");
+            throw std::runtime_error("Failed to record to the command buffer!");
 
         auto result = swapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.wasWindowResized()) {
             window.resetWindowResizedFlag();
             recreateSwapChain();
-        } else if (result != VK_SUCCESS) throw std::runtime_error("Failed to present swap chain image!");
+        } else if (result != VK_SUCCESS) throw std::runtime_error("Failed to present the swap chain image!");
 
         isFrameStarted = false;
         currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
@@ -63,7 +63,7 @@ namespace Engine {
         renderPassInfo.renderArea.extent = swapChain->getSwapChainExtent();
 
         std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
+        clearValues[0].color = {{0.01f, 0.01f, 0.01f, 1.0f}};
         clearValues[1].depthStencil = {1.0f, 0};
         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         renderPassInfo.pClearValues = clearValues.data();
@@ -98,7 +98,7 @@ namespace Engine {
             allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
             if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
-                throw std::runtime_error("Failed to allocate command buffers!");
+                throw std::runtime_error("Failed to allocate the command buffers!");
     }
     void Renderer::recreateSwapChain() {
         auto extent = window.getExtent();
@@ -112,7 +112,7 @@ namespace Engine {
             std::shared_ptr<SwapChain> oldSwapChain = std::move(swapChain);
             swapChain = std::make_unique<SwapChain>(device, extent, oldSwapChain);
             if(!oldSwapChain->compareSwapFormats(*swapChain))
-                throw std::runtime_error("Swap chain image/depth format or presentation mode has changed!");
+                throw std::runtime_error("Swap chain image/depth format or presentation mode has been changed!");
         }
     }
     void Renderer::freeCommandBuffers() {

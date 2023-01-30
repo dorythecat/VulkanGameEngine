@@ -1,5 +1,6 @@
 #include "billboardrendersystem.hpp"
 
+// TODO(Dory): Abstract rendering systems to be more generic. There's a lot of reused code between these two...
 namespace Engine {
     struct PointLightPushConstant {
         glm::vec4 position{};
@@ -34,7 +35,7 @@ namespace Engine {
             throw std::runtime_error("Failed to create pipeline layout!");
     }
     void BillboardRenderSystem::createPipeline(VkRenderPass renderPass) {
-        assert(pipelineLayout != NULL && "Cannot create pipeline before pipeline layout!");
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before the pipeline layout is created!");
 
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfo(pipelineConfig);
