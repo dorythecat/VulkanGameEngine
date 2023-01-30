@@ -39,7 +39,7 @@ namespace Engine {
                    // swapChainExtent.height == other.swapChainExtent.height;
         }
 
-        float getExtentAspectRatio() const {
+        float extentAspectRatio() const {
             return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
         }
         VkFormat findDepthFormat();

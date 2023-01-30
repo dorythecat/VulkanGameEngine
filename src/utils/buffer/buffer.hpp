@@ -47,8 +47,8 @@ namespace Engine {
 
         Device& device;
         void* mapped = nullptr;
-        VkBuffer buffer = nullptr;
-        VkDeviceMemory memory = nullptr;
+        VkBuffer buffer = VK_NULL_HANDLE;
+        VkDeviceMemory memory = VK_NULL_HANDLE;
 
         VkDeviceSize bufferSize;
         uint32_t instanceCount;

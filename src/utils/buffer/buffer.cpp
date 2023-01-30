@@ -150,7 +150,7 @@ namespace Engine {
     *
     */
     void Buffer::writeToIndex(void *data, int index) {
-        writeToBuffer(data, instanceSize, static_cast<VkDeviceSize>(index) * alignmentSize);
+        writeToBuffer(data, instanceSize, index * alignmentSize);
     }
 
     /**
@@ -160,7 +160,7 @@ namespace Engine {
     *
     */
     VkResult Buffer::flushIndex(int index) {
-        return flush(alignmentSize, static_cast<VkDeviceSize>(index) * alignmentSize);
+        return flush(alignmentSize, index * alignmentSize);
     }
 
     /**
@@ -171,7 +171,7 @@ namespace Engine {
     * @return VkDescriptorBufferInfo for instance at index
     */
     VkDescriptorBufferInfo Buffer::descriptorInfoForIndex(int index) {
-        return descriptorInfo(alignmentSize, static_cast<VkDeviceSize>(index) * alignmentSize);
+        return descriptorInfo(alignmentSize, index * alignmentSize);
     }
 
     /**
@@ -184,6 +184,6 @@ namespace Engine {
     * @return VkResult of the invalidate call
     */
     VkResult Buffer::invalidateIndex(int index) {
-        return invalidate(alignmentSize, static_cast<VkDeviceSize>(index) * alignmentSize);
+        return invalidate(alignmentSize, index * alignmentSize);
     }
 }

@@ -16,7 +16,7 @@ namespace Engine {
 
     // The normal matrix is the inverse transpose of the model matrix
     // This can also be defined as R * S^-1
-    glm::mat3 TransformComponent::normal() const {
+    glm::mat3 TransformComponent::normal () const {
         const float s1 = glm::sin(rotation.x);
         const float c1 = glm::cos(rotation.x);
 
@@ -56,11 +56,11 @@ namespace Engine {
             }};
     }
 
-    GameObject GameObject::createGameObject() {
+    GameObject GameObject::createGameObject () {
         static id_t currentId = 0;
         return {currentId++};
     }
-    GameObject GameObject::createPointLight(float intensity, float radius, glm::vec3 color) {
+    GameObject GameObject::createPointLight (float intensity, float radius, glm::vec3 color) {
         GameObject obj = GameObject::createGameObject();
         obj.color = color;
         obj.transform.scale.x = radius;
