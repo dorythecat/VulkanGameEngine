@@ -17,8 +17,10 @@
 #include "utils/renderer/renderer.hpp"
 #include "utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp"
 #include "utils/descriptors/descriptors.hpp"
+#include "utils/procedural/terrain/terrain.hpp"
 
 #include "rendersystems/simple/simplerendersystem.hpp"
+#include "rendersystems/billboard/billboardrendersystem.hpp"
 
 namespace Engine {
     class Application {

@@ -1,5 +1,4 @@
 #include "application.hpp"
-#include "rendersystems/billboard/billboardrendersystem.hpp"
 
 namespace Engine {
     Application::Application() {
@@ -113,6 +112,15 @@ namespace Engine {
         sphereSmooth.transform.position = glm::vec3{2.5f, 0.0f, 5.0f};
         sphereSmooth.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
         gameObjects.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
+
+        // Procedural terrain (center)
+        Procedural::Terrain t(device, 64);
+        std::shared_ptr<Model> terrainModel = t.getModel();
+        auto terrain = GameObject::createGameObject();
+        terrain.model = terrainModel;
+        terrain.transform.position = glm::vec3{2.5f, 0.0f, 5.0f};
+        terrain.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
+        gameObjects.emplace(terrain.getId(), std::move(terrain));
 
         // Point lights
         std::vector<glm::vec3> lightColors{
