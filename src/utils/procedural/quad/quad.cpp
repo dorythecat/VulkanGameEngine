@@ -1,4 +1,4 @@
-#include "terrain.hpp"
+#include "quad.hpp"
 
 namespace std {
     template<>
@@ -12,7 +12,7 @@ namespace std {
 }
 
 namespace Engine::Procedural {
-    Terrain::Terrain(Device &device, uint32_t resolution) : device(device), resolution(resolution) {
+    Quad::Quad(Device &device, uint32_t resolution) : device(device), resolution(resolution) {
         vertices.clear();
         indices.clear();
 
@@ -61,7 +61,7 @@ namespace Engine::Procedural {
         }
     }
 
-    std::unique_ptr<Model> Terrain::getModel() {
+    std::unique_ptr<Model> Quad::getModel() {
         Model::Builder builder{vertices, indices};
         return std::make_unique<Model>(device, builder);
     }

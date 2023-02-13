@@ -1,5 +1,5 @@
-#ifndef TERRAIN_HPP
-#define TERRAIN_HPP
+#ifndef QUAD_HPP
+#define QUAD_HPP
 
 #include <cstdint>
 #include <vector>
@@ -7,13 +7,13 @@
 #include "../../model/model.hpp"
 
 namespace Engine::Procedural {
-    class Terrain {
+    class Quad {
     public:
-        Terrain(Device &device, uint32_t resolution);
-        ~Terrain() = default;
+        Quad(Device &device, uint32_t resolution);
+        ~Quad() = default;
 
-        Terrain(const Terrain&) = delete;
-        Terrain& operator=(const Terrain&) = delete;
+        Quad(const Quad&) = delete;
+        Quad& operator=(const Quad&) = delete;
 
         std::unique_ptr<Model> getModel();
     private:

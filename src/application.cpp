@@ -113,14 +113,14 @@ namespace Engine {
         sphereSmooth.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
         gameObjects.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
 
-        // Procedural terrain (center)
-        Procedural::Terrain t(device, 64);
-        std::shared_ptr<Model> terrainModel = t.getModel();
-        auto terrain = GameObject::createGameObject();
-        terrain.model = terrainModel;
-        terrain.transform.position = glm::vec3{2.5f, 0.0f, 5.0f};
-        terrain.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
-        gameObjects.emplace(terrain.getId(), std::move(terrain));
+        // Procedural quad (center)
+        Procedural::Quad q(device, 100);
+        std::shared_ptr<Model> terrainModel = q.getModel();
+        auto quad = GameObject::createGameObject();
+        quad.model = terrainModel;
+        quad.transform.position = glm::vec3{-2.5f, 0.0f, 5.0f};
+        quad.transform.scale = glm::vec3{0.05f, 0.05f, 0.05f};
+        gameObjects.emplace(quad.getId(), std::move(quad));
 
         // Point lights
         std::vector<glm::vec3> lightColors{
