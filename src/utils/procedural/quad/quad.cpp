@@ -19,8 +19,8 @@ namespace Engine::Procedural {
         std::unordered_map<Model::Vertex, uint32_t> uniqueVertices{};
 
         float step = 1.0f / static_cast<float>(resolution);
-        for (float x = 0; x <= 1.0f; x += step) {
-            for (float z = 0; z <= 1.0f; z += step) {
+        for (float x = 0.0f; x <= 1.0f; x += step) {
+            for (float z = 0.0f; z <= 1.0f; z += step) {
                 Model::Vertex vertex1{};
                 vertex1.position = {x, 0.0f, z};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
