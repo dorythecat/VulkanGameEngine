@@ -119,7 +119,7 @@ namespace Engine {
         auto quad = GameObject::createGameObject();
         quad.model = terrainModel;
         quad.transform.position = glm::vec3{-2.5f, 0.0f, 5.0f};
-        quad.transform.scale = glm::vec3{0.05f, 0.05f, 0.05f};
+        quad.transform.scale = glm::vec3{5.0f, 5.0f, 5.0f};
         gameObjects.emplace(quad.getId(), std::move(quad));
 
         // Point lights

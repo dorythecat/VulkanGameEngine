@@ -17,35 +17,37 @@ namespace Engine::Procedural {
         indices.clear();
 
         std::unordered_map<Model::Vertex, uint32_t> uniqueVertices{};
-        for (uint32_t x = 0; x <= resolution - 1; x++) {
-            for (uint32_t z = 0; z <= resolution - 1; z++) {
+
+        float step = 1.0f / static_cast<float>(resolution);
+        for (float x = 0; x <= 1.0f; x += step) {
+            for (float z = 0; z <= 1.0f; z += step) {
                 Model::Vertex vertex1{};
                 vertex1.position = {x, 0.0f, z};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
                 vertex1.normal = {0.0f, 1.0f, 0.0f};
-                vertex1.texCoord = {static_cast<float>(x) / static_cast<float>(resolution),
-                                    static_cast<float>(z) / static_cast<float>(resolution)};
+                vertex1.texCoord = {x / static_cast<float>(resolution),
+                                    z / static_cast<float>(resolution)};
 
                 Model::Vertex vertex2{};
-                vertex2.position = {x + 1, 0.0f, z};
+                vertex2.position = {x + step, 0.0f, z};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
                 vertex2.normal = {0.0f, 1.0f, 0.0f};
-                vertex2.texCoord = {static_cast<float>(x + 1) / static_cast<float>(resolution),
-                                    static_cast<float>(z) / static_cast<float>(resolution)};
+                vertex2.texCoord = {(x + step) / static_cast<float>(resolution),
+                                    z / static_cast<float>(resolution)};
 
                 Model::Vertex vertex3{};
-                vertex3.position = {x, 0.0f, z + 1};
+                vertex3.position = {x, 0.0f, z + step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {0.0f, 1.0f, 0.0f};
-                vertex3.texCoord = {static_cast<float>(x) / static_cast<float>(resolution),
-                                    static_cast<float>(z + 1) / static_cast<float>(resolution)};
+                vertex3.texCoord = {x / static_cast<float>(resolution),
+                                    (z + step) / static_cast<float>(resolution)};
 
                 Model::Vertex vertex4{};
-                vertex4.position = {x + 1, 0.0f, z + 1};
+                vertex4.position = {x + step, 0.0f, z + step};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
                 vertex4.normal = {0.0f, 1.0f, 0.0f};
-                vertex4.texCoord = {static_cast<float>(x + 1) / static_cast<float>(resolution),
-                                    static_cast<float>(z + 1) / static_cast<float>(resolution)};
+                vertex4.texCoord = {(x + step) / static_cast<float>(resolution),
+                                    (z + step) / static_cast<float>(resolution)};
 
                 if (uniqueVertices.count(vertex1) == 0) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
