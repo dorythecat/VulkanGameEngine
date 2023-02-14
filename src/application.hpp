@@ -11,14 +11,18 @@
 #include <vector>
 #include <array>
 
+// Misc utils
 #include "utils/window/window.hpp"
 #include "utils/device/device.hpp"
 #include "utils/gameobject/gameobject.hpp"
 #include "utils/renderer/renderer.hpp"
 #include "utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp"
 #include "utils/descriptors/descriptors.hpp"
+
+// Procedural geometry
 #include "utils/procedural/quad/quad.hpp"
 
+// Render systems
 #include "rendersystems/simple/simplerendersystem.hpp"
 #include "rendersystems/billboard/billboardrendersystem.hpp"
 
