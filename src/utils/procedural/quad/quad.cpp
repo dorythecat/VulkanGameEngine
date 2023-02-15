@@ -19,35 +19,42 @@ namespace Engine::Procedural {
         std::unordered_map<Model::Vertex, uint32_t> uniqueVertices{};
 
         float step = 1.0f / static_cast<float>(resolution);
-        for (float x = 0.0f; x < 1.0f - step; x += step) {
-            for (float z = 0.0f; z < 1.0f - step; z += step) {
+        float stepSquared = step * step;
+        float stepMinus = 1.0f - step;
+
+        for (float x = 0.0f; x < stepMinus; x += step) {
+            float xStep = x * step;
+
+            for (float z = 0.0f; z < stepMinus; z += step) {
+                float zStep = z * step;
+
                 Model::Vertex vertex1{};
                 vertex1.position = {x, 0.0f, z};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
                 vertex1.normal = {0.0f, 1.0f, 0.0f};
-                vertex1.texCoord = {x / static_cast<float>(resolution),
-                                    z / static_cast<float>(resolution)};
+                vertex1.texCoord = {xStep,
+                                    zStep};
 
                 Model::Vertex vertex2{};
                 vertex2.position = {x + step, 0.0f, z};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
                 vertex2.normal = {0.0f, 1.0f, 0.0f};
-                vertex2.texCoord = {(x + step) / static_cast<float>(resolution),
-                                    z / static_cast<float>(resolution)};
+                vertex2.texCoord = {xStep + stepSquared,
+                                    zStep};
 
                 Model::Vertex vertex3{};
                 vertex3.position = {x, 0.0f, z + step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {0.0f, 1.0f, 0.0f};
                 vertex3.texCoord = {x / static_cast<float>(resolution),
-                                    (z + step) / static_cast<float>(resolution)};
+                                    zStep + stepSquared};
 
                 Model::Vertex vertex4{};
                 vertex4.position = {x + step, 0.0f, z + step};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
                 vertex4.normal = {0.0f, 1.0f, 0.0f};
-                vertex4.texCoord = {(x + step) / static_cast<float>(resolution),
-                                    (z + step) / static_cast<float>(resolution)};
+                vertex4.texCoord = {xStep + stepSquared,
+                                    zStep + stepSquared};
 
                 if (uniqueVertices.count(vertex1) == 0) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
