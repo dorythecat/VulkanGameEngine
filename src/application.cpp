@@ -122,6 +122,15 @@ namespace Engine {
         quad.transform.scale = glm::vec3{5.0f, 5.0f, 5.0f};
         gameObjects.emplace(quad.getId(), std::move(quad));
 
+        // Procedural cube (center up)
+        Procedural::Cube c(device, 100);
+        std::shared_ptr<Model> cubeModel = c.getModel();
+        auto cube = GameObject::createGameObject();
+        cube.model = cubeModel;
+        cube.transform.position = glm::vec3{-0.5f, -2.0f, 5.0f};
+        cube.transform.scale = glm::vec3{1.0f, 1.0f, 1.0f};
+        gameObjects.emplace(cube.getId(), std::move(cube));
+
         // Point lights
         std::vector<glm::vec3> lightColors{
                 {1.0f, 0.1f, 0.1f},
