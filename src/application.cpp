@@ -114,7 +114,8 @@ namespace Engine {
         gameObjects.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
 
         // Procedural quad (center)
-        Procedural::Quad q(device, 100);
+        Procedural::Quad q(device, 128);
+        q.generateModel();
         std::shared_ptr<Model> terrainModel = q.getModel();
         auto quad = GameObject::createGameObject();
         quad.model = terrainModel;
@@ -123,7 +124,8 @@ namespace Engine {
         gameObjects.emplace(quad.getId(), std::move(quad));
 
         // Procedural cube (center up)
-        Procedural::Cube c(device, 100);
+        Procedural::Cube c(device, 128);
+        c.generateModel();
         std::shared_ptr<Model> cubeModel = c.getModel();
         auto cube = GameObject::createGameObject();
         cube.model = cubeModel;

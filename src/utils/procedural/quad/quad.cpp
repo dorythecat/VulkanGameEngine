@@ -12,12 +12,16 @@ namespace std {
 }
 
 namespace Engine::Procedural {
-    Quad::Quad(Device &device, uint32_t resolution) : device(device), resolution(resolution) {
-        vertices.clear();
-        indices.clear();
-
+    void Quad::generateModel() {
         std::unordered_map<Model::Vertex, uint32_t> uniqueVertices{};
 
+        // Reserve space for the vertices and indices. This is done to avoid reallocations, hence more performance.
+        uint32_t reserveSpace = resolution * resolution;
+        vertices.reserve(reserveSpace);
+        indices.reserve(reserveSpace);
+        uniqueVertices.reserve(reserveSpace);
+
+        // Precomputed values for the loops.
         float step = 1.0f / static_cast<float>(resolution);
         float stepSquared = step * step;
         float stepMinus = 1.0f - step;
@@ -87,10 +91,7 @@ namespace Engine::Procedural {
                 indices.push_back(uniqueVertices[vertex4]);
             }
         }
-    }
 
-    std::unique_ptr<Model> Quad::getModel() {
-        Model::Builder builder{vertices, indices};
-        return std::make_unique<Model>(device, builder);
+        builder = *new Model::Builder{vertices, indices};
     }
 }

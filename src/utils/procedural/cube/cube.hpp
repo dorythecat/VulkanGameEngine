@@ -5,24 +5,14 @@
 #include <vector>
 
 #include "../../model/model.hpp"
+#include "../procedural_mesh.hpp"
 
 namespace Engine::Procedural {
-    class Cube {
+    class Cube : public ProceduralMesh {
     public:
-        Cube(Device &device, uint32_t resolution);
-        ~Cube() = default;
+        Cube(Device &device, uint32_t resolution) : ProceduralMesh(device, resolution) {}
 
-        Cube(const Cube&) = delete;
-        Cube& operator=(const Cube&) = delete;
-
-        std::unique_ptr<Model> getModel();
-    private:
-        Device &device;
-
-        uint32_t resolution;
-
-        std::vector<Model::Vertex> vertices{};
-        std::vector<uint32_t> indices{};
+        void generateModel() override;
     };
 }
 

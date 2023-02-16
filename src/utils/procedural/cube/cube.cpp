@@ -12,11 +12,7 @@ namespace std {
 }
 
 namespace Engine::Procedural {
-    Cube::Cube(Device &device, uint32_t resolution) : device(device), resolution(resolution) {
-        // Clear the vectors, just to ensure they are clean.
-        vertices.clear();
-        indices.clear();
-
+    void Cube::generateModel() {
         std::unordered_map<Model::Vertex, uint32_t> uniqueVertices{};
 
         // Reserve space for the vertices and indices. This is done to avoid reallocations, hence more performance.
@@ -419,10 +415,7 @@ namespace Engine::Procedural {
                 indices.push_back(uniqueVertices[vertex4]);
             }
         }
-    }
 
-    std::unique_ptr<Model> Cube::getModel() {
-        Model::Builder builder{vertices, indices};
-        return std::make_unique<Model>(device, builder);
+        builder = *new Model::Builder{vertices, indices};
     }
 }
