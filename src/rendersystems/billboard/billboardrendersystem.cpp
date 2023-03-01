@@ -49,12 +49,12 @@ namespace Engine {
     }
     void BillboardRenderSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo) {
         int index = 0;
-        for (auto &kv : frameInfo.gameObjects) {
-            auto &obj = kv.second;
-            if (obj.pointLight == nullptr) continue;
+        for (auto &kv : frameInfo.entities) {
+            auto &ent = kv.second;
+            if(!ent.hasComponent(ComponentType::POINT_LIGHT)) continue;
 
-            ubo.pointLights[index].position = glm::vec4(obj.transform.position, 1.0f);
-            ubo.pointLights[index].color = glm::vec4(obj.color, obj.pointLight->intensity);
+            ubo.pointLights[index].position = glm::vec4(ent.getTransformComponent()->position, 1.0f);
+            ubo.pointLights[index].color = glm::vec4(ent.color, ent.getPointLightComponent()->intensity);
             index++;
         } ubo.pointLightCount = index;
     }
@@ -69,14 +69,14 @@ namespace Engine {
                                 &frameInfo.globalDescriptorSet,
                                 0,
                                 nullptr);
-        for (auto &kv : frameInfo.gameObjects) {
-            auto &obj = kv.second;
-            if (obj.pointLight == nullptr) continue;
+        for (auto &kv : frameInfo.entities) {
+            auto &ent = kv.second;
+            if(!ent.hasComponent(ComponentType::POINT_LIGHT)) continue;
 
             PointLightPushConstant push{};
-            push.position = glm::vec4(obj.transform.position, 1.0f);
-            push.color = glm::vec4(obj.color, obj.pointLight->intensity);
-            push.radius = obj.transform.scale.x;
+            push.position = glm::vec4(ent.getTransformComponent()->position, 1.0f);
+            push.color = glm::vec4(ent.color, ent.getPointLightComponent()->intensity);
+            push.radius = ent.getTransformComponent()->scale.x;
 
             vkCmdPushConstants(frameInfo.commandBuffer,
                                pipelineLayout,

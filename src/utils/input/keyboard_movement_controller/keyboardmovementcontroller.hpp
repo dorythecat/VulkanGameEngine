@@ -5,7 +5,7 @@
 
 #include <limits>
 
-#include "../../gameobject/gameobject.hpp"
+#include "../../entity/entity.hpp"
 
 namespace Engine {
     class KeyboardMovementController {
@@ -28,7 +28,7 @@ namespace Engine {
         float moveSpeed = 3.0f;
         float lookSpeed = 1.5f;
 
-        void moveInPlaneXZ(GLFWwindow *window, float deltaTime, GameObject &gameObject);
+        void moveInPlaneXZ(GLFWwindow *window, float deltaTime, Entity &gameObject);
     };
 }
 

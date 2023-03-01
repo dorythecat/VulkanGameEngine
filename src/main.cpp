@@ -4,6 +4,7 @@
 
 #include "application.hpp"
 
+// TODO(Dory): Change to a proper naming and file structure convention.
 int main() {
     Engine::Application app {};
 

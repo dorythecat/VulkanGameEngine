@@ -12,7 +12,7 @@
 
 #include "../../utils/device/device.hpp"
 #include "../../utils/pipeline/pipeline.hpp"
-#include "../../utils/gameobject/gameobject.hpp"
+#include "../../utils/entity/entity.hpp"
 #include "../../utils/camera/camera.hpp"
 #include "../../utils/frameinfo/frameinfo.hpp"
 

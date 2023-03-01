@@ -14,7 +14,7 @@
 // Misc utils
 #include "utils/window/window.hpp"
 #include "utils/device/device.hpp"
-#include "utils/gameobject/gameobject.hpp"
+#include "utils/entity/entity.hpp"
 #include "utils/renderer/renderer.hpp"
 #include "utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp"
 #include "utils/descriptors/descriptors.hpp"
@@ -44,7 +44,7 @@ namespace Engine {
         Window window{WIDTH, HEIGHT, "Vulkan test window"};
         Device device{window};
         Renderer renderer{window, device};
-        GameObject::Map gameObjects;
+        Entity::Map entities;
 
         std::unique_ptr<DescriptorPool> globalPool{};
 

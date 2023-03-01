@@ -57,13 +57,13 @@ namespace Engine {
                                 0,
                                 nullptr);
 
-        for (auto &kv : frameInfo.gameObjects) {
-            auto &obj = kv.second; // Extract the second element of the pair (the GameObject)
-            if (obj.model == nullptr) continue; // Skip if the model is a null pointer
+        for (auto &kv : frameInfo.entities) {
+            auto &ent = kv.second; // Extract the second element of the pair (the GameObject)
+            if (!ent.hasComponent(ComponentType::MODEL)) continue;
 
             SimplePushConstantData push{};
-            push.modelMatrix = obj.transform.mat4();
-            push.normalMatrix = obj.transform.normal();
+            push.modelMatrix = ent.getTransformComponent()->mat4();
+            push.normalMatrix = ent.getTransformComponent()->normal();
 
             vkCmdPushConstants(frameInfo.commandBuffer,
                                pipelineLayout,
@@ -72,8 +72,8 @@ namespace Engine {
                                sizeof(SimplePushConstantData),
                                &push);
 
-            obj.model->bind(frameInfo.commandBuffer);
-            obj.model->draw(frameInfo.commandBuffer);
+            ent.getModelComponent()->model->bind(frameInfo.commandBuffer);
+            ent.getModelComponent()->model->draw(frameInfo.commandBuffer);
         }
     }
 }

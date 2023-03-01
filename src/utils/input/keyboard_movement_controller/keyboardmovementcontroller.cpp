@@ -1,7 +1,7 @@
 #include "keyboardmovementcontroller.hpp"
 
 namespace Engine {
-    void KeyboardMovementController::moveInPlaneXZ(GLFWwindow *window, float deltaTime, GameObject &gameObject) {
+    void KeyboardMovementController::moveInPlaneXZ(GLFWwindow *window, float deltaTime, Entity &gameObject) {
         glm::vec3 rotate{0.0f, 0.0f, 0.0f};
 
         if(glfwGetKey(window, keys.lookRight) == GLFW_PRESS) rotate.y += 1.0f;
@@ -16,14 +16,14 @@ namespace Engine {
            glm::abs(rotate.y) > std::numeric_limits<float>::epsilon() ||
            glm::abs(rotate.z) > std::numeric_limits<float>::epsilon()) {
             // We normalize the rotation angles so that rotation in both axis are equivalent
-            gameObject.transform.rotation += glm::normalize(rotate) * lookSpeed * deltaTime;
+            gameObject.getTransformComponent()->rotation += glm::normalize(rotate) * lookSpeed * deltaTime;
 
             // We clamp the x value and wrap the y value to keep the camera stable and avoid floating point errors
-            gameObject.transform.rotation.x = glm::clamp(gameObject.transform.rotation.x, -1.5f, 1.5f);
-            gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
+            gameObject.getTransformComponent()->rotation.x = glm::clamp(gameObject.getTransformComponent()->rotation.x, -1.5f, 1.5f);
+            gameObject.getTransformComponent()->rotation.y = glm::mod(gameObject.getTransformComponent()->rotation.y, glm::two_pi<float>());
         }
 
-        float yaw = gameObject.transform.rotation.y;
+        float yaw = gameObject.getTransformComponent()->rotation.y;
         const glm::vec3 forwardVector{glm::sin(yaw), 0.0f, glm::cos(yaw)};
         const glm::vec3 rightVector{forwardVector.z, 0.0f, -forwardVector.x};
         const glm::vec3 upVector{0.0f, -1.0f, 0.0f};
@@ -42,7 +42,7 @@ namespace Engine {
         if(glm::abs(moveVector.x) > std::numeric_limits<float>::epsilon() ||
            glm::abs(moveVector.y) > std::numeric_limits<float>::epsilon() ||
            glm::abs(moveVector.z) > std::numeric_limits<float>::epsilon()) {
-            gameObject.transform.position += glm::normalize(moveVector) * moveSpeed * deltaTime;
+            gameObject.getTransformComponent()->position += glm::normalize(moveVector) * moveSpeed * deltaTime;
         }
     }
 }

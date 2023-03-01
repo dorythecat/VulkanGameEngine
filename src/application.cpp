@@ -46,8 +46,8 @@ namespace Engine {
         Camera camera{};
         camera.setViewTarget(glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
 
-        auto cameraObject = GameObject::createGameObject();
-        cameraObject.transform.position.z = -2.5f;
+        auto cameraEntity = Entity::createEntity();
+        cameraEntity.addComponent(std::make_unique<TransformComponent>(glm::vec3{0.0f, 0.0f, -2.5f}));
         KeyboardMovementController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -61,8 +61,9 @@ namespace Engine {
             // Make the maximum time between frames 1/30 seconds, so the minimum framerate is 30 FPS
             deltaTime = glm::min(deltaTime, 0.0333f);
 
-            cameraController.moveInPlaneXZ(window.getWindow(), deltaTime, cameraObject);
-            camera.setViewXYZ(cameraObject.transform.position, cameraObject.transform.rotation);
+            cameraController.moveInPlaneXZ(window.getWindow(), deltaTime, cameraEntity);
+            camera.setViewXYZ(cameraEntity.getTransformComponent()->position,
+                              cameraEntity.getTransformComponent()->rotation);
 
             float aspectRatio = renderer.getAspectRatio();
             // camera.setOrthographicProjection(aspectRatio, -1.0f, -1.0f, 1.0f);
@@ -76,7 +77,7 @@ namespace Engine {
                                     commandBuffer,
                                     camera,
                                     globalDescriptorSets[frameIndex],
-                                    gameObjects};
+                                    entities};
 
                 // Update cycle
                 GlobalUbo ubo{};
@@ -99,39 +100,38 @@ namespace Engine {
     void Application::loadGameObjects () {
         // Flat shaded sphere (left)
         std::shared_ptr<Model> sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
-        auto sphereFlat = GameObject::createGameObject();
-        sphereFlat.model = sphereFlatModel;
-        sphereFlat.transform.position = glm::vec3{-2.5f, 0.0f, 5.0f};
-        sphereFlat.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
-        gameObjects.emplace(sphereFlat.getId(), std::move(sphereFlat));
+        auto sphereFlat = Entity::createEntity();
+        sphereFlat.addComponent(std::make_unique<ModelComponent>(sphereFlatModel));
+        sphereFlat.addComponent(std::make_unique<TransformComponent>(glm::vec3{2.5f, 0.0f, 5.0f},
+                                                                       glm::vec3{0.5f, 0.5f, 0.5f}));
+        entities.emplace(sphereFlat.getId(), std::move(sphereFlat));
 
         // Smooth shaded sphere (right)
         std::shared_ptr<Model> sphereSmoothModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_smooth.obj");
-        auto sphereSmooth = GameObject::createGameObject();
-        sphereSmooth.model = sphereSmoothModel;
-        sphereSmooth.transform.position = glm::vec3{2.5f, 0.0f, 5.0f};
-        sphereSmooth.transform.scale = glm::vec3{0.5f, 0.5f, 0.5f};
-        gameObjects.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
+        auto sphereSmooth = Entity::createEntity();
+        sphereSmooth.addComponent(std::make_unique<ModelComponent>(sphereSmoothModel));
+        sphereSmooth.addComponent(std::make_unique<TransformComponent>(glm::vec3{-2.5f, 0.0f, 5.0f},
+                                                                       glm::vec3{0.5f, 0.5f, 0.5f}));
+        entities.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
 
         // Procedural quad (center)
         Procedural::Quad q(device, 128);
         q.generateModel();
         std::shared_ptr<Model> terrainModel = q.getModel();
-        auto quad = GameObject::createGameObject();
-        quad.model = terrainModel;
-        quad.transform.position = glm::vec3{-2.5f, 0.0f, 5.0f};
-        quad.transform.scale = glm::vec3{5.0f, 5.0f, 5.0f};
-        gameObjects.emplace(quad.getId(), std::move(quad));
+        auto quad = Entity::createEntity();
+        quad.addComponent(std::make_unique<ModelComponent>(terrainModel));
+        quad.addComponent(std::make_unique<TransformComponent>(glm::vec3{-2.5f, 0.0f, 5.0f},
+                                                                glm::vec3{5.0f, 5.0f, 5.0f}));
+        entities.emplace(quad.getId(), std::move(quad));
 
         // Procedural cube (center up)
         Procedural::Cube c(device, 128);
         c.generateModel();
         std::shared_ptr<Model> cubeModel = c.getModel();
-        auto cube = GameObject::createGameObject();
-        cube.model = cubeModel;
-        cube.transform.position = glm::vec3{-0.5f, -2.0f, 5.0f};
-        cube.transform.scale = glm::vec3{1.0f, 1.0f, 1.0f};
-        gameObjects.emplace(cube.getId(), std::move(cube));
+        auto cube = Entity::createEntity();
+        cube.addComponent(std::make_unique<ModelComponent>(cubeModel));
+        cube.addComponent(std::make_unique<TransformComponent>(glm::vec3{-0.5f, -2.0f, 5.0f}));
+        entities.emplace(cube.getId(), std::move(cube));
 
         // Point lights
         std::vector<glm::vec3> lightColors{
@@ -144,14 +144,14 @@ namespace Engine {
         };
 
         for (unsigned int i = 0; i < lightColors.size(); i++) {
-            auto pointLight = GameObject::createPointLight(1.0f);
+            auto pointLight = Entity::createPointLight(1.0f);
             pointLight.color = lightColors[i];
             auto rotateLight = glm::rotate(
-                    glm::mat4(1.f),
+                    glm::mat4(1.0f),
                     (static_cast<float>(i) * glm::two_pi<float>()) / static_cast<float>(lightColors.size()),
-                    {0.f, -1.f, 0.f});
-            pointLight.transform.position = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
-            gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+                    {0.0f, -1.0f, 0.0f});
+            pointLight.getTransformComponent()->position = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+            entities.emplace(pointLight.getId(), std::move(pointLight));
         }
     }
 }

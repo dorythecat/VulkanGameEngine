@@ -32,7 +32,7 @@ namespace Engine {
         VkCommandBuffer commandBuffer;
         Camera &camera;
         VkDescriptorSet globalDescriptorSet;
-        GameObject::Map &gameObjects;
+        Entity::Map &entities;
     };
 }
 
