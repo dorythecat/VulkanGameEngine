@@ -16,7 +16,7 @@
 namespace Engine {
     class Entity {
     public:
-        typedef uint16_t id_t; // 65536 entities should be enough for now
+        typedef uint16_t id_t; // 65536 entities should do, at least for now
         typedef std::unordered_map<id_t, Entity> Map;
 
         glm::vec3 color{};
@@ -33,12 +33,12 @@ namespace Engine {
             ComponentType type = component->getComponentType();
             assert(!hasComponent(type) && "Component already exists for this entity!");
             components[type] = std::move(component);
-            componentMask |= (1 << type);
+            componentMask |= static_cast<ComponentType_t>(1 << type);
         }
         void removeComponent(ComponentType type) {
             assert(hasComponent(type) && "Component does not exist for this entity!");
             components.erase(type);
-            componentMask &= ~(1 << type);
+            componentMask &= static_cast<ComponentType_t>(~(1 << type));
         }
 
         TransformComponent *getTransformComponent() {
