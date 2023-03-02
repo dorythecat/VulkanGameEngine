@@ -5,7 +5,7 @@ namespace Engine {
         static id_t currentId = 0;
         return {currentId++};
     }
-    Entity Entity::createPointLight(float intensity, float radius, glm::vec3 color) {
+    Entity Entity::createPointLightEntity(float intensity, float radius, glm::vec3 color) {
         Entity ent = Entity::createEntity();
         ent.color = color;
         ent.addComponent(std::make_unique<TransformComponent>(glm::vec3(0.0f),

@@ -27,7 +27,7 @@ namespace Engine {
             return commandBuffers[currentFrameIndex];
         }
 
-        int getCurrentFrameIndex() const {
+        uint32_t getCurrentFrameIndex() const {
             assert(isFrameStarted && "Cannot get frame index outside of a render pass!");
             return currentFrameIndex;
         }
@@ -47,7 +47,7 @@ namespace Engine {
         std::vector<VkCommandBuffer> commandBuffers;
 
         uint32_t currentImageIndex = 0;
-        int currentFrameIndex = 0;
+        uint32_t currentFrameIndex = 0;
         bool isFrameStarted = false;
 
         void createCommandBuffers();

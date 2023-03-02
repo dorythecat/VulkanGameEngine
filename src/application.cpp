@@ -68,10 +68,10 @@ namespace Engine {
             float aspectRatio = renderer.getAspectRatio();
             // camera.setOrthographicProjection(aspectRatio, -1.0f, -1.0f, 1.0f);
             // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
-            camera.setPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 100.0f);
+            camera.setPerspectiveProjection(glm::radians(60.0f), aspectRatio, 0.1f, 100.0f);
 
             if (auto commandBuffer = renderer.beginFrame()) {
-                int frameIndex = renderer.getCurrentFrameIndex();
+                uint32_t frameIndex = renderer.getCurrentFrameIndex();
                 FrameInfo frameInfo{frameIndex,
                                     deltaTime,
                                     commandBuffer,
@@ -100,7 +100,7 @@ namespace Engine {
     void Application::loadGameObjects () {
         // Flat shaded sphere (left)
         std::shared_ptr<Model> sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
-        auto sphereFlat = Entity::createEntity();
+        Entity sphereFlat = Entity::createEntity();
         sphereFlat.addComponent(std::make_unique<ModelComponent>(sphereFlatModel));
         sphereFlat.addComponent(std::make_unique<TransformComponent>(glm::vec3{2.5f, 0.0f, 5.0f},
                                                                        glm::vec3{0.5f, 0.5f, 0.5f}));
@@ -108,7 +108,7 @@ namespace Engine {
 
         // Smooth shaded sphere (right)
         std::shared_ptr<Model> sphereSmoothModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_smooth.obj");
-        auto sphereSmooth = Entity::createEntity();
+        Entity sphereSmooth = Entity::createEntity();
         sphereSmooth.addComponent(std::make_unique<ModelComponent>(sphereSmoothModel));
         sphereSmooth.addComponent(std::make_unique<TransformComponent>(glm::vec3{-2.5f, 0.0f, 5.0f},
                                                                        glm::vec3{0.5f, 0.5f, 0.5f}));
@@ -118,7 +118,7 @@ namespace Engine {
         Procedural::Quad q(device, 128);
         q.generateModel();
         std::shared_ptr<Model> terrainModel = q.getModel();
-        auto quad = Entity::createEntity();
+        Entity quad = Entity::createEntity();
         quad.addComponent(std::make_unique<ModelComponent>(terrainModel));
         quad.addComponent(std::make_unique<TransformComponent>(glm::vec3{-2.5f, 0.0f, 5.0f},
                                                                 glm::vec3{5.0f, 5.0f, 5.0f}));
@@ -128,7 +128,7 @@ namespace Engine {
         Procedural::Cube c(device, 128);
         c.generateModel();
         std::shared_ptr<Model> cubeModel = c.getModel();
-        auto cube = Entity::createEntity();
+        Entity cube = Entity::createEntity();
         cube.addComponent(std::make_unique<ModelComponent>(cubeModel));
         cube.addComponent(std::make_unique<TransformComponent>(glm::vec3{-0.5f, -2.0f, 5.0f}));
         entities.emplace(cube.getId(), std::move(cube));
@@ -143,14 +143,14 @@ namespace Engine {
                 {1.0f, 1.0f, 1.0f}
         };
 
-        for (unsigned int i = 0; i < lightColors.size(); i++) {
-            auto pointLight = Entity::createPointLight(1.0f);
+        for (uint32_t i = 0; i < lightColors.size(); i++) {
+            Entity pointLight = Entity::createPointLightEntity();
             pointLight.color = lightColors[i];
-            auto rotateLight = glm::rotate(
+            glm::mat4 rotateLight = glm::rotate(
                     glm::mat4(1.0f),
                     (static_cast<float>(i) * glm::two_pi<float>()) / static_cast<float>(lightColors.size()),
                     {0.0f, -1.0f, 0.0f});
-            pointLight.getTransformComponent()->position = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+            pointLight.getTransformComponent()->position = glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
             entities.emplace(pointLight.getId(), std::move(pointLight));
         }
     }
