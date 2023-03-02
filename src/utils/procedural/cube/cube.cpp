@@ -24,16 +24,15 @@ namespace Engine::Procedural {
         // Precomputed values for the loops.
         float step = 1.0f / static_cast<float>(resolution);
         float stepSquared = step * step;
-        float stepMinus = 1.0f - step;
 
         // TODO(Dory): I'm sure this could be done in a better way, for now let's roll with this.
         // For example, Up and Down faces are the same, but with different Y values. Same for Left and Right and Front and Back.
         // Also, I don't like using for loops with floats, but I don't know how to do it in a better way, at least for now.
-        for (float x = 0.0f; x < stepMinus; x += step) {
+        for (float x = 0.0f; x < 1.0f; x += step) {
             float xStep = x * step;
 
             // Front face
-            for (float y = 0.0f; y < stepMinus; y += step) {
+            for (float y = 0.0f; y < 1.0f; y += step) {
                 float yStep = y * step;
 
                 Model::Vertex vertex1{};
@@ -96,7 +95,7 @@ namespace Engine::Procedural {
             }
 
             // Back face
-            for (float y = 0.0f; y < stepMinus; y += step) {
+            for (float y = 0.0f; y < 1.0f; y += step) {
                 float yStep = y * step;
 
                 Model::Vertex vertex1{};
@@ -159,7 +158,7 @@ namespace Engine::Procedural {
             }
 
             // Up face
-            for (float z = 0.0f; z < stepMinus; z += step) {
+            for (float z = 0.0f; z < 1.0f; z += step) {
                 float zStep = z * step;
 
                 Model::Vertex vertex1{};
@@ -222,7 +221,7 @@ namespace Engine::Procedural {
             }
 
             // Down face
-            for (float z = 0.0f; z < stepMinus; z += step) {
+            for (float z = 0.0f; z < 1.0f; z += step) {
                 float zStep = z * step;
 
                 Model::Vertex vertex1{};
@@ -285,11 +284,11 @@ namespace Engine::Procedural {
             }
         }
 
-        for(float y = 0.0f; y < stepMinus; y += step) {
+        for(float y = 0.0f; y < 1.0f; y += step) {
             float yStep = y * step;
 
             // Left face
-            for(float z = 0.0f; z < stepMinus; z += step) {
+            for(float z = 0.0f; z < 1.0f; z += step) {
                 float zStep = z * step;
 
                 Model::Vertex vertex1{};
@@ -353,7 +352,7 @@ namespace Engine::Procedural {
 
 
             // Right face
-            for (float z = 0; z < stepMinus; z += step) {
+            for (float z = 0; z < 1.0f; z += step) {
                 float zStep = z * step;
 
                 Model::Vertex vertex1{};
