@@ -24,12 +24,11 @@ namespace Engine::Procedural {
         // Precomputed values for the loops.
         float step = 1.0f / static_cast<float>(resolution);
         float stepSquared = step * step;
-        float stepMinus = 1.0f - step;
 
-        for (float x = 0.0f; x < stepMinus; x += step) {
+        for (float x = 0; x < 1.0f; x += step) {
             float xStep = x * step;
 
-            for (float z = 0.0f; z < stepMinus; z += step) {
+            for (float z = 0.0f; z < 1.0f; z += step) {
                 float zStep = z * step;
 
                 Model::Vertex vertex1{};
@@ -50,7 +49,7 @@ namespace Engine::Procedural {
                 vertex3.position = {x, 0.0f, z + step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {0.0f, 1.0f, 0.0f};
-                vertex3.texCoord = {x / static_cast<float>(resolution),
+                vertex3.texCoord = {xStep,
                                     zStep + stepSquared};
 
                 Model::Vertex vertex4{};
