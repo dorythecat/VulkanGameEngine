@@ -28,40 +28,42 @@ namespace Engine::Procedural {
         // TODO(Dory): I'm sure this could be done in a better way, for now let's roll with this.
         // For example, Up and Down faces are the same, but with different Y values. Same for Left and Right and Front and Back.
         // Also, I don't like using for loops with floats, but I don't know how to do it in a better way, at least for now.
-        for (float x = 0.0f; x < 1.0f; x += step) {
-            float xStep = x * step;
+        for (uint32_t x = 0; x < resolution; x++) {
+            float xStep = static_cast<float>(x) * step;
+            float xStepSquared = static_cast<float>(x) * stepSquared;
 
             // Front face
-            for (float y = 0.0f; y < 1.0f; y += step) {
-                float yStep = y * step;
+            for (uint32_t y = 0; y < resolution; y++) {
+                float yStep = static_cast<float>(y) * step;
+                float yStepSquared = static_cast<float>(y) * stepSquared;
 
                 Model::Vertex vertex1{};
-                vertex1.position = {x, y, 0.0f};
+                vertex1.position = {xStep, yStep, 0.0f};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
                 vertex1.normal = {0.0f, 0.0f, -1.0f};
-                vertex1.texCoord = {xStep,
-                                    yStep};
+                vertex1.texCoord = {xStepSquared,
+                                    yStepSquared};
 
                 Model::Vertex vertex2{};
-                vertex2.position = {x + step, y, 0.0f};
+                vertex2.position = {xStep + step, yStep, 0.0f};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
                 vertex2.normal = {0.0f, 0.0f, -1.0f};
-                vertex2.texCoord = {xStep + stepSquared,
-                                    yStep};
+                vertex2.texCoord = {xStepSquared + stepSquared,
+                                    yStepSquared};
 
                 Model::Vertex vertex3{};
-                vertex3.position = {x, y + step, 0.0f};
+                vertex3.position = {xStep, yStep + step, 0.0f};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {0.0f, 0.0f, -1.0f};
-                vertex3.texCoord = {xStep,
-                                    yStep + stepSquared};
+                vertex3.texCoord = {xStepSquared,
+                                    yStepSquared + stepSquared};
 
                 Model::Vertex vertex4{};
-                vertex4.position = {x + step, y + step, 0.0f};
+                vertex4.position = {xStep + step, yStep + step, 0.0f};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
                 vertex4.normal = {0.0f, 0.0f, -1.0f};
-                vertex4.texCoord = {xStep + stepSquared,
-                                    yStep + stepSquared};
+                vertex4.texCoord = {xStepSquared + stepSquared,
+                                    yStepSquared + stepSquared};
 
                 if (uniqueVertices.count(vertex1) == 0) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
@@ -95,36 +97,37 @@ namespace Engine::Procedural {
             }
 
             // Back face
-            for (float y = 0.0f; y < 1.0f; y += step) {
-                float yStep = y * step;
+            for (uint32_t y = 0; y < resolution; y++) {
+                float yStep = static_cast<float>(y) * step;
+                float yStepSquared = static_cast<float>(y) * stepSquared;
 
                 Model::Vertex vertex1{};
-                vertex1.position = {x, y, 1.0f};
+                vertex1.position = {xStep, yStep, 1.0f};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
                 vertex1.normal = {0.0f, 0.0f, 1.0f};
-                vertex1.texCoord = {xStep,
-                                    yStep};
+                vertex1.texCoord = {xStepSquared,
+                                    yStepSquared};
 
                 Model::Vertex vertex2{};
-                vertex2.position = {x + step, y, 1.0f};
+                vertex2.position = {xStep + step, yStep, 1.0f};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
                 vertex2.normal = {0.0f, 0.0f, 1.0f};
-                vertex2.texCoord = {xStep + stepSquared,
-                                    yStep};
+                vertex2.texCoord = {xStepSquared + stepSquared,
+                                    yStepSquared};
 
                 Model::Vertex vertex3{};
-                vertex3.position = {x, y + step, 1.0f};
+                vertex3.position = {xStep, yStep + step, 1.0f};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {0.0f, 0.0f, 1.0f};
-                vertex3.texCoord = {xStep,
-                                    yStep + stepSquared};
+                vertex3.texCoord = {xStepSquared,
+                                    yStepSquared + stepSquared};
 
                 Model::Vertex vertex4{};
-                vertex4.position = {x + step, y + step, 1.0f};
+                vertex4.position = {xStep + step, yStep + step, 1.0f};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
                 vertex4.normal = {0.0f, 0.0f, 1.0f};
-                vertex4.texCoord = {xStep + stepSquared,
-                                    yStep + stepSquared};
+                vertex4.texCoord = {xStepSquared + stepSquared,
+                                    yStepSquared + stepSquared};
 
                 if (uniqueVertices.count(vertex1) == 0) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
@@ -158,36 +161,37 @@ namespace Engine::Procedural {
             }
 
             // Up face
-            for (float z = 0.0f; z < 1.0f; z += step) {
-                float zStep = z * step;
+            for (uint32_t z = 0; z < resolution; z++) {
+                float zStep = static_cast<float>(z) * step;
+                float zStepSquared = static_cast<float>(z) * stepSquared;
 
                 Model::Vertex vertex1{};
-                vertex1.position = {x, 0.0f, z};
+                vertex1.position = {xStep, 0.0f, zStep};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
                 vertex1.normal = {0.0f, -1.0f, 0.0f};
-                vertex1.texCoord = {xStep,
-                                    z / static_cast<float>(resolution)};
+                vertex1.texCoord = {xStepSquared,
+                                    zStepSquared};
 
                 Model::Vertex vertex2{};
-                vertex2.position = {x + step, 0.0f, z};
+                vertex2.position = {xStep + step, 0.0f, zStep};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
                 vertex2.normal = {0.0f, -1.0f, 0.0f};
-                vertex2.texCoord = {xStep + stepSquared,
-                                    zStep};
+                vertex2.texCoord = {xStepSquared + stepSquared,
+                                    zStepSquared};
 
                 Model::Vertex vertex3{};
-                vertex3.position = {x, 0.0f, z + step};
+                vertex3.position = {xStep, 0.0f, zStep + step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {0.0f, -1.0f, 0.0f};
-                vertex3.texCoord = {xStep,
-                                    zStep + stepSquared};
+                vertex3.texCoord = {xStepSquared,
+                                    zStepSquared + stepSquared};
 
                 Model::Vertex vertex4{};
-                vertex4.position = {x + step, 0.0f, z + step};
+                vertex4.position = {xStep + step, 0.0f, zStep + step};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
                 vertex4.normal = {0.0f, -1.0f, 0.0f};
-                vertex4.texCoord = {xStep + stepSquared,
-                                    zStep + stepSquared};
+                vertex4.texCoord = {xStepSquared + stepSquared,
+                                    zStepSquared + stepSquared};
 
                 if (uniqueVertices.count(vertex1) == 0) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
@@ -221,36 +225,37 @@ namespace Engine::Procedural {
             }
 
             // Down face
-            for (float z = 0.0f; z < 1.0f; z += step) {
-                float zStep = z * step;
+            for (uint32_t z = 0; z < resolution; z++) {
+                float zStep = static_cast<float>(z) * step;
+                float zStepSquared = static_cast<float>(z) * stepSquared;
 
                 Model::Vertex vertex1{};
-                vertex1.position = {x, 1.0f, z};
+                vertex1.position = {xStep, 1.0f, zStep};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
                 vertex1.normal = {0.0f, 1.0f, 0.0f};
-                vertex1.texCoord = {xStep,
-                                    zStep};
+                vertex1.texCoord = {xStepSquared,
+                                    zStepSquared};
 
                 Model::Vertex vertex2{};
-                vertex2.position = {x + step, 1.0f, z};
+                vertex2.position = {xStep + step, 1.0f, zStep};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
                 vertex2.normal = {0.0f, 1.0f, 0.0f};
-                vertex2.texCoord = {xStep + stepSquared,
-                                    zStep};
+                vertex2.texCoord = {xStepSquared + stepSquared,
+                                    zStepSquared};
 
                 Model::Vertex vertex3{};
-                vertex3.position = {x, 1.0f, z + step};
+                vertex3.position = {xStep, 1.0f, zStep + step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {0.0f, 1.0f, 0.0f};
-                vertex3.texCoord = {xStep,
-                                    zStep + stepSquared};
+                vertex3.texCoord = {xStepSquared,
+                                    zStepSquared + stepSquared};
 
                 Model::Vertex vertex4{};
-                vertex4.position = {x + step, 1.0f, z + step};
+                vertex4.position = {xStep + step, 1.0f, zStep + step};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
                 vertex4.normal = {0.0f, 1.0f, 0.0f};
-                vertex4.texCoord = {xStep + stepSquared,
-                                    zStep + stepSquared};
+                vertex4.texCoord = {xStepSquared + stepSquared,
+                                    zStepSquared + stepSquared};
 
                 if (uniqueVertices.count(vertex1) == 0) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
@@ -284,40 +289,42 @@ namespace Engine::Procedural {
             }
         }
 
-        for(float y = 0.0f; y < 1.0f; y += step) {
-            float yStep = y * step;
+        for(uint32_t y = 0; y < resolution; y++) {
+            float yStep = static_cast<float>(y) * step;
+            float yStepSquared = static_cast<float>(y) * stepSquared;
 
             // Left face
-            for(float z = 0.0f; z < 1.0f; z += step) {
-                float zStep = z * step;
+            for(uint32_t z = 0; z < resolution; z++) {
+                float zStep = static_cast<float>(z) * step;
+                float zStepSquared = static_cast<float>(z) * stepSquared;
 
                 Model::Vertex vertex1{};
-                vertex1.position = {0.0f, y, z};
+                vertex1.position = {0.0f, yStep, zStep};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
                 vertex1.normal = {1.0f, 0.0f, 0.0f};
-                vertex1.texCoord = {yStep,
-                                    zStep};
+                vertex1.texCoord = {yStepSquared,
+                                    zStepSquared};
 
                 Model::Vertex vertex2{};
-                vertex2.position = {0.0f, y + step, z};
+                vertex2.position = {0.0f, yStep + step, zStep};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
                 vertex2.normal = {1.0f, 0.0f, 0.0f};
-                vertex2.texCoord = {yStep + stepSquared,
-                                    zStep};
+                vertex2.texCoord = {yStepSquared + stepSquared,
+                                    zStepSquared};
 
                 Model::Vertex vertex3{};
-                vertex3.position = {0.0f, y, z + step};
+                vertex3.position = {0.0f, yStep, zStep + step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {1.0f, 0.0f, 0.0f};
-                vertex3.texCoord = {yStep,
-                                    zStep + stepSquared};
+                vertex3.texCoord = {yStepSquared,
+                                    zStepSquared + stepSquared};
 
                 Model::Vertex vertex4{};
-                vertex4.position = {0.0f, y + step, z + step};
+                vertex4.position = {0.0f, yStep + step, zStep + step};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
                 vertex4.normal = {1.0f, 0.0f, 0.0f};
-                vertex4.texCoord = {yStep + stepSquared,
-                                    zStep + stepSquared};
+                vertex4.texCoord = {yStepSquared + stepSquared,
+                                    zStepSquared + stepSquared};
 
                 if (uniqueVertices.count(vertex1) == 0) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
@@ -352,36 +359,37 @@ namespace Engine::Procedural {
 
 
             // Right face
-            for (float z = 0; z < 1.0f; z += step) {
-                float zStep = z * step;
+            for (uint32_t z = 0; z < resolution; z++) {
+                float zStep = static_cast<float>(z) * step;
+                float zStepSquared = static_cast<float>(z) * stepSquared;
 
                 Model::Vertex vertex1{};
-                vertex1.position = {1.0f, y, z};
+                vertex1.position = {1.0f, yStep, zStep};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
                 vertex1.normal = {-1.0f, 0.0f, 0.0f};
-                vertex1.texCoord = {yStep,
-                                    zStep};
+                vertex1.texCoord = {yStepSquared,
+                                    zStepSquared};
 
                 Model::Vertex vertex2{};
-                vertex2.position = {1.0f, y + step, z};
+                vertex2.position = {1.0f, yStep + step, zStep};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
                 vertex2.normal = {-1.0f, 0.0f, 0.0f};
-                vertex2.texCoord = {yStep + stepSquared,
-                                    zStep};
+                vertex2.texCoord = {yStepSquared + stepSquared,
+                                    zStepSquared};
 
                 Model::Vertex vertex3{};
-                vertex3.position = {1.0f, y, z + step};
+                vertex3.position = {1.0f, yStep, zStep + step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
                 vertex3.normal = {-1.0f, 0.0f, 0.0f};
-                vertex3.texCoord = {yStep,
-                                    zStep + stepSquared};
+                vertex3.texCoord = {yStepSquared,
+                                    zStepSquared + stepSquared};
 
                 Model::Vertex vertex4{};
-                vertex4.position = {1.0f, y + step, z + step};
+                vertex4.position = {1.0f, yStep + step, zStep + step};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
                 vertex4.normal = {-1.0f, 0.0f, 0.0f};
-                vertex4.texCoord = {yStep + stepSquared,
-                                    zStep + stepSquared};
+                vertex4.texCoord = {yStepSquared + stepSquared,
+                                    zStepSquared + stepSquared};
 
                 if (uniqueVertices.count(vertex1) == 0) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
