@@ -50,7 +50,7 @@ void main() {
         // specular lighting
         vec3 halfwayDir = normalize(directionToLight + viewDir);
         float blinnTerm = pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), 32.0); //TODO(Dory): Make the exponent variable
-        specular += light.color.xyz * intensity * blinnTerm;
+        specular += intensity * blinnTerm;
     }
 
     //TODO(Dory): Make it so that you can choose if there's mettallic highlights or not
