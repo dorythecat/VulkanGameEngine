@@ -19,6 +19,8 @@ namespace Engine {
     struct GlobalUbo {
         glm::mat4 projectionMatrix{1.0f}; // 64 bytes
         glm::mat4 viewMatrix{1.0f}; // 64 bytes
+        glm::mat4 inverseViewMatrix{1.0f}; // 64 bytes
+
         glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.05f}; // 16 bytes
 
         // Lightning

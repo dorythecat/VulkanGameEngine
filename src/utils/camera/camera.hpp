@@ -27,10 +27,12 @@ namespace Engine {
 
         glm::mat4 getProjectionMatrix () const { return projectionMatrix; }
         glm::mat4 getViewMatrix () const { return viewMatrix; }
+        glm::mat4 getInverseViewMatrix () const { return inverseViewMatrix; }
 
     private:
         glm::mat4 projectionMatrix{1.0f};
         glm::mat4 viewMatrix{1.0f};
+        glm::mat4 inverseViewMatrix{1.0f};
     };
 }
 

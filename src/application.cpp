@@ -83,6 +83,7 @@ namespace Engine {
                 GlobalUbo ubo{};
                 ubo.projectionMatrix = frameInfo.camera.getProjectionMatrix();
                 ubo.viewMatrix = frameInfo.camera.getViewMatrix();
+                ubo.inverseViewMatrix = camera.getInverseViewMatrix();
                 billboardRenderSystem.update(frameInfo, ubo);
                 uboBuffers[frameInfo.frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameInfo.frameIndex]->flush();
