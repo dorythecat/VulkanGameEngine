@@ -1,14 +1,16 @@
 #include "swapchain.hpp"
 
+#include <utility>
+
 namespace Engine {
     SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent} {
         init();
     }
     SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent, std::shared_ptr<SwapChain> previous) :
-    device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+    device{deviceRef}, windowExtent{extent}, oldSwapChain{std::move(previous)} {
         init();
 
-        oldSwapChain = nullptr; // Clean up, since we no longer need it, and we can free its memory
+        oldSwapChain = nullptr; // Clean up, since we no longer need it, and we can free its memory.
     }
     SwapChain::~SwapChain() {
         for (auto imageView : swapChainImageViews)

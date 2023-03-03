@@ -117,9 +117,9 @@ namespace Engine {
         // Procedural quad (center)
         Procedural::Quad q(device, 128);
         q.generateModel();
-        std::shared_ptr<Model> terrainModel = q.getModel();
+        std::shared_ptr<Model> quadModel = q.getModel();
         Entity quad = Entity::createEntity();
-        quad.addComponent(std::make_unique<ModelComponent>(terrainModel));
+        quad.addComponent(std::make_unique<ModelComponent>(quadModel));
         quad.addComponent(std::make_unique<TransformComponent>(glm::vec3{-2.5f, 0.0f, 5.0f},
                                                                 glm::vec3{5.0f, 5.0f, 5.0f}));
         entities.emplace(quad.getId(), std::move(quad));
@@ -133,25 +133,10 @@ namespace Engine {
         cube.addComponent(std::make_unique<TransformComponent>(glm::vec3{-0.5f, -2.0f, 5.0f}));
         entities.emplace(cube.getId(), std::move(cube));
 
-        // Point lights
-        std::vector<glm::vec3> lightColors{
-                {1.0f, 0.1f, 0.1f},
-                {0.1f, 0.1f, 1.0f},
-                {0.1f, 1.0f, 0.1f},
-                {1.0f, 1.0f, 0.1f},
-                {0.1f, 1.0f, 1.0f},
-                {1.0f, 1.0f, 1.0f}
-        };
-
-        for (uint32_t i = 0; i < lightColors.size(); i++) {
-            Entity pointLight = Entity::createPointLightEntity();
-            pointLight.color = lightColors[i];
-            glm::mat4 rotateLight = glm::rotate(
-                    glm::mat4(1.0f),
-                    (static_cast<float>(i) * glm::two_pi<float>()) / static_cast<float>(lightColors.size()),
-                    {0.0f, -1.0f, 0.0f});
-            pointLight.getTransformComponent()->position = glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
-            entities.emplace(pointLight.getId(), std::move(pointLight));
-        }
+        // Point light
+        Entity pointLight = Entity::createPointLightEntity();
+        pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+        pointLight.getTransformComponent()->position = glm::vec3(0.0f, -3.0f, 3.0f);
+        entities.emplace(pointLight.getId(), std::move(pointLight));
     }
 }
