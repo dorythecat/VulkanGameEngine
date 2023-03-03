@@ -29,17 +29,30 @@ layout (location = 0) out vec4 outColor;
 
 void main() {
     vec3 diffuse = globalUbo.ambientLightColor.rgb * globalUbo.ambientLightColor.a;
+    vec3 specular = vec3(0.0);
     vec3 surfaceNormal = normalize(fragNormal);
+
+    vec3 cameraPosWorld = globalUbo.inverseViewMatrix[3].xyz;
+    vec3 viewDir = normalize(cameraPosWorld - fragPos);
 
     for(int i = 0; i < globalUbo.pointLightCount; i++) {
         PointLight light = globalUbo.pointLights[i];
         vec3 directionToLight = light.position.xyz - fragPos;
         float attenuation = 1.0 / dot(directionToLight, directionToLight); // distance squared
-        float cosAngIncidence = max(dot(surfaceNormal, normalize(directionToLight)), 0.0);
+
+        directionToLight = normalize(directionToLight);
+
+        float cosAngIncidence = max(dot(surfaceNormal, directionToLight), 0.0);
         vec3 intensity = light.color.xyz * light.color.w * attenuation;
 
         diffuse += intensity * cosAngIncidence;
+
+        // specular lighting
+        vec3 halfwayDir = normalize(directionToLight + viewDir);
+        float blinnTerm = pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), 32.0); //TODO(Dory): Make the exponent variable
+        specular += light.color.xyz * intensity * blinnTerm;
     }
 
-    outColor = vec4(diffuse * fragColor, 1.0);
+    //TODO(Dory): Make it so that you can choose if there's mettallic highlights or not
+    outColor = vec4(diffuse * fragColor + specular * fragColor, 1.0);
 }
