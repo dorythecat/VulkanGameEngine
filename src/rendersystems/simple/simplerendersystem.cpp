@@ -6,8 +6,9 @@ namespace Engine {
         glm::mat4 normalMatrix{1.0f};
     };
 
-    SimpleRenderSystem::SimpleRenderSystem(Device &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
-    : device(device) {
+    SimpleRenderSystem::SimpleRenderSystem(Device &device,
+                                           VkRenderPass renderPass,
+                                           VkDescriptorSetLayout globalSetLayout) : device(device) {
         createPipelineLayout(globalSetLayout);
         createPipeline(renderPass);
     }
@@ -34,7 +35,7 @@ namespace Engine {
             throw std::runtime_error("Failed to create pipeline layout!");
     }
     void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
-        assert(pipelineLayout != NULL && "Cannot create pipeline before pipeline layout!");
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout!");
 
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfo(pipelineConfig);

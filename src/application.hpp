@@ -18,6 +18,7 @@
 #include "utils/renderer/renderer.hpp"
 #include "utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp"
 #include "utils/descriptors/descriptors.hpp"
+#include "utils/texture/texture.hpp"
 
 // Procedural geometry
 #include "utils/procedural/quad/quad.hpp"

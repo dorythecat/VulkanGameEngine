@@ -16,6 +16,8 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
     int pointLightCount;
 } globalUbo;
 
+layout(set = 0, binding = 1) uniform sampler2D texSampler;
+
 layout (push_constant) uniform PushConstant {
     mat4 modelMatrix;
     mat4 normalMatrix;
@@ -24,6 +26,7 @@ layout (push_constant) uniform PushConstant {
 layout (location = 0) in vec3 fragColor;
 layout (location = 1) in vec3 fragPos;
 layout (location = 2) in vec3 fragNormal;
+layout (location = 3) in vec2 fragTexCoords;
 
 layout (location = 0) out vec4 outColor;
 
@@ -54,5 +57,5 @@ void main() {
     }
 
     //TODO(Dory): Make it so that you can choose if there's mettallic highlights or not
-    outColor = vec4(diffuse * fragColor + specular * fragColor, 1.0);
+    outColor = texture(texSampler, fragTexCoords) * vec4(diffuse * fragColor + specular * fragColor, 1.0);
 }

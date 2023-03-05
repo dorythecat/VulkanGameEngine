@@ -84,7 +84,7 @@ namespace Engine {
 
         if (size == VK_WHOLE_SIZE) memcpy(mapped, data, bufferSize);
         else {
-            char *memOffset = (char *)mapped;
+            char *memOffset = (char*)mapped;
             memOffset += offset;
             memcpy(memOffset, data, size);
         }

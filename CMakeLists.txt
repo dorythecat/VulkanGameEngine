@@ -37,6 +37,10 @@ endif()
 add_subdirectory("${PROJECT_SOURCE_DIR}/libs/glfw-3.3.8")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libs/glm-0.9.9.8")
 
+# Include directories
+include_directories("${PROJECT_SOURCE_DIR}/libs/glfw-3.3.8/include")
+include_directories("${PROJECT_SOURCE_DIR}/libs/stb_image")
+
 # Add Tracy
 # add_library(TracyClient STATIC libs/tracy/public/TracyClient.cpp)
 # target_include_directories(TracyClient PUBLIC libs/tracy/public/tracy)
@@ -90,7 +94,7 @@ add_custom_target(Shaders ALL DEPENDS ${SPV_SHADERS}) # This is the target that 
 #==============================================================================
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp) # Get all the source files
-add_executable(${PROJECT_NAME} ${SOURCES} ${SPV_SHADERS}) # Add the source files and shaders to the executable
+add_executable(${PROJECT_NAME} ${SOURCES} ${SPV_SHADERS} libs/stb_image/stb_image.h src/utils/texture/texture.cpp src/utils/texture/texture.hpp src/utils/image/image.cpp src/utils/image/image.hpp) # Add the source files and shaders to the executable
 add_dependencies(${PROJECT_NAME} Shaders) # Add the shaders as a dependency to the executable
 target_link_libraries(${PROJECT_NAME} glfw glm Vulkan::Vulkan)#TracyClient) # Link all of the libraries
 

@@ -16,11 +16,10 @@ namespace Engine {
         public:
             Builder(Device &device) : device{device} {}
 
-            Builder &addBinding(
-                    uint32_t binding,
-                    VkDescriptorType descriptorType,
-                    VkShaderStageFlags stageFlags,
-                    uint32_t count = 1);
+            Builder &addBinding(uint32_t binding,
+                                VkDescriptorType descriptorType,
+                                VkShaderStageFlags stageFlags,
+                                uint32_t count = 1);
             std::unique_ptr<DescriptorSetLayout> build() const;
 
         private:
@@ -28,7 +27,7 @@ namespace Engine {
             std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
         };
 
-        DescriptorSetLayout(Device &device, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
+        DescriptorSetLayout(Device &device, const std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding>& bindings);
         ~DescriptorSetLayout();
         DescriptorSetLayout(const DescriptorSetLayout &) = delete;
         DescriptorSetLayout &operator=(const DescriptorSetLayout &) = delete;
@@ -61,11 +60,10 @@ namespace Engine {
             VkDescriptorPoolCreateFlags poolFlags = 0;
         };
 
-        DescriptorPool(
-                Device &Device,
-                uint32_t maxSets,
-                VkDescriptorPoolCreateFlags poolFlags,
-                const std::vector<VkDescriptorPoolSize> &poolSizes);
+        DescriptorPool(Device &device,
+                       uint32_t maxSets,
+                       VkDescriptorPoolCreateFlags poolFlags,
+                       const std::vector<VkDescriptorPoolSize> &poolSizes);
         ~DescriptorPool();
         DescriptorPool(const DescriptorPool &) = delete;
         DescriptorPool &operator=(const DescriptorPool &) = delete;

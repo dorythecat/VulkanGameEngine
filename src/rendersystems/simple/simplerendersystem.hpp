@@ -19,7 +19,9 @@
 namespace Engine {
     class SimpleRenderSystem {
     public:
-        SimpleRenderSystem(Device &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
+        SimpleRenderSystem(Device &device,
+                           VkRenderPass renderPass,
+                           VkDescriptorSetLayout globalSetLayout);
         ~SimpleRenderSystem();
 
         SimpleRenderSystem(const SimpleRenderSystem&) = delete;

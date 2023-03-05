@@ -157,6 +157,7 @@ namespace Engine {
         bindingDescriptions[0].binding = 0;
         bindingDescriptions[0].stride = sizeof(Vertex);
         bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
         return bindingDescriptions;
     }
     std::vector<VkVertexInputAttributeDescription> Model::Vertex::getAttributeDescriptions() {
