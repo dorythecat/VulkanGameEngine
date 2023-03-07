@@ -1,7 +1,9 @@
+#include <cassert>
 #include "window.hpp"
 
 namespace Engine {
-    Window::Window(int width, int height, const char* title) : width(width), height(height), window_title(title) {
+    Window::Window(int width, int height, const char* title) :
+    width(width), height(height), window_title(title) {
         init();
     }
 
@@ -11,11 +13,17 @@ namespace Engine {
     }
 
     void Window::init() {
-        glfwInit();
+        assert(glfwInit() && "Failed to initialize GLFW!");
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+        glfwWindowHint(GLFW_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_VERSION_REVISION, 8);
+
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         window = glfwCreateWindow(width, height, window_title, nullptr, nullptr);
+
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
     }

@@ -29,6 +29,8 @@ namespace Engine {
     };
 
     struct FrameInfo {
+        static constexpr float MAX_DELTA_TIME = 0.0333f;
+
         uint32_t frameIndex = 0;
         float frameTime = 0.0f;
         VkCommandBuffer commandBuffer{};

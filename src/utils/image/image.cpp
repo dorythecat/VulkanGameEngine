@@ -3,7 +3,6 @@
 #include "image.hpp"
 
 namespace Engine {
-
     Image::Image(Device &device,
                  uint32_t width,
                  uint32_t height,
@@ -39,7 +38,7 @@ namespace Engine {
         allocInfo.memoryTypeIndex = device.findMemoryType(memRequirements.memoryTypeBits, properties);
 
         if (vkAllocateMemory(device.device(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
-            throw std::runtime_error("failed to allocate image memory!");
+            throw std::runtime_error("Failed to allocate the image memory!");
 
         vkBindImageMemory(device.device(), image, imageMemory, 0);
     }

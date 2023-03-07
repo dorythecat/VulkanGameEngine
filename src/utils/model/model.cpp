@@ -33,12 +33,15 @@ namespace Engine {
         vertices.clear();
         indices.clear();
 
+        vertices.reserve(attrib.vertices.size());
+        indices.reserve(attrib.vertices.size());
+
         std::unordered_map<Vertex, uint32_t> uniqueVertices{};
         for(const auto &shape : shapes) {
             for(const auto &index : shape.mesh.indices) {
                 Vertex vertex{};
                 if(index.vertex_index >= 0) {
-                    auto offset = 3 * index.vertex_index;
+                    uint32_t offset = 3 * static_cast<uint32_t>(index.vertex_index);
                     vertex.position = {
                             attrib.vertices[offset],
                             attrib.vertices[offset + 1],
@@ -53,7 +56,7 @@ namespace Engine {
                 }
 
                 if(index.normal_index >= 0) {
-                    auto offset = 3 * index.normal_index;
+                    uint32_t offset = 3 * static_cast<uint32_t>(index.normal_index);
                     vertex.normal = {
                             attrib.normals[offset],
                             attrib.normals[offset + 1],
@@ -62,7 +65,7 @@ namespace Engine {
                 }
 
                 if(index.texcoord_index >= 0) {
-                    auto offset = 2 * index.texcoord_index;
+                    uint32_t offset = 2 * static_cast<uint32_t>(index.texcoord_index);
                     vertex.texCoord = {
                             attrib.texcoords[offset],
                             attrib.texcoords[offset + 1]
@@ -86,7 +89,7 @@ namespace Engine {
 
     void Model::createVertexBuffer(const std::vector<Vertex> &vertices) {
         vertexCount = static_cast<uint32_t>(vertices.size());
-        assert(vertexCount >= 3 && "Vertex count must be at least 3!");
+        assert(vertexCount >= 3 && "Vertex count must be of at least 3!");
 
         uint32_t vertexSize = sizeof(vertices[0]);
 
@@ -100,15 +103,14 @@ namespace Engine {
         };
 
         stagingBuffer.map();
-        stagingBuffer.writeToBuffer((void*) vertices.data());
+        stagingBuffer.writeToBuffer((void*)vertices.data());
 
         vertexBuffer = std::make_unique<Buffer>(
             device,
             vertexSize,
             vertexCount,
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-        );
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         device.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), vertexSize * vertexCount);
     }
 
@@ -116,6 +118,7 @@ namespace Engine {
         indexCount = static_cast<uint32_t>(indices.size());
         hasIndexBuffer = indexCount > 0;
         if(!hasIndexBuffer) return;
+        assert(indexCount >= 3 && "Index count must be of at least 3!");
 
         uint32_t indexSize = sizeof(indices[0]);
 
@@ -129,21 +132,20 @@ namespace Engine {
         };
 
         stagingBuffer.map();
-        stagingBuffer.writeToBuffer((void*) indices.data());
+        stagingBuffer.writeToBuffer((void*)indices.data());
 
         indexBuffer = std::make_unique<Buffer>(
                 device,
                 indexSize,
                 indexCount,
                 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-                                               );
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         device.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), indexSize * indexCount);
     }
 
     void Model::bind(VkCommandBuffer commandBuffer) {
         VkBuffer buffers[] = { vertexBuffer->getBuffer() };
-        VkDeviceSize offsets[] = {0};
+        VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
         if(hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
     }

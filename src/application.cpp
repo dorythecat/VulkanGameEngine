@@ -5,11 +5,12 @@ namespace Engine {
         globalPool = DescriptorPool::Builder(device)
                      .setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
                      .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
+                     .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, SwapChain::MAX_FRAMES_IN_FLIGHT)
                      .build();
-        loadGameObjects();
+        loadEntities();
     }
     Application::~Application() {
-        globalPool = nullptr; // We need globalPool to be destroyed before device is, this ensures that happens
+        globalPool = nullptr; // We need globalPool to be destroyed before device is, this ensures that happens.
     }
 
     void Application::run() {
@@ -36,8 +37,8 @@ namespace Engine {
 
         std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
         for (unsigned int i = 0; i < globalDescriptorSets.size(); i++) {
-            auto bufferInfo = uboBuffers[i]->descriptorInfo();
-            auto imageInfo = texture.getDescriptorImageInfo();
+            VkDescriptorBufferInfo bufferInfo = uboBuffers[i]->descriptorInfo();
+            VkDescriptorImageInfo imageInfo = texture.getDescriptorImageInfo();
             DescriptorWriter(*globalSetLayout, *globalPool)
                 .writeBuffer(0, &bufferInfo)
                 .writeImage(1, &imageInfo)
@@ -65,8 +66,7 @@ namespace Engine {
             float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
             currentTime = newTime;
 
-            // Make the maximum time between frames 1/30 seconds, so the minimum framerate is 30 FPS
-            deltaTime = glm::min(deltaTime, 0.0333f);
+            deltaTime = glm::min(deltaTime, FrameInfo::MAX_DELTA_TIME);
 
             cameraController.moveInPlaneXZ(window.getWindow(), deltaTime, cameraEntity);
             camera.setViewXYZ(cameraEntity.getTransformComponent()->position,
@@ -75,7 +75,7 @@ namespace Engine {
             float aspectRatio = renderer.getAspectRatio();
             // camera.setOrthographicProjection(aspectRatio, -1.0f, -1.0f, 1.0f);
             // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
-            camera.setPerspectiveProjection(glm::radians(60.0f), aspectRatio, 0.1f, 100.0f);
+            camera.setPerspectiveProjection(FOV, aspectRatio, NEAR_PLANE, FAR_PLANE);
 
             if (auto commandBuffer = renderer.beginFrame()) {
                 uint32_t frameIndex = renderer.getCurrentFrameIndex();
@@ -105,7 +105,9 @@ namespace Engine {
         } vkDeviceWaitIdle(device.device()); // Wait for all the resource to be freed before destroying them
     }
 
-    void Application::loadGameObjects () {
+    void Application::loadEntities() {
+        entities.reserve(5);
+
         // Flat shaded sphere (left)
         std::shared_ptr<Model> sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
         Entity sphereFlat = Entity::createEntity();

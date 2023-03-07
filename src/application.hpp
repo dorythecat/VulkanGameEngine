@@ -34,6 +34,11 @@ namespace Engine {
         static constexpr int WIDTH = 800;
         static constexpr int HEIGHT = 600;
 
+        static constexpr float FOV = glm::radians(60.0f);
+
+        static constexpr float NEAR_PLANE = 0.1f;
+        static constexpr float FAR_PLANE = 100.0f;
+
         Application();
         ~Application();
 
@@ -49,7 +54,7 @@ namespace Engine {
 
         std::unique_ptr<DescriptorPool> globalPool{};
 
-        void loadGameObjects();
+        void loadEntities();
     };
 }
 

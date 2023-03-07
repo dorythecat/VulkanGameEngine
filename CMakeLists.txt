@@ -15,7 +15,7 @@ endif()
 # For more info on all of these warning flags, check out https://gcc.gnu.org/onlinedocs/gcc-3.4.0/gcc/Warning-Options.html
 # For more information of all of these optimization flags, check out https://gcc.gnu.org/onlinedocs/gcc-12.2.0/gcc/Optimize-Options.html
 set(CMAKE_CXX_FLAGS "-static -Wall -Wextra -Wundef -Wdouble-promotion -Wformat=2 -fno-common -Wconversion -pedantic -Wno-unused-parameter") # Bundle the necessary static libraries, as well as enable some useful warnings, and disable some nasty ones
-set(CMAKE_CXX_FLAGS_DEBUG "-g3 -Og") # Enable debug symbols and optimisations for debug builds
+set(CMAKE_CXX_FLAGS_DEBUG "-g3 -Og -DDEBUG") # Enable debug symbols and optimisations for debug builds
 set(CMAKE_CXX_FLAGS_RELEASE "-O3") # Enable full optimisations for release builds
 
 # GLFW settings

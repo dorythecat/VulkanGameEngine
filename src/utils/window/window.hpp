@@ -5,6 +5,7 @@
 #include "GLFW/glfw3.h"
 
 #include <stdexcept>
+#include <iostream>
 
 namespace Engine {
     class Window {
