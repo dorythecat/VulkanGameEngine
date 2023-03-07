@@ -2221,7 +2221,7 @@ static int stbi__jpeg_decode_block(stbi__jpeg *j, short data[64], stbi__huffman 
    if (!stbi__addints_valid(j->img_comp[b].dc_pred, diff)) return stbi__err("bad delta","Corrupt JPEG");
    dc = j->img_comp[b].dc_pred + diff;
    j->img_comp[b].dc_pred = dc;
-   if (!stbi__mul2shorts_valid(dc, dequant[0])) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
+   if (!stbi__mul2shorts_valid(static_cast<int16_t>(dc), dequant[0])) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
    data[0] = (short) (dc * dequant[0]);
 
    // decode AC components, see JPEG spec
@@ -2278,7 +2278,7 @@ static int stbi__jpeg_decode_block_prog_dc(stbi__jpeg *j, short data[64], stbi__
       if (!stbi__addints_valid(j->img_comp[b].dc_pred, diff)) return stbi__err("bad delta", "Corrupt JPEG");
       dc = j->img_comp[b].dc_pred + diff;
       j->img_comp[b].dc_pred = dc;
-      if (!stbi__mul2shorts_valid(dc, 1 << j->succ_low)) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
+      if (!stbi__mul2shorts_valid(static_cast<int16_t>(dc), 1 << j->succ_low)) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
       data[0] = (short) (dc * (1 << j->succ_low));
    } else {
       // refinement scan for DC coefficient
@@ -2421,8 +2421,8 @@ stbi_inline static stbi_uc stbi__clamp(int x)
    return (stbi_uc) x;
 }
 
-#define stbi__f2f(x)  ((int) (((x) * 4096 + 0.5)))
-#define stbi__fsh(x)  ((x) * 4096)
+#define stbi__f2f(x)  ((int)(x * 4096.0f + 0.5f))
+#define stbi__fsh(x)  (x * 4096)
 
 // derived from jidctint -- DCT_ISLOW
 #define STBI__IDCT_1D(s0,s1,s2,s3,s4,s5,s6,s7) \
@@ -3072,7 +3072,7 @@ static void stbi__jpeg_dequantize(short *data, stbi__uint16 *dequant)
 {
    int i;
    for (i=0; i < 64; ++i)
-      data[i] *= dequant[i];
+      data[i] *= static_cast<int16_t>(dequant[i]);
 }
 
 static void stbi__jpeg_finish(stbi__jpeg *z)
@@ -3422,12 +3422,11 @@ static int stbi__decode_jpeg_image(stbi__jpeg *j)
          if (!stbi__process_scan_header(j)) return 0;
          if (!stbi__parse_entropy_coded_data(j)) return 0;
          if (j->marker == STBI__MARKER_none ) {
-         j->marker = stbi__skip_jpeg_junk_at_end(j);
+         j->marker = static_cast<unsigned char>(stbi__skip_jpeg_junk_at_end(j));
             // if we reach eof without hitting a marker, stbi__get_marker() below will fail and we'll eventually return 0
          }
          m = stbi__get_marker(j);
-         if (STBI__RESTART(m))
-            m = stbi__get_marker(j);
+         if (STBI__RESTART(m)) m = stbi__get_marker(j);
       } else if (stbi__DNL(m)) {
          int Ld = stbi__get16be(j->s);
          stbi__uint32 NL = stbi__get16be(j->s);
@@ -4852,7 +4851,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
       stbi__uint16 *cur16 = (stbi__uint16*)cur;
 
       for(i=0; i < x*y*out_n; ++i,cur16++,cur+=2) {
-         *cur16 = (cur[0] << 8) | cur[1];
+         *cur16 = static_cast<uint16_t>((cur[0] << 8) | cur[1]);
       }
    }
 
@@ -5053,9 +5052,9 @@ static void stbi__de_iphone(stbi__png *z)
             stbi_uc t = p[0];
             if (a) {
                stbi_uc half = a / 2;
-               p[0] = (p[2] * 255 + half) / a;
-               p[1] = (p[1] * 255 + half) / a;
-               p[2] = ( t   * 255 + half) / a;
+               p[0] = static_cast<unsigned char>((p[2] * 255 + half) / a);
+               p[1] = static_cast<unsigned char>((p[1] * 255 + half) / a);
+               p[2] = static_cast<unsigned char>((t * 255 + half) / a);
             } else {
                p[0] = p[2];
                p[2] = t;
@@ -7132,7 +7131,7 @@ static void stbi__hdr_convert(float *output, stbi_uc *input, int req_comp) {
       float f1;
       // Exponent
       f1 = (float) ldexp(1.0f, input[3] - (int)(128 + 8));
-      if (req_comp <= 2) output[0] = (input[0] + input[1] + input[2]) * f1 / 3;
+      if (req_comp <= 2) output[0] = static_cast<float>(input[0] + input[1] + input[2]) * f1 / 3;
       else {
          output[0] = input[0] * f1;
          output[1] = input[1] * f1;
