@@ -3,7 +3,7 @@
 namespace Engine {
     Texture::Texture(Device &device, const char *texturePath) : device(device), texturePath(texturePath) {
         createTextureImage();
-        createTextureImageView();
+        textureImageView = textureImage->createImageView();
         createTextureSampler();
     }
 
@@ -12,7 +12,7 @@ namespace Engine {
         vkDestroyImageView(device.device(), textureImageView, nullptr);
     };
 
-    void Texture::createTextureImage() {
+    void Texture::createTextureImage () {
         int texWidth, texHeight, texChannels;
         stbi_uc* pixels = stbi_load(texturePath,
                                     &texWidth,
@@ -24,11 +24,11 @@ namespace Engine {
         if (!pixels) throw std::runtime_error("Failed to load the texture image!");
 
         Buffer stagingBuffer{
-            device,
-            imageSize,
-            1,
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+                device,
+                imageSize,
+                1,
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         };
 
         stagingBuffer.map();
@@ -36,26 +36,22 @@ namespace Engine {
 
         stbi_image_free(pixels);
 
-        textureImage = std::make_unique<Image>(device,
-                                               static_cast<uint32_t>(texWidth),
-                                               static_cast<uint32_t>(texHeight),
-                                               VK_FORMAT_R8G8B8A8_SRGB,
-                                               VK_IMAGE_TILING_OPTIMAL,
-                                               VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-        textureImage->transitionImageLayout(VK_FORMAT_R8G8B8A8_SRGB,
-                                           VK_IMAGE_LAYOUT_UNDEFINED,
-                                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        textureImage = std::make_unique<Image>(
+                device,
+                static_cast<uint32_t>(texWidth),
+                static_cast<uint32_t>(texHeight),
+                VK_FORMAT_R8G8B8A8_SRGB,
+                VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        textureImage->transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
         textureImage->copyBufferToImage(stagingBuffer.getBuffer());
-        textureImage->transitionImageLayout(VK_FORMAT_R8G8B8A8_SRGB,
-                                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
+        textureImage->transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        textureImage->copyBufferToImage(stagingBuffer.getBuffer());
+        textureImage->generateMipmaps();
         stagingBuffer.unmap();
-    }
-
-    void Texture::createTextureImageView() {
-        textureImageView = textureImage->createImageView();
     }
 
     void Texture::createTextureSampler() {
@@ -73,9 +69,9 @@ namespace Engine {
         samplerInfo.compareEnable = VK_FALSE;
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-        samplerInfo.mipLodBias = 0.0f;
-        samplerInfo.minLod = 0.0f;
-        samplerInfo.maxLod = 0.0f;
+        samplerInfo.minLod = 0.0f; // Optional
+        samplerInfo.maxLod = static_cast<float>(textureImage->getMipLevels());
+        samplerInfo.mipLodBias = 0.0f; // Optional
 
         if (vkCreateSampler(device.device(), &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
             throw std::runtime_error("Failed to create the texture sampler!");

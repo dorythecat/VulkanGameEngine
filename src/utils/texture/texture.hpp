@@ -19,15 +19,11 @@ namespace Engine {
         Texture(Device &device, const char* texturePath);
         ~Texture();
 
-        // Not copyable or movable
         Texture(const Texture &) = delete;
         Texture& operator=(const Texture &) = delete;
         Texture(Texture &&) = delete;
         Texture& operator=(Texture &&) = delete;
 
-        void createTextureImage();
-        void createTextureImageView();
-        void createTextureSampler();
         VkDescriptorImageInfo getDescriptorImageInfo() const;
     private:
         Device &device;
@@ -36,6 +32,9 @@ namespace Engine {
         VkSampler textureSampler;
 
         const char* texturePath;
+
+        void createTextureImage();
+        void createTextureSampler();
     };
 }
 

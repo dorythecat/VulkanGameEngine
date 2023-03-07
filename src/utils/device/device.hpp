@@ -30,10 +30,10 @@ namespace Engine {
 
     class Device {
     public:
-#ifdef NDEBUG
-        const bool enableValidationLayers = false;
-#else
+#ifdef DEBUG
         const bool enableValidationLayers = true;
+#else
+        const bool enableValidationLayers = false;
 #endif
 
         VkPhysicalDeviceProperties properties;
@@ -41,7 +41,6 @@ namespace Engine {
         explicit Device(Window &window);
         ~Device();
 
-        // Not copyable or movable
         Device(const Device &) = default;
         Device& operator=(const Device &) = delete;
         Device(Device &&) = delete;
@@ -52,6 +51,12 @@ namespace Engine {
         VkSurfaceKHR surface() const { return surface_; }
         VkQueue graphicsQueue() { return graphicsQueue_; }
         VkQueue presentQueue() { return presentQueue_; }
+
+        VkFormatProperties getFormatProperties(VkFormat format) const {
+            VkFormatProperties formatProperties;
+            vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &formatProperties);
+            return formatProperties;
+        }
 
         SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
