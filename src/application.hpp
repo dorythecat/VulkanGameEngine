@@ -11,6 +11,11 @@
 #include <vector>
 #include <array>
 
+// ImGUI
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_vulkan.h>
+
 // Misc utils
 #include "utils/window/window.hpp"
 #include "utils/device/device.hpp"
@@ -53,6 +58,11 @@ namespace Engine {
         Entity::Map entities;
 
         std::unique_ptr<DescriptorPool> globalPool{};
+
+        // ImGUI
+        void initImGUI();
+        void drawImGUI(FrameInfo frameInfo);
+        void destroyImGUI();
 
         void loadEntities();
     };

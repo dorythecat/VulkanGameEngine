@@ -19,8 +19,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g3 -Og -DDEBUG") # Enable debug symbols and optimisa
 set(CMAKE_CXX_FLAGS_RELEASE "-O3") # Enable full optimisations for release builds
 
 # GLFW settings
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "GLFW lib only")
-set(GLFW_INSTALL OFF CACHE BOOL "GLFW lib only")
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+option(GLFW_INSTALL "Generate installation target" OFF)
+option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 # Find Vulkan
 find_package(Vulkan REQUIRED COMPONENTS glslc)
@@ -33,13 +36,22 @@ else()
     message(STATUS "Using the Vulkan library, located at: ${Vulkan_LIBRARIES}")
 endif()
 
+set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/libs/imgui)
+set(IMGUI_SOURCES ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+                  ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
+                  ${IMGUI_DIR}/imgui.cpp
+                  ${IMGUI_DIR}/imgui_draw.cpp
+                  ${IMGUI_DIR}/imgui_tables.cpp
+                  ${IMGUI_DIR}/imgui_widgets.cpp)
+
 # Add subdirectories
 add_subdirectory("${PROJECT_SOURCE_DIR}/libs/glfw-3.3.8")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libs/glm-0.9.9.8")
 
 # Include directories
-include_directories("${PROJECT_SOURCE_DIR}/libs/glfw-3.3.8/include")
-include_directories("${PROJECT_SOURCE_DIR}/libs/stb_image")
+include_directories(${PROJECT_SOURCE_DIR}/libs/glfw-3.3.8/include ${PROJECT_SOURCE_DIR}/libs/glfw-3.3.8/deps)
+include_directories(${PROJECT_SOURCE_DIR}/libs/stb_image)
+include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends)
 
 # Add Tracy
 # add_library(TracyClient STATIC libs/tracy/public/TracyClient.cpp)
@@ -94,8 +106,9 @@ add_custom_target(Shaders ALL DEPENDS ${SPV_SHADERS}) # This is the target that 
 #==============================================================================
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp) # Get all the source files
-add_executable(${PROJECT_NAME} ${SOURCES} ${SPV_SHADERS} libs/stb_image/stb_image.h src/utils/texture/texture.cpp src/utils/texture/texture.hpp src/utils/image/image.cpp src/utils/image/image.hpp) # Add the source files and shaders to the executable
+add_executable(${PROJECT_NAME} ${SOURCES} ${SPV_SHADERS} ${IMGUI_SOURCES} libs/stb_image/stb_image.h) # Add the source files and shaders to the executable
 add_dependencies(${PROJECT_NAME} Shaders) # Add the shaders as a dependency to the executable
 target_link_libraries(${PROJECT_NAME} glfw glm Vulkan::Vulkan)#TracyClient) # Link all of the libraries
+target_compile_definitions(${PROJECT_NAME} PUBLIC -DImTextureID=ImU64) # Define the ImTextureID as an ImU64
 
 #==============================================================================

@@ -46,21 +46,23 @@ namespace Engine {
         Device(Device &&) = delete;
         Device& operator=(Device &&) = delete;
 
-        VkCommandPool getCommandPool() const { return commandPool; }
-        VkDevice device() { return device_; }
-        VkSurfaceKHR surface() const { return surface_; }
-        VkQueue graphicsQueue() { return graphicsQueue_; }
-        VkQueue presentQueue() { return presentQueue_; }
+        VkCommandPool getCommandPool() const { return _commandPool; }
+        VkInstance instance() { return _instance; }
+        VkDevice device() { return _device; }
+        VkPhysicalDevice physicalDevice() { return _physicalDevice; }
+        VkSurfaceKHR surface() const { return _surface; }
+        VkQueue graphicsQueue() { return _graphicsQueue; }
+        VkQueue presentQueue() { return _presentQueue; }
 
         VkFormatProperties getFormatProperties(VkFormat format) const {
             VkFormatProperties formatProperties;
-            vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &formatProperties);
+            vkGetPhysicalDeviceFormatProperties(_physicalDevice, format, &formatProperties);
             return formatProperties;
         }
 
-        SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
+        SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(_physicalDevice); }
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-        QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
+        QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(_physicalDevice); }
         VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
         // Buffer Helper Functions
@@ -84,16 +86,16 @@ namespace Engine {
         const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
         const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-        VkInstance instance;
         VkDebugUtilsMessengerEXT debugMessenger;
-        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
         Window &window;
-        VkCommandPool commandPool;
 
-        VkDevice device_;
-        VkSurfaceKHR surface_;
-        VkQueue graphicsQueue_;
-        VkQueue presentQueue_;
+        VkCommandPool _commandPool;
+        VkInstance _instance;
+        VkDevice _device;
+        VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
+        VkSurfaceKHR _surface;
+        VkQueue _graphicsQueue;
+        VkQueue _presentQueue;
 
         void createInstance();
         void setupDebugMessenger();

@@ -10,7 +10,9 @@ namespace Engine {
         loadEntities();
     }
     Application::~Application() {
-        globalPool = nullptr; // We need globalPool to be destroyed before device is, this ensures that happens.
+        vkDeviceWaitIdle(device.device()); // Wait for all the resource to be freed before destroying them
+        globalPool = nullptr; // We need globalPool to be destroyed before the device is, this line of code ensures that happens.
+        destroyImGUI();
     }
 
     void Application::run() {
@@ -58,6 +60,13 @@ namespace Engine {
         cameraEntity.addComponent(std::make_unique<TransformComponent>(glm::vec3{0.0f, 0.0f, -2.5f}));
         KeyboardMovementController cameraController{};
 
+        float aspectRatio = renderer.getAspectRatio();
+        // camera.setOrthographicProjection(aspectRatio, -1.0f, -1.0f, 1.0f);
+        // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
+        camera.setPerspectiveProjection(FOV, aspectRatio, NEAR_PLANE, FAR_PLANE);
+
+        initImGUI();
+
         auto currentTime = std::chrono::high_resolution_clock::now();
         while (!window.shouldClose()) {
             glfwPollEvents();
@@ -71,11 +80,6 @@ namespace Engine {
             cameraController.moveInPlaneXZ(window.getWindow(), deltaTime, cameraEntity);
             camera.setViewXYZ(cameraEntity.getTransformComponent()->position,
                               cameraEntity.getTransformComponent()->rotation);
-
-            float aspectRatio = renderer.getAspectRatio();
-            // camera.setOrthographicProjection(aspectRatio, -1.0f, -1.0f, 1.0f);
-            // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
-            camera.setPerspectiveProjection(FOV, aspectRatio, NEAR_PLANE, FAR_PLANE);
 
             if (auto commandBuffer = renderer.beginFrame()) {
                 uint32_t frameIndex = renderer.getCurrentFrameIndex();
@@ -99,16 +103,114 @@ namespace Engine {
                 renderer.beginSwapChainRenderPass(frameInfo.commandBuffer);
                 simpleRenderSystem.renderGameObjects(frameInfo);
                 billboardRenderSystem.render(frameInfo);
+
+                drawImGUI(frameInfo);
+
                 renderer.endSwapChainRenderPass(frameInfo.commandBuffer);
                 renderer.endFrame();
             }
         } vkDeviceWaitIdle(device.device()); // Wait for all the resource to be freed before destroying them
     }
 
+    void Application::initImGUI() {
+        // TODO(Dory): Optimize pool sizes
+        VkDescriptorPoolSize pool_sizes[] = {
+                        { VK_DESCRIPTOR_TYPE_SAMPLER, 1024 },
+                        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1024 },
+                        { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1024 },
+                        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1024 },
+                        { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1024 },
+                        { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1024 },
+                        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024 },
+                        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1024 },
+                        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1024 },
+                        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1024 },
+                        { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1024 }
+        };
+
+        VkDescriptorPoolCreateInfo pool_info = {};
+        pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        pool_info.maxSets = 1024;
+        pool_info.poolSizeCount = std::size(pool_sizes);
+        pool_info.pPoolSizes = pool_sizes;
+
+        VkDescriptorPool imguiPool;
+        if (vkCreateDescriptorPool(device.device(), &pool_info, nullptr, &imguiPool) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create the ImGUI descriptor pool!");
+
+
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+
+        ImGui::StyleColorsDark();
+        //ImGui::StyleColorsLight();
+
+        ImGui_ImplVulkan_InitInfo init_info = {};
+        init_info.Instance = device.instance();
+        init_info.PhysicalDevice = device.physicalDevice();
+        init_info.Device = device.device();
+        init_info.Queue = device.graphicsQueue();
+        init_info.DescriptorPool = imguiPool;
+        init_info.MinImageCount = 3;
+        init_info.ImageCount = 3;
+        init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+
+        ImGui_ImplGlfw_InitForVulkan(window.getWindow(), true);
+        ImGui_ImplVulkan_Init(&init_info, renderer.getSwapChainRenderPass());
+
+        VkCommandBuffer commandBuffer = device.beginSingleTimeCommands();
+
+        ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+
+        VkSubmitInfo end_info = {};
+        end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        end_info.commandBufferCount = 1;
+        end_info.pCommandBuffers = &commandBuffer;
+        vkEndCommandBuffer(commandBuffer);
+        vkQueueSubmit(device.graphicsQueue(), 1, &end_info, VK_NULL_HANDLE);
+
+        device.endSingleTimeCommands(commandBuffer);
+
+        vkDeviceWaitIdle(device.device());
+        ImGui_ImplVulkan_DestroyFontUploadObjects();
+    }
+
+    void Application::drawImGUI(FrameInfo frameInfo) {
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        bool* windowOpen = new bool(true);
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
+
+        ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiCond_Appearing);
+        ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_Appearing);
+        if (!ImGui::Begin("Hello, world!", windowOpen, windowFlags)) {
+            ImGui::End();
+            return;
+        }
+
+        ImGui::Text("Hello, world!");
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), frameInfo.commandBuffer);
+    }
+
+    void Application::destroyImGUI() {
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+    }
+
     void Application::loadEntities() {
         entities.reserve(5);
 
-        // Flat shaded sphere (left)
         std::shared_ptr<Model> sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
         Entity sphereFlat = Entity::createEntity();
         sphereFlat.addComponent(std::make_unique<ModelComponent>(sphereFlatModel));
@@ -116,7 +218,6 @@ namespace Engine {
                                                                        glm::vec3{0.5f, 0.5f, 0.5f}));
         entities.emplace(sphereFlat.getId(), std::move(sphereFlat));
 
-        // Smooth shaded sphere (right)
         std::shared_ptr<Model> sphereSmoothModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_smooth.obj");
         Entity sphereSmooth = Entity::createEntity();
         sphereSmooth.addComponent(std::make_unique<ModelComponent>(sphereSmoothModel));
@@ -124,7 +225,6 @@ namespace Engine {
                                                                        glm::vec3{0.5f, 0.5f, 0.5f}));
         entities.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
 
-        // Procedural quad (center)
         Procedural::Quad q(device, 128);
         q.generateModel();
         std::shared_ptr<Model> quadModel = q.getModel();
@@ -134,7 +234,6 @@ namespace Engine {
                                                                 glm::vec3{5.0f, 5.0f, 5.0f}));
         entities.emplace(quad.getId(), std::move(quad));
 
-        // Procedural cube (center up)
         Procedural::Cube c(device, 128);
         c.generateModel();
         std::shared_ptr<Model> cubeModel = c.getModel();
@@ -143,7 +242,6 @@ namespace Engine {
         cube.addComponent(std::make_unique<TransformComponent>(glm::vec3{-0.5f, -2.0f, 5.0f}));
         entities.emplace(cube.getId(), std::move(cube));
 
-        // Point light
         Entity pointLight = Entity::createPointLightEntity();
         pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
         pointLight.getTransformComponent()->position = glm::vec3(0.0f, -3.0f, 3.0f);
