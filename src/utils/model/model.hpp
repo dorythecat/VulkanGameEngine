@@ -19,7 +19,6 @@
 // This are the ones I care about, rest can be added later, or never, I don't care, LULZ
 
 // TODO(Dory): Add support for textures
-// TODO(Dory): Add support for normals
 // TODO(Dory): Add support for tangents and bitangents
 namespace Engine {
     class Model {
