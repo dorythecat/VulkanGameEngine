@@ -6,7 +6,7 @@
 namespace std {
     template<>
     struct hash<Engine::Model::Vertex> {
-        size_t operator()(Engine::Model::Vertex const &vertex) const {
+        inline size_t operator()(Engine::Model::Vertex const &vertex) const {
             size_t seed = 0;
             hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.texCoord);
             return seed;
