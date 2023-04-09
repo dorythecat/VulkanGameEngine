@@ -1,11 +1,13 @@
 #include "swapchain.hpp"
 
+#include <utility>
+
 namespace Engine {
     SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent} {
         init();
     }
     SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent, std::shared_ptr<SwapChain> previous) :
-    device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+    device{deviceRef}, windowExtent{extent}, oldSwapChain{std::move(previous)} {
         init();
 
         oldSwapChain = nullptr; // Clean up, since we no longer need it, and we can free its memory
@@ -15,12 +17,12 @@ namespace Engine {
             vkDestroyImageView(device.device(), imageView, nullptr);
         swapChainImageViews.clear();
 
-        if (swapChain != NULL) {
+        if (swapChain != nullptr) {
             vkDestroySwapchainKHR(device.device(), swapChain, nullptr);
-            swapChain = NULL;
+            swapChain = nullptr;
         }
 
-        for (int i = 0; i < depthImages.size(); i++) {
+        for (uint32_t i = 0; i < depthImages.size(); i++) {
             vkDestroyImageView(device.device(), depthImageViews[i], nullptr);
             vkDestroyImage(device.device(), depthImages[i], nullptr);
             vkFreeMemory(device.device(), depthImageMemorys[i], nullptr);
@@ -250,7 +252,7 @@ namespace Engine {
         for (size_t i = 0; i < imageCount(); i++) {
             std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
 
-            VkExtent2D swapChainExtent = getSwapChainExtent();
+            swapChainExtent = getSwapChainExtent();
             VkFramebufferCreateInfo framebufferInfo = {};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
             framebufferInfo.renderPass = renderPass;
@@ -260,23 +262,23 @@ namespace Engine {
             framebufferInfo.height = swapChainExtent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(
-                    device.device(),
-                    &framebufferInfo,
-                    nullptr,
-                    &swapChainFramebuffers[i]) != VK_SUCCESS)
+            if (vkCreateFramebuffer(device.device(),
+                                    &framebufferInfo,
+                                    nullptr,
+
+                                    &swapChainFramebuffers[i]) != VK_SUCCESS)
                 throw std::runtime_error("Failed to create framebuffer!");
         }
     }
     void SwapChain::createDepthResources() {
         swapChainDepthFormat = findDepthFormat();
-        VkExtent2D swapChainExtent = getSwapChainExtent();
+        swapChainExtent = getSwapChainExtent();
 
         depthImages.resize(imageCount());
         depthImageMemorys.resize(imageCount());
         depthImageViews.resize(imageCount());
 
-        for (int i = 0; i < depthImages.size(); i++) {
+        for (uint32_t i = 0; i < depthImages.size(); i++) {
             VkImageCreateInfo imageInfo{};
             imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             imageInfo.imageType = VK_IMAGE_TYPE_2D;

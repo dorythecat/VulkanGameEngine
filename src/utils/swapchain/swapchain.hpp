@@ -23,9 +23,9 @@ namespace Engine {
         SwapChain(const SwapChain &) = delete;
         SwapChain& operator=(const SwapChain &) = delete;
 
-        VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
+        VkFramebuffer getFrameBuffer(uint32_t index) { return swapChainFramebuffers[index]; }
         VkRenderPass getRenderPass() const { return renderPass; }
-        VkImageView getImageView(int index) { return swapChainImageViews[index]; }
+        VkImageView getImageView(uint32_t index) { return swapChainImageViews[index]; }
         size_t imageCount() { return swapChainImages.size(); }
         VkFormat getSwapChainImageFormat() { return swapChainImageFormat; }
         VkExtent2D getSwapChainExtent() { return swapChainExtent; }
@@ -82,9 +82,9 @@ namespace Engine {
         void createSyncObjects();
 
         // Helper functions
-        VkSurfaceFormatKHR chooseSwapSurfaceFormat(
+        static VkSurfaceFormatKHR chooseSwapSurfaceFormat(
                 const std::vector<VkSurfaceFormatKHR> &availableFormats);
-        VkPresentModeKHR chooseSwapPresentMode(
+ static        VkPresentModeKHR chooseSwapPresentMode(
                 const std::vector<VkPresentModeKHR> &availablePresentModes);
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
     };
