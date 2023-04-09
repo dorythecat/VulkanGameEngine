@@ -362,17 +362,12 @@ namespace Engine {
     }
     VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) return capabilities.currentExtent;
-        else {
-            VkExtent2D actualExtent = windowExtent;
-            actualExtent.width = std::max(
-                    capabilities.minImageExtent.width,
-                    std::min(capabilities.maxImageExtent.width, actualExtent.width));
-            actualExtent.height = std::max(
-                    capabilities.minImageExtent.height,
-                    std::min(capabilities.maxImageExtent.height, actualExtent.height));
-
-            return actualExtent;
-        }
+        VkExtent2D actualExtent = windowExtent;
+        actualExtent.width = std::max(capabilities.minImageExtent.width,
+                                      std::min(capabilities.maxImageExtent.width, actualExtent.width));
+        actualExtent.height = std::max(capabilities.minImageExtent.height,
+                                       std::min(capabilities.maxImageExtent.height, actualExtent.height));
+        return actualExtent;
     }
     VkFormat SwapChain::findDepthFormat() {
         return device.findSupportedFormat(

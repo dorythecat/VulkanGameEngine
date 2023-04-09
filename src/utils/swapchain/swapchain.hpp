@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <memory>
+#include <limits>
 
 #include "../device/device.hpp"
 

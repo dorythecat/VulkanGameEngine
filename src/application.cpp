@@ -16,7 +16,7 @@ namespace Engine {
                 renderer.endFrame();
             }
         }
-        vkDeviceWaitIdle(device.device()); // Wait for all the resource to be freed before destroying them
+        vkDeviceWaitIdle(device.device()); // Wait for all the resources to be freed before destroying them
     }
     void Application::loadGameObjects () {
         std::vector<Model::Vertex> vertices = {
@@ -30,7 +30,7 @@ namespace Engine {
         triangle.color = {1.0f, 0.2f, 0.1f};
         triangle.transform2D.position.x = 0.2f;
         triangle.transform2D.scale = {1.0f, 1.0f};
-        triangle.transform2D.rotation = glm::two_pi<float>() / 4.0f;
+        triangle.transform2D.rotation = glm::pi<float>() / 2.0f;
         gameObjects.push_back(std::move(triangle));
     }
 }

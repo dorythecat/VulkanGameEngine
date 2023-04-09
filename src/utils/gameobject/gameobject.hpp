@@ -49,7 +49,7 @@ namespace Engine {
     private:
         id_t id;
 
-        explicit GameObject(id_t objId) : id(objId) {}
+        GameObject(id_t objId) : id(objId) {}
     };
 }
 
