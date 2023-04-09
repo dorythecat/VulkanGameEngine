@@ -50,7 +50,7 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/libs/glm-0.9.9.8")
 
 # Include directories
 include_directories("${PROJECT_SOURCE_DIR}/libs/glfw-3.3.8/include")
-# include_directories("${PROJECT_SOURCE_DIR}/libs/stb_image")
+include_directories("${PROJECT_SOURCE_DIR}/libs/stb_image")
 include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends)
 
 # add_library(TracyClient STATIC libs/tracy/public/TracyClient.cpp)
@@ -105,7 +105,7 @@ add_custom_target(Shaders ALL DEPENDS ${SPV_SHADERS}) # This is the target that 
 #==============================================================================
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp) # Get all the source files
-add_executable(${PROJECT_NAME} ${SOURCES} ${SPV_SHADERS} ${IMGUI_SOURCES}) # libs/stb_image/stb_image.h) # Add the source files and shaders to the executable
+add_executable(${PROJECT_NAME} ${SOURCES} ${SPV_SHADERS} ${IMGUI_SOURCES} libs/stb_image/stb_image.h) # Add the source files and shaders to the executable
 target_link_libraries(Game_Engine glfw glm Vulkan::Vulkan )#TracyClient)
 target_compile_definitions(${PROJECT_NAME} PUBLIC -DImTextureID=ImU64) # Define the ImTextureID as an ImU64
 
