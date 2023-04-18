@@ -45,7 +45,7 @@ set(IMGUI_SOURCES ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
                   ${IMGUI_DIR}/imgui_widgets.cpp)
 
 # Add subdirectories
-add_subdirectory("${PROJECT_SOURCE_DIR}/libs/glfw-3.3.8")
+add_subdirectory("${PROJECT_SOURCE_DIR}/libs/glfw")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libs/glm")
 
 # Include directories
