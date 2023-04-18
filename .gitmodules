@@ -1,0 +1,18 @@
+[submodule "libs/imgui"]
+    path = libs/imgui
+    url = https://github.com/ocornut/imgui
+[submodule "libs/glm"]
+    path = libs/glm
+    url = https://github.com/g-truc/glm
+[submodule "libs/stb"]
+    path = libs/stb
+    url = https://github.com/nothings/stb
+[submodule "libs/glfw"]
+    path = libs/glfw
+    url = https://github.com/glfw/glfw
+[submodule "libs/tinyobjloader"]
+	path = libs/tinyobjloader
+	url = https://github.com/tinyobjloader/tinyobjloader
+[submodule "libs/tracy"]
+	path = libs/tracy
+	url = https://github.com/wolfpld/tracy
