@@ -55,10 +55,11 @@ namespace Engine {
 
         projectionMatrix = glm::perspective(fov, aspect, near, far);
 
-        // IDK why, but these two values are inverted in the perspective projection matrix from GLM
-        // TODO(Dory): Check if this is a bug in GLM or if I'm just doing something wrong
+        // https://github.com/g-truc/glm/blob/0.9.5/glm/gtc/matrix_transform.inl#L208
+        // TODO(Dory): Fix this, I don't know where this bug comes from, but it's probably in the code somewhere, it's not GLM
         projectionMatrix[2][2] *= -1.0f;
         projectionMatrix[2][3] *= -1.0f;
+        projectionMatrix[3][2] *= 2.0f;
     }
 
     void Camera::setViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
