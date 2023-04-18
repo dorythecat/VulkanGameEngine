@@ -12,7 +12,7 @@ option(TRACY_STATIC "Whether to build Tracy as a static library" ${DEFAULT_STATI
 
 find_package(Threads REQUIRED)
 
-set(TRACY_PUBLIC_DIR PUBLIC)
+set(TRACY_PUBLIC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/public)
 
 if(TRACY_STATIC)
 	set(TRACY_VISIBILITY "STATIC")
@@ -22,10 +22,12 @@ endif()
 
 add_library(TracyClient ${TRACY_VISIBILITY} "${TRACY_PUBLIC_DIR}/TracyClient.cpp")
 target_compile_features(TracyClient PUBLIC cxx_std_11)
-target_include_directories(TracyClient SYSTEM PUBLIC $<BUILD_INTERFACE:${TRACY_PUBLIC_DIR}> $<INSTALL_INTERFACE:include>)
+target_include_directories(TracyClient SYSTEM PUBLIC
+    $<BUILD_INTERFACE:${TRACY_PUBLIC_DIR}>
+    $<INSTALL_INTERFACE:include>)
 target_link_libraries(
     TracyClient
-        PUBLIC
+    PUBLIC
         Threads::Threads
         ${CMAKE_DL_LIBS}
 )
@@ -53,7 +55,7 @@ macro(set_option option help value)
 endmacro()
 
 set_option(TRACY_ENABLE "Enable profiling" ON)
-set_option(TRACY_ON_DEMAND "On-demand profiling" ON)
+set_option(TRACY_ON_DEMAND "On-demand profiling" OFF)
 set_option(TRACY_CALLSTACK "Enfore callstack collection for tracy regions" OFF)
 set_option(TRACY_NO_CALLSTACK "Disable all callstack related functionality" OFF)
 set_option(TRACY_NO_CALLSTACK_INLINES "Disables the inline functions in callstacks" OFF)
@@ -131,7 +133,7 @@ set(common_includes
 install(TARGETS TracyClient
         EXPORT TracyConfig
         RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(FILES ${tracy_includes}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tracy)

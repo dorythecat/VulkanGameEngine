@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#  include <WS2tcpip.h>
+#  include <ws2tcpip.h>
 #else
 #  include <arpa/inet.h>
 #  include <sys/socket.h>

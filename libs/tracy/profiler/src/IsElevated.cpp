@@ -2,7 +2,7 @@
 
 #ifdef _WIN32
 
-#include <Windows.h>
+#include <windows.h>
 
 bool IsElevated()
 {
@@ -20,6 +20,13 @@ bool IsElevated()
     bool ret = te.TokenIsElevated;
     CloseHandle( token );
     return ret;
+}
+
+#elif defined __EMSCRIPTEN__
+
+bool IsElevated()
+{
+    return false;
 }
 
 #else

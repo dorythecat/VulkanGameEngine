@@ -496,6 +496,8 @@ The client with on-demand profiling enabled needs to perform additional bookkeep
 
 By default, the Tracy client will announce its presence to the local network\footnote{Additional configuration may be required to achieve full functionality, depending on your network layout. Read about UDP broadcasts for more information.}. If you want to disable this feature, define the \texttt{TRACY\_NO\_BROADCAST} macro.
 
+The program name that is sent out in the broadcast messages can be customized by using the \texttt{TracySetProgramName(name)} macro.
+
 \subsubsection{Client network interface}
 
 By default, the Tracy client will listen on all network interfaces. If you want to restrict it to only listening on the localhost interface, define the \texttt{TRACY\_ONLY\_LOCALHOST} macro at compile-time, or set the \texttt{TRACY\_ONLY\_LOCALHOST} environment variable to $1$ at runtime.
@@ -766,6 +768,20 @@ On Unix systems you will need to install the \texttt{pkg-config} utility and the
 In addition to the beforementioned libraries, you might also have to install the \texttt{tbb} library\footnote{Technically this is not a dependency of Tracy but rather of \texttt{libstdc++} but it may still not be installed by default.}.
 
 Installation of the libraries on OSX can be facilitated using the \texttt{brew} package manager.
+
+\subparagraph{Wayland}
+
+Linux builds of Tracy use the Wayland protocol by default, which allows proper support for Hi-DPI scaling and high-precision input devices such as touchpads. As such, the \texttt{glfw} library is no longer needed, but you will have to install \texttt{libxkbcommon}, \texttt{wayland}, \texttt{libglvnd} (or \texttt{libegl} on some distributions).
+
+You can build the profiler the old way on Linux by enabling the \texttt{LEGACY} flag, e.g. by issuing the following build command \texttt{make LEGACY=1}.
+
+\begin{bclogo}[
+noborder=true,
+couleur=black!5,
+logo=\bcbombe
+]{Window decorations}
+Please don't ask about window decorations in Gnome. The current behavior is the intended behavior. Gnome does not want windows to have decorations, and Tracy respects that choice. If you find this problematic, use a desktop environment that actually listens to its users.
+\end{bclogo}
 
 \subsubsection{Build process}
 
@@ -1509,6 +1525,12 @@ In order to maintain synchronization between CPU and GPU time domains, you will 
 
 To enable calibrated context, replace the macro \texttt{TracyVkContext} with \texttt{TracyVkContextCalibrated} and pass the two functions as additional parameters, in the order specified above.
 
+\subparagraph{Using Vulkan 1.2 features}
+
+Vulkan 1.2 and \texttt{VK\_EXT\_host\_query\_reset} provide mechanics to reset the query pool without the need of a command buffer. By using \texttt{TracyVkContextHostCalibrated} you can make use of this feature. It only requires a function pointer to \texttt{vkResetQueryPool} in addition to the ones required for \texttt{TracyVkContextCalibrated} instead of the VkQueue and VkCommandBuffer handles.
+
+However, using this feature requires the physical device to have calibrated device and host time domains. In addition to \texttt{VK\_TIME\_DOMAIN\_DEVICE\_EXT}, \texttt{vkGetPhysicalDeviceCalibrateableTimeDomainsEXT} will have to additionally return either \texttt{VK\_TIME\_DOMAIN\_CLOCK\_MONOTONIC\_RAW\_EXT} or \texttt{VK\_TIME\_DOMAIN\_QUERY\_PERFORMANCE\_COUNTER\_EXT} for Unix and Windows, respectively. If this is not the case, you will need to use \texttt{TracyVkContextCalibrated} or \texttt{TracyVkContext} macro instead.
+
 \subsubsection{Direct3D 11}
 
 To enable Direct3D 11 support, include the \texttt{public/tracy/TracyD3D11.hpp} header file, and create a \texttt{TracyD3D11Ctx} object with the \texttt{TracyD3D11Context(device, devicecontext)} macro. The object should later be cleaned up with the \texttt{TracyD3D11Destroy} macro. Tracy does not support D3D11 command lists. To set a custom name for the context, use the \texttt{TracyGpuContextName(name, size)} macro.
@@ -1708,7 +1730,7 @@ On Linux\footnote{And possibly other systems, if they decide to adapt the requir
 
 A modern alternative to installing static debug packages is to use the \emph{debuginfod} system, which performs on-demand delivery of debugging information across the internet. See \url{https://sourceware.org/elfutils/Debuginfod.html} for more details. Since this new method of symbol delivery is not yet universally supported, you will have to manually enable it, both in your system and in Tracy.
 
-First, make sure your distribution maintains a debuginfod server. Then, install the debuginfod library. You also need to ensure you have appropriately configured which server to access, but distribution maintainers usually provide this. Next, add the \texttt{TRACY\_DEBUGINFOD} define to the program you want to profile and link it with \texttt{libdebuginfod}. This will enable network delivery of symbols and source file contents. However, the first run may be slow to respond until the local debuginfod cache becomes filled.
+First, make sure your distribution maintains a debuginfod server. Then, install the \texttt{debuginfod} library. You also need to ensure you have appropriately configured which server to access, but distribution maintainers usually provide this. Next, add the \texttt{TRACY\_DEBUGINFOD} define to the program you want to profile and link it with \texttt{libdebuginfod}. This will enable network delivery of symbols and source file contents. However, the first run (including after a system update) may be slow to respond until the local debuginfod cache becomes filled.
 
 \paragraph{Using the dbghelp library on Windows}
 
@@ -2149,6 +2171,8 @@ couleur=black!5,
 logo=\bcbombe
 ]{Important}
 For proper program code retrieval, you can unload no module used by the application during the runtime. See section~\ref{datalifetime} for an explanation.
+
+On Linux, Tracy will override the \texttt{dlclose} function call to prevent shared objects from being unloaded. Note that in a well-behaved program this shouldn't have any effect, as calling \texttt{dlclose} does not guarantee that the shared object will be unloaded.
 \end{bclogo}
 
 \subsubsection{Vertical synchronization}
@@ -3318,6 +3342,12 @@ logo=\bclampe
 Set custom trace descriptions (see section~\ref{traceinfo}) to easily differentiate the two loaded traces. If no trace description is set, the name of the profiled program will be displayed along with the capture time.
 \end{bclogo}
 
+\subsubsection{Source files diff}
+
+To see what changes were made in the source code between the two compared traces, select the \emph{Source diff} compare mode. This will display a list of deleted, added, and changed files. By default, the difference is calculated from the older trace to the newer one. You can reverse this by clicking on the \emph{Switch} button.
+
+Please note that changes will be registered only if the file has the same name and location in both traces. Tracy does not resolve file renames or moves.
+
 \subsection{Memory window}
 \label{memorywindow}
 
@@ -3567,8 +3597,6 @@ Selecting the \emph{\faCogs{}~Raw code} option will enable the display of raw ma
 If any instruction would jump to a predefined address, the symbolic name of the jump target will be additionally displayed. If the destination location is within the currently displayed symbol, an \texttt{->}~arrow will be prepended to the name. Hovering the \faMousePointer{}~mouse pointer over such symbol name will highlight the target location. Clicking on it with the \LMB{}~left mouse button will focus the view on the destination instruction or switch view to the destination symbol.
 
 Enabling the \emph{\faShare{}~Jumps} option will show jumps within the symbol code as a series of arrows from the jump source to the jump target, and hovering the \faMousePointer{}~mouse pointer over a jump arrow will display a jump information tooltip. It will also draw the jump range on the scroll bar as a green line. A horizontal green line will mark the jump target location. Clicking on a jump arrow with the \LMB{}~left mouse button will focus the view on the target location. The \RMB{}~right mouse button opens a jump context menu, which allows inspection and navigation to the target location or any of the source locations. Jumps going out of the symbol\footnote{This includes jumps, procedure calls, and returns. For example, in x86 assembly the respective operand names can be: \texttt{jmp}, \texttt{call}, \texttt{ret}.} will be indicated by a smaller arrow pointing away from the code.
-
-The \emph{AT\&T} switch can be used to select between \emph{Intel} and \emph{AT\&T} assembly syntax. Beware that microarchitecture data is only available if Intel syntax is selected.
 
 Portions of the executable used to show the symbol view are stored within the captured profile and don't rely on the available local disk files.
 
@@ -3848,7 +3876,7 @@ The following libraries are included with and used by the Tracy Profiler. Entrie
 \item getopt\_port -- \url{https://github.com/kimgr/getopt\_port}
 \item libbacktrace \faStar{} -- \url{https://github.com/ianlancetaylor/libbacktrace}
 \item Zstandard -- \url{https://github.com/facebook/zstd}
-\item capstone -- \url{https://github.com/capstone-engine/capstone}
+\item Diff Template Library -- \url{https://github.com/cubicdaiya/dtl}
 \end{itemize}
 
 \item 2-clause BSD license
@@ -3869,7 +3897,6 @@ The following libraries are included with and used by the Tracy Profiler. Entrie
 \item zlib license
 \begin{itemize}
 \item Native File Dialog Extended -- \url{https://github.com/btzy/nativefiledialog-extended}
-\item GLFW -- \url{https://github.com/glfw/glfw}
 \item IconFontCppHeaders -- \url{https://github.com/juliettef/IconFontCppHeaders}
 \item pdqsort -- \url{https://github.com/orlp/pdqsort}
 \end{itemize}
@@ -3885,11 +3912,6 @@ The following libraries are included with and used by the Tracy Profiler. Entrie
 \item Apache license 2.0
 \begin{itemize}
 \item Droid Sans -- \url{https://www.fontsquirrel.com/fonts/droid-sans}
-\end{itemize}
-
-\item FreeType License
-\begin{itemize}
-\item FreeType -- \url{https://www.freetype.org/}
 \end{itemize}
 
 \item SIL Open Font License 1.1

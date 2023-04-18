@@ -10,7 +10,7 @@ find_package(OpenCL REQUIRED)
 add_executable(OpenCLVectorAdd OpenCLVectorAdd.cpp)
 
 add_library(TracyClient STATIC ../../public/TracyClient.cpp
-        ../../public/tracy/TracyOpenCL.hpp)
+                               ../../public/tracy/TracyOpenCL.hpp)
 target_include_directories(TracyClient PUBLIC ../../public/tracy)
 target_compile_definitions(TracyClient PUBLIC TRACY_ENABLE=1)
 

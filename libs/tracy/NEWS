@@ -5,6 +5,23 @@ here.
 v0.x.x (xxxx-xx-xx)
 -------------------
 
+- Missed frames region of on-demand captures will be now ignored when
+  calculating trace time span, zone percentages, etc.
+  - Due to technicalities information about locks, frame statistics in trace
+    information window and csvexport utility still include the missed frames
+    time.
+- When source location dynamic zone coloring mode is enabled, collapsed
+  zones will be now gray-colored. Previously such regions falled back to
+  showing thread colors, which may have been confusing to users.
+- Vulkan contexts can now use VK_EXT_host_query_reset extension.
+- System power usage is now reported on x86 Linux.
+- Program name displayed in broadcast messages can be now changed with the
+  TracySetProgramName() macro.
+
+
+v0.9.1 (2023-02-26)
+-------------------
+
 - Support for pre-0.8 traces has been dropped.
 - Profiled programs will ignore dlclose() calls.
 - Added warning when the profiler interface is run with privilege elevation.
@@ -15,6 +32,31 @@ v0.x.x (xxxx-xx-xx)
   - TracyFunction - defaults to __FUNCTION__
   - TracyFile - defaults to __FILE__
   - TracyLine - defaults to __LINE__
+- Tracy on Linux now targets and requires Wayland by default.
+  - Please don't ask about window decorations on Gnome. Current behavior is
+    the intended behavior. Gnome does not want windows to have decorations,
+    and Tracy respects this choice. If you find this problematic, use a
+    desktop environment that actually listens to its users.
+  - Pass LEGACY=1 parameter to make, if you want to instead rely on the GLFW
+    library, like before.
+  - Other platforms still use GLFW.
+- Compare traces menu can now display source code differences between two
+  traces.
+- Assembly listings saved to files have been improved.
+  - Listings are now annotated with source line information.
+  - To improve compatibility with external tools comments are now prefixed
+    with '#' instead of ';'.
+- Histogram tooltip will now also show left/right counts.
+- Tracy now actively manages timeline vertical scroll offset in order to keep
+  the thread under the mouse cursor in the same place on screen.
+- Removed support for AT&T assembly syntax.
+- Tracy will not display notification if the file selector can't be used.
+  Possible reasons for failure include lack of xdg-desktop-portal.
+- Using the TRACY_NO_CRASH_HANDLER define will disable handling of
+  application crashes by the profiler.
+- Tracy will now query jump and call target addresses. This enables discovery
+  of target function names, even if such function has no samples and is not
+  present in any call stack.
 
 
 v0.9.0 (2022-10-26)

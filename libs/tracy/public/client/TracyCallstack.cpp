@@ -14,14 +14,14 @@
 #  ifndef NOMINMAX
 #    define NOMINMAX
 #  endif
-#  include <Windows.h>
-#  include <Psapi.h>
+#  include <windows.h>
+#  include <psapi.h>
 #  include <algorithm>
 #  ifdef _MSC_VER
 #    pragma warning( push )
 #    pragma warning( disable : 4091 )
 #  endif
-#  include <DbgHelp.h>
+#  include <dbghelp.h>
 #  ifdef _MSC_VER
 #    pragma warning( pop )
 #  endif
@@ -227,6 +227,10 @@ void InitCallstack()
                 const auto res = GetModuleFileNameA( mod[i], name, 1021 );
                 if( res > 0 )
                 {
+                    // This may be a new module loaded since our call to SymInitialize.
+                    // Just in case, force DbgHelp to load its pdb !
+                    SymLoadModuleEx(proc, NULL, name, NULL, (DWORD64)info.lpBaseOfDll, info.SizeOfImage, NULL, 0);
+
                     auto ptr = name + res;
                     while( ptr > name && *ptr != '\\' && *ptr != '/' ) ptr--;
                     if( ptr > name ) ptr++;

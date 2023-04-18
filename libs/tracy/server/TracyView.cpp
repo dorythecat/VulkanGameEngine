@@ -25,7 +25,7 @@
 #include "imgui_internal.h"
 
 #ifdef _WIN32
-#  include <Windows.h>
+#  include <windows.h>
 #elif defined __linux__
 #  include <sys/sysinfo.h>
 #elif defined __APPLE__ || defined BSD
@@ -44,7 +44,7 @@ namespace tracy
 
 double s_time = 0;
 
-View::View( void(*cbMainThread)(std::function<void()>, bool), const char* addr, uint16_t port, ImFont* fixedWidth, ImFont* smallFont, ImFont* bigFont, SetTitleCallback stcb, SetScaleCallback sscb, AttentionCallback acb )
+View::View( void(*cbMainThread)(const std::function<void()>&, bool), const char* addr, uint16_t port, ImFont* fixedWidth, ImFont* smallFont, ImFont* bigFont, SetTitleCallback stcb, SetScaleCallback sscb, AttentionCallback acb )
     : m_worker( addr, port )
     , m_staticView( false )
     , m_viewMode( ViewMode::LastFrames )
@@ -65,10 +65,10 @@ View::View( void(*cbMainThread)(std::function<void()>, bool), const char* addr, 
     , m_cbMainThread( cbMainThread )
 {
     InitMemory();
-    InitTextEditor( fixedWidth );
+    InitTextEditor();
 }
 
-View::View( void(*cbMainThread)(std::function<void()>, bool), FileRead& f, ImFont* fixedWidth, ImFont* smallFont, ImFont* bigFont, SetTitleCallback stcb, SetScaleCallback sscb, AttentionCallback acb )
+View::View( void(*cbMainThread)(const std::function<void()>&, bool), FileRead& f, ImFont* fixedWidth, ImFont* smallFont, ImFont* bigFont, SetTitleCallback stcb, SetScaleCallback sscb, AttentionCallback acb )
     : m_worker( f )
     , m_filename( f.GetFilename() )
     , m_staticView( true )
@@ -89,8 +89,8 @@ View::View( void(*cbMainThread)(std::function<void()>, bool), FileRead& f, ImFon
     m_notificationText = std::string( "Trace loaded in " ) + TimeToString( m_worker.GetLoadTime() );
 
     InitMemory();
-    InitTextEditor( fixedWidth );
-    m_vd.zvStart = 0;
+    InitTextEditor();
+    m_vd.zvStart = m_worker.GetFirstTime();
     m_vd.zvEnd = m_worker.GetLastTime();
     m_userData.StateShouldBePreserved();
     m_userData.LoadState( m_vd );
@@ -142,7 +142,7 @@ void View::InitMemory()
 #endif
 }
 
-void View::InitTextEditor( ImFont* font )
+void View::InitTextEditor()
 {
     m_sourceView = std::make_unique<SourceView>();
     m_sourceViewFile = nullptr;
@@ -760,10 +760,10 @@ bool View::DrawImpl()
         }
         else if( m_viewModeHeuristicTry )
         {
-            const auto lastTime = m_worker.GetLastTime();
+            const auto lastTime = m_worker.GetLastTime() - m_worker.GetFirstTime();
             if( lastTime > 5*1000*1000*1000ll )
             {
-                if( m_viewMode == ViewMode::LastFrames && m_worker.GetFrameCount( *m_worker.GetFramesBase() ) <= 2 )
+                if( m_viewMode == ViewMode::LastFrames && m_worker.GetFrameCount( *m_worker.GetFramesBase() ) <= ( m_worker.IsOnDemand() ? 3 : 2 ) )
                 {
                     m_viewMode = ViewMode::LastRange;
                     ZoomToRange( lastTime - 5*1000*1000*1000ll, lastTime, false );
@@ -909,16 +909,25 @@ bool View::DrawImpl()
         auto dx = ImGui::GetCursorPosX() - cx;
         if( dx < targetLabelSize ) ImGui::SameLine( cx + targetLabelSize );
 
+        const auto firstTime = m_worker.GetFirstTime();
+        const auto lastTime = m_worker.GetLastTime();
         cx = ImGui::GetCursorPosX();
-        ImGui::Text( ICON_FA_DATABASE " %s", TimeToString( m_worker.GetLastTime() ) );
+        ImGui::Text( ICON_FA_DATABASE " %s", TimeToString( lastTime - firstTime ) );
         if( ImGui::IsItemHovered() )
         {
             ImGui::BeginTooltip();
-            ImGui::Text( "Time span" );
+            if( firstTime == 0 )
+            {
+                ImGui::Text( "Time span" );
+            }
+            else
+            {
+                TextFocused( "Total time span:", TimeToString( lastTime ) );
+            }
             ImGui::EndTooltip();
             if( ImGui::IsItemClicked( 2 ) )
             {
-                ZoomToRange( 0, m_worker.GetLastTime() );
+                ZoomToRange( firstTime, lastTime );
             }
         }
         ImGui::SameLine();

@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#  include <Windows.h>
+#  include <windows.h>
 #  include <shellapi.h>
 #elif defined __EMSCRIPTEN__
 #  include <emscripten.h>

@@ -2,7 +2,7 @@
 
 #if defined _WIN32
 #  include <io.h>
-#  include <Windows.h>
+#  include <windows.h>
 
 void* mmap( void* addr, size_t length, int prot, int flags, int fd, off_t offset )
 {

@@ -3,7 +3,7 @@
 #ifdef TRACY_HAS_SYSTIME
 
 #  if defined _WIN32
-#    include <Windows.h>
+#    include <windows.h>
 #  elif defined __linux__
 #    include <stdio.h>
 #    include <inttypes.h>

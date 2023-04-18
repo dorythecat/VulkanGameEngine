@@ -14,8 +14,8 @@
 #  ifndef NOMINMAX
 #    define NOMINMAX
 #  endif
-#  include <WinSock2.h>
-#  include <WS2tcpip.h>
+#  include <winsock2.h>
+#  include <ws2tcpip.h>
 #  ifdef _MSC_VER
 #    pragma warning(disable:4244)
 #    pragma warning(disable:4267)
@@ -353,7 +353,7 @@ int Socket::Recv( void* _buf, int len, int timeout )
     }
 }
 
-int Socket::ReadUpTo( void* _buf, int len, int timeout )
+int Socket::ReadUpTo( void* _buf, int len )
 {
     const auto sock = m_sock.load( std::memory_order_relaxed );
     auto buf = (char*)_buf;

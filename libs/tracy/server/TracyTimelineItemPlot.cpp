@@ -1,5 +1,6 @@
 #include "TracyImGui.hpp"
 #include "TracyPrint.hpp"
+#include "TracyTimelineContext.hpp"
 #include "TracyTimelineItemPlot.hpp"
 #include "TracyUtility.hpp"
 #include "TracyView.hpp"
@@ -9,7 +10,7 @@ namespace tracy
 {
 
 TimelineItemPlot::TimelineItemPlot( View& view, Worker& worker, PlotData* plot )
-    : TimelineItem( view, worker )
+    : TimelineItem( view, worker, plot, false )
     , m_plot( plot )
 {
 }
@@ -38,6 +39,9 @@ const char* TimelineItemPlot::HeaderLabel() const
         }
     case PlotType::SysTime:
         return ICON_FA_GAUGE_HIGH " CPU usage";
+    case PlotType::Power:
+        sprintf( tmp, ICON_FA_BOLT " %s", m_worker.GetString( m_plot->name ) );
+        return tmp;
     default:
         assert( false );
         return nullptr;
@@ -55,7 +59,7 @@ void TimelineItemPlot::HeaderTooltip( const char* label ) const
     const auto first = RangeBegin();
     const auto last = RangeEnd();
     const auto activity = last - first;
-    const auto traceLen = m_worker.GetLastTime();
+    const auto traceLen = m_worker.GetLastTime() - m_worker.GetFirstTime();
 
     TextFocused( "Appeared at", TimeToString( first ) );
     TextFocused( "Last event at", TimeToString( last ) );
@@ -81,14 +85,14 @@ void TimelineItemPlot::HeaderTooltip( const char* label ) const
     ImGui::EndTooltip();
 }
 
-void TimelineItemPlot::HeaderExtraContents( int offset, const ImVec2& wpos, float labelWidth, double pxns, bool hover )
+void TimelineItemPlot::HeaderExtraContents( const TimelineContext& ctx, int offset, float labelWidth )
 {
     auto draw = ImGui::GetWindowDrawList();
     const auto ty = ImGui::GetTextLineHeight();
 
     char tmp[128];
     sprintf( tmp, "(y-range: %s, visible data points: %s)", FormatPlotValue( m_plot->rMax - m_plot->rMin, m_plot->format ), RealToString( m_plot->num ) );
-    draw->AddText( wpos + ImVec2( ty * 1.5f + labelWidth, offset ), 0xFF226E6E, tmp );
+    draw->AddText( ctx.wpos + ImVec2( ty * 1.5f + labelWidth, offset ), 0xFF226E6E, tmp );
 }
 
 int64_t TimelineItemPlot::RangeBegin() const
@@ -101,9 +105,9 @@ int64_t TimelineItemPlot::RangeEnd() const
     return m_plot->data.back().time.Val();
 }
 
-bool TimelineItemPlot::DrawContents( double pxns, int& offset, const ImVec2& wpos, bool hover, float yMin, float yMax )
+bool TimelineItemPlot::DrawContents( const TimelineContext& ctx, int& offset )
 {
-    return m_view.DrawPlot( *m_plot, pxns, offset, wpos, hover, yMin, yMax );
+    return m_view.DrawPlot( ctx, *m_plot, offset );
 }
 
 }

@@ -24,10 +24,10 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #endif
 
 #include <assert.h>
-#include <ShObjIdl.h>
+#include <shobjidl.h>
 #include <stdio.h>
 #include <wchar.h>
-#include <Windows.h>
+#include <windows.h>
 #include "nfd.h"
 
 namespace {

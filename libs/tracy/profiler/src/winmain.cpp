@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#  include <Windows.h>
+#  include <windows.h>
 #  include <stdlib.h>
 #  include <intrin.h>
 #  include <stdint.h>

@@ -8,7 +8,7 @@
 
 #ifdef _WIN32
 #  include <direct.h>
-#  include <Windows.h>
+#  include <windows.h>
 #else
 #  include <dirent.h>
 #  include <sys/types.h>
