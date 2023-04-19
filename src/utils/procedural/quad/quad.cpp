@@ -35,28 +35,28 @@ namespace Engine::Procedural {
                 Model::Vertex vertex1{};
                 vertex1.position = {xStep, 0.0f, zStep};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
-                vertex1.normal = {0.0f, 1.0f, 0.0f};
+                vertex1.normal = {0.0f, -1.0f, 0.0f};
                 vertex1.texCoord = {xStep,
                                     zStep};
 
                 Model::Vertex vertex2{};
                 vertex2.position = {x1Step, 0.0f, zStep};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
-                vertex2.normal = {0.0f, 1.0f, 0.0f};
+                vertex2.normal = {0.0f, -1.0f, 0.0f};
                 vertex2.texCoord = {x1Step,
                                     zStep};
 
                 Model::Vertex vertex3{};
                 vertex3.position = {xStep, 0.0f, z1Step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
-                vertex3.normal = {0.0f, 1.0f, 0.0f};
+                vertex3.normal = {0.0f, -1.0f, 0.0f};
                 vertex3.texCoord = {xStep,
                                     z1Step};
 
                 Model::Vertex vertex4{};
                 vertex4.position = {x1Step, 0.0f, z1Step};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
-                vertex4.normal = {0.0f, 1.0f, 0.0f};
+                vertex4.normal = {0.0f, -1.0f, 0.0f};
                 vertex4.texCoord = {x1Step,
                                     z1Step};
 
