@@ -153,7 +153,7 @@ namespace Engine::Procedural {
                 indices.push_back(uniqueVertices[vertex4p]);
             }
 
-            // Up and down faces
+            // Top and bottom faces
             for (uint32_t z = 0; z < resolution; z++) {
                 // Up face
                 float zStep = static_cast<float>(z) * step;
@@ -162,28 +162,28 @@ namespace Engine::Procedural {
                 Model::Vertex vertex1{};
                 vertex1.position = {xStep, 0.0f, zStep};
                 vertex1.color = {1.0f, 1.0f, 1.0f};
-                vertex1.normal = {0.0f, -1.0f, 0.0f};
+                vertex1.normal = {0.0f, 1.0f, 0.0f};
                 vertex1.texCoord = {xStep,
                                     zStep};
 
                 Model::Vertex vertex2{};
                 vertex2.position = {x1Step, 0.0f, zStep};
                 vertex2.color = {1.0f, 1.0f, 1.0f};
-                vertex2.normal = {0.0f, -1.0f, 0.0f};
+                vertex2.normal = {0.0f, 1.0f, 0.0f};
                 vertex2.texCoord = {x1Step,
                                     zStep};
 
                 Model::Vertex vertex3{};
                 vertex3.position = {xStep, 0.0f, z1Step};
                 vertex3.color = {1.0f, 1.0f, 1.0f};
-                vertex3.normal = {0.0f, -1.0f, 0.0f};
+                vertex3.normal = {0.0f, 1.0f, 0.0f};
                 vertex3.texCoord = {xStep,
                                     z1Step};
 
                 Model::Vertex vertex4{};
                 vertex4.position = {x1Step, 0.0f, z1Step};
                 vertex4.color = {1.0f, 1.0f, 1.0f};
-                vertex4.normal = {0.0f, -1.0f, 0.0f};
+                vertex4.normal = {0.0f, 1.0f, 0.0f};
                 vertex4.texCoord = {x1Step,
                                     z1Step};
 
@@ -221,28 +221,28 @@ namespace Engine::Procedural {
                 Model::Vertex vertex1p{};
                 vertex1p.position = {xStep, -1.0f, zStep};
                 vertex1p.color = {1.0f, 1.0f, 1.0f};
-                vertex1p.normal = {0.0f, 1.0f, 0.0f};
+                vertex1p.normal = {0.0f, -1.0f, 0.0f};
                 vertex1p.texCoord = {xStep,
                                      zStep};
 
                 Model::Vertex vertex2p{};
                 vertex2p.position = {x1Step, -1.0f, zStep};
                 vertex2p.color = {1.0f, 1.0f, 1.0f};
-                vertex2p.normal = {0.0f, 1.0f, 0.0f};
+                vertex2p.normal = {0.0f, -1.0f, 0.0f};
                 vertex2p.texCoord = {x1Step,
                                      zStep};
 
                 Model::Vertex vertex3p{};
                 vertex3p.position = {xStep, -1.0f, z1Step};
                 vertex3p.color = {1.0f, 1.0f, 1.0f};
-                vertex3p.normal = {0.0f, 1.0f, 0.0f};
+                vertex3p.normal = {0.0f, -1.0f, 0.0f};
                 vertex3p.texCoord = {xStep,
                                      z1Step};
 
                 Model::Vertex vertex4p{};
                 vertex4p.position = {x1Step, -1.0f, z1Step};
                 vertex4p.color = {1.0f, 1.0f, 1.0f};
-                vertex4p.normal = {0.0f, 1.0f, 0.0f};
+                vertex4p.normal = {0.0f, -1.0f, 0.0f};
                 vertex4p.texCoord = {x1Step,
                                      z1Step};
 
