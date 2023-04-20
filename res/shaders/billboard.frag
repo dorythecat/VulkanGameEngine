@@ -26,7 +26,19 @@ layout (location = 0) in vec2 fragOffset;
 
 layout (location = 0) out vec4 outColor;
 
+const float PI = 3.1415926535;
+
+float cosine(float x) {
+    // Which one is actually better?
+
+    // float a = x * x / 2.0;
+    // return 1.0 - a * (1.0 - (a / 6.0) * (1.0 - (a / 15.0) * (1.0 - (a / 28.0) * (1.0 - a / 45.0))));
+
+    return cos(x);
+}
+
 void main() {
-    if(sqrt(dot(fragOffset, fragOffset)) >= 1.0) discard;
-    outColor = vec4(push.color.rgb, 1.0);
+    float dis = sqrt(dot(fragOffset, fragOffset)) * 2;
+    if(dis >= 1.0) discard;
+    outColor = vec4(push.color.rgb, 0.5 * cosine(PI * dis) + 0.5);
 }

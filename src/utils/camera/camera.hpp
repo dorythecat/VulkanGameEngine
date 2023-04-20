@@ -25,14 +25,15 @@ namespace Engine {
                               glm::vec3 up = glm::vec3{0.0f, -1.0f, 0.0f});
         void setViewXYZ(glm::vec3 position, glm::vec3 rotation);
 
-        glm::mat4 getProjectionMatrix () const { return projectionMatrix; }
-        glm::mat4 getViewMatrix () const { return viewMatrix; }
-        glm::mat4 getInverseViewMatrix () const { return inverseViewMatrix; }
+        glm::mat4 getProjectionMatrix() const { return projectionMatrix; }
+        glm::mat4 getViewMatrix() const { return viewMatrix; }
+        glm::mat4 getInverseViewMatrix() const { return inverseViewMatrix; }
+        glm::vec3 getPosition() const { return inverseViewMatrix[3]; }
 
     private:
-        glm::mat4 projectionMatrix{1.0f};
-        glm::mat4 viewMatrix{1.0f};
-        glm::mat4 inverseViewMatrix{1.0f};
+        glm::mat4 projectionMatrix {1.0f};
+        glm::mat4 viewMatrix {1.0f};
+        glm::mat4 inverseViewMatrix {1.0f};
     };
 }
 

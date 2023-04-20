@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include <map>
+#include <ranges>
 
 #include "../../utils/device/device.hpp"
 #include "../../utils/pipeline/pipeline.hpp"

@@ -57,7 +57,7 @@ namespace Engine {
         }
 
         static Entity createEntity();
-        static Entity createPointLightEntity(float intensity = 1.0f, float radius = 0.1f, glm::vec3 color = {1.0f, 1.0f, 1.0f});
+        static Entity createPointLightEntity(float intensity = 1.0f, float radius = 1.0f, glm::vec3 color = {1.0f, 1.0f, 1.0f});
 
         id_t getId() const { return id; }
     private:

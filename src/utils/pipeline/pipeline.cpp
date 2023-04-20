@@ -127,7 +127,7 @@ namespace Engine {
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
         configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-        configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL; // VK_POLYGON_MODE_LINE for wireframe
+        configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
         configInfo.rasterizationInfo.lineWidth = 1.0f;
         configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
         configInfo.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
@@ -185,5 +185,19 @@ namespace Engine {
 
         configInfo.bindingDescriptions = Model::Vertex::getBindingDescriptions();
         configInfo.attributeDescriptions = Model::Vertex::getAttributeDescriptions();
+    }
+
+    void Pipeline::enableAlphaBlending(PipelineConfigInfo &configInfo) {
+        configInfo.colorBlendAttachment.blendEnable = VK_TRUE;
+        configInfo.colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+        configInfo.colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        configInfo.colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+        configInfo.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+        configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+    }
+
+    void Pipeline::enableWireframe(PipelineConfigInfo &configInfo) {
+        configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_LINE;
     }
 }

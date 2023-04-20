@@ -46,6 +46,9 @@ namespace Engine {
 
         static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 
+        // Extra features
+        static void enableAlphaBlending(PipelineConfigInfo& configInfo);
+        static void enableWireframe(PipelineConfigInfo& configInfo);
     private:
         Device& device;
         VkPipeline graphicsPipeline;

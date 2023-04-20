@@ -101,6 +101,8 @@ namespace Engine {
 
                 // Render cycle
                 renderer.beginSwapChainRenderPass(frameInfo.commandBuffer);
+
+                // !!!ORDER MATTERS HERE!!!
                 simpleRenderSystem.renderGameObjects(frameInfo);
                 billboardRenderSystem.render(frameInfo);
 

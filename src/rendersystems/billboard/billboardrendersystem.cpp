@@ -38,6 +38,7 @@ namespace Engine {
 
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfo(pipelineConfig);
+        Pipeline::enableAlphaBlending(pipelineConfig);
         pipelineConfig.attributeDescriptions.clear();
         pipelineConfig.bindingDescriptions.clear();
         pipelineConfig.renderPass = renderPass;
@@ -59,6 +60,19 @@ namespace Engine {
         } ubo.pointLightCount = index;
     }
     void BillboardRenderSystem::render(FrameInfo &frameInfo) {
+        // Sort the objects from back to front, for alpha blending to work correctly
+        // TODO(Dory): Implement Order-Independent rendering so that this isn't necessary
+        std::map<float, Entity::id_t> sorted;
+        for (auto &kv : frameInfo.entities) {
+            auto &ent = kv.second;
+            if(!ent.hasComponent(ComponentType::POINT_LIGHT)) continue;
+
+            // We really don't care if the distance is squared, we just care about the order so we can save a sqrt operation
+            glm::vec3 offset = frameInfo.camera.getPosition() - ent.getTransformComponent()->position;
+            float distance = glm::dot(offset, offset);
+            sorted[distance] = ent.getId();
+        }
+
         pipeline->bind(frameInfo.commandBuffer);
 
         vkCmdBindDescriptorSets(frameInfo.commandBuffer,
@@ -69,9 +83,8 @@ namespace Engine {
                                 &frameInfo.globalDescriptorSet,
                                 0,
                                 nullptr);
-        for (auto &kv : frameInfo.entities) {
-            auto &ent = kv.second;
-            if(!ent.hasComponent(ComponentType::POINT_LIGHT)) continue;
+        for (auto & kv : std::ranges::reverse_view(sorted)) {
+            auto &ent = frameInfo.entities.at(kv.second);
 
             PointLightPushConstant push{};
             push.position = glm::vec4(ent.getTransformComponent()->position, 1.0f);
