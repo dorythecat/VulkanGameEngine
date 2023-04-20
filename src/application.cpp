@@ -143,7 +143,7 @@ namespace Engine {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
 
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
 
@@ -156,9 +156,13 @@ namespace Engine {
         init_info.Device = device.device();
         init_info.Queue = device.graphicsQueue();
         init_info.DescriptorPool = imguiPool;
-        init_info.MinImageCount = 3;
-        init_info.ImageCount = 3;
+        init_info.MinImageCount = 2;
+        init_info.ImageCount = SwapChain::MAX_FRAMES_IN_FLIGHT;
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+        init_info.CheckVkResultFn = [](VkResult err) {
+            if (err != VK_SUCCESS)
+                throw std::runtime_error("ImGUI Vulkan error!");
+        };
 
         ImGui_ImplGlfw_InitForVulkan(window.getWindow(), true);
         ImGui_ImplVulkan_Init(&init_info, renderer.getSwapChainRenderPass());
