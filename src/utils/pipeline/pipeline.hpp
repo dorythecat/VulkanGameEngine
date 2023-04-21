@@ -47,6 +47,7 @@ namespace Engine {
         static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 
         // Extra features
+        static void enableBackfaceCulling(PipelineConfigInfo& configInfo);
         static void enableAlphaBlending(PipelineConfigInfo& configInfo);
         static void enableWireframe(PipelineConfigInfo& configInfo);
     private:

@@ -129,7 +129,7 @@ namespace Engine {
         configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
         configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
         configInfo.rasterizationInfo.lineWidth = 1.0f;
-        configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
+        configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_FRONT_BIT;
         configInfo.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
         configInfo.rasterizationInfo.depthBiasEnable = VK_FALSE;
         configInfo.rasterizationInfo.depthBiasConstantFactor = 0.0f;  // Optional
@@ -187,6 +187,9 @@ namespace Engine {
         configInfo.attributeDescriptions = Model::Vertex::getAttributeDescriptions();
     }
 
+    void Pipeline::enableBackfaceCulling(PipelineConfigInfo& configInfo) {
+        configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_FRONT_AND_BACK;
+    }
     void Pipeline::enableAlphaBlending(PipelineConfigInfo &configInfo) {
         configInfo.colorBlendAttachment.blendEnable = VK_TRUE;
         configInfo.colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
@@ -196,7 +199,6 @@ namespace Engine {
         configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
         configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
     }
-
     void Pipeline::enableWireframe(PipelineConfigInfo &configInfo) {
         configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_LINE;
     }
