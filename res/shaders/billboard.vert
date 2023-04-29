@@ -1,12 +1,12 @@
 #version 460
 
 const float offsets[12] = {
+    -0.5, 0.5,
+    0.5, -0.5,
     -0.5, -0.5,
-    0.5, -0.5,
-    -0.5, 0.5,
-    -0.5, 0.5,
-    0.5, -0.5,
     0.5, 0.5,
+    0.5, -0.5,
+    -0.5, 0.5,
 };
 
 struct PointLight {
@@ -35,8 +35,8 @@ layout (location = 0) out vec2 fragOffset;
 
 void main() {
     fragOffset = vec2(offsets[gl_VertexIndex * 2], offsets[gl_VertexIndex * 2 + 1]);
-    vec3 cameraRightWorld = {globalUbo.viewMatrix[0][0], globalUbo.viewMatrix[1][0], globalUbo.viewMatrix[2][0]};
-    vec3 cameraUpWorld = {globalUbo.viewMatrix[0][1], globalUbo.viewMatrix[1][1], globalUbo.viewMatrix[2][1]};
+    vec3 cameraRightWorld = { globalUbo.viewMatrix[0][0], globalUbo.viewMatrix[1][0], globalUbo.viewMatrix[2][0] };
+    vec3 cameraUpWorld = { globalUbo.viewMatrix[0][1], globalUbo.viewMatrix[1][1], globalUbo.viewMatrix[2][1] };
 
     vec3 posWorld = push.position.xyz
     + push.radius * fragOffset.x * cameraRightWorld
