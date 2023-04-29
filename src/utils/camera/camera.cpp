@@ -5,9 +5,9 @@
 
 namespace Engine {
     void Camera::setOrthographicProjection(float right, float top, float near, float far) {
-        // TODO(Dory): We should probably check for more assertion cases here, mainly to avoid 1.0f / 0.0f and similar
-        assert(far > near && "Far plane cannot be closer than the near plane!");
-        assert(far - near > std::numeric_limits<float>::epsilon() && "Near and far planes cannot be equal!");
+        assert(right > std::numeric_limits<float>::epsilon() && "Right plane must be positive!");
+        assert(top > std::numeric_limits<float>::epsilon() && "Top plane must be positive!");
+        assert(far - near > std::numeric_limits<float>::epsilon() && "Far plane cannot be less or equal to the near plane!");
 
         const float r = 1.0f / right;
         const float b = 1.0f / top;
@@ -24,9 +24,9 @@ namespace Engine {
     }
 
     void Camera::setOrthographicProjection(float left, float right, float top, float bottom, float near, float far) {
-        // TODO(Dory): We should probably check for more assertion cases here, mainly to avoid 1.0f / 0.0f and similar
-        assert(far > near && "Far plane cannot be closer than the near plane!");
-        assert(far - near > std::numeric_limits<float>::epsilon() && "Near and far planes cannot be equal!");
+        assert(right - left > std::numeric_limits<float>::epsilon() && "Right plane cannot be less or equal to the left plane!");
+        assert(top - bottom > std::numeric_limits<float>::epsilon() && "Top plane cannot be less or equal to the bottom plane!");
+        assert(far - near > std::numeric_limits<float>::epsilon() && "Far plane cannot be less or equal to the near plane!");
 
         const float rl = 1.0f / (right - left);
         const float bt = 1.0f / (bottom - top);
@@ -49,9 +49,7 @@ namespace Engine {
         assert(aspect > std::numeric_limits<float>::epsilon() && "Aspect ratio cannot be zero or negative!");
         assert(near > std::numeric_limits<float>::epsilon() && "Near plane cannot be zero or negative!");
         assert(far > std::numeric_limits<float>::epsilon() && "Far plane cannot be zero or negative!");
-
-        assert(far > near && "Far plane cannot be closer than the near plane!");
-        assert(far - near > std::numeric_limits<float>::epsilon() && "Near and far planes cannot be equal!");
+        assert(far - near > std::numeric_limits<float>::epsilon() && "Far plane cannot be less or equal to the near plane!");
 
         projectionMatrix = glm::perspective(fov, aspect, near, far);
 
