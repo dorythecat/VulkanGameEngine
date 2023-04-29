@@ -10,6 +10,9 @@ namespace Engine::Procedural {
     class ProceduralMesh {
     public:
         ProceduralMesh(Device &device, uint32_t resolution) : device(device), resolution(resolution) {
+            // Some sanity checks.
+            assert(resolution > 0 && "Resolution must be greater than 0!");
+
             // Clear the vectors to avoid reallocations.
             vertices.clear();
             indices.clear();
