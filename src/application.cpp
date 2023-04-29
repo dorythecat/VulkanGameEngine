@@ -249,7 +249,6 @@ namespace Engine {
         entities.emplace(cube.getId(), std::move(cube));
 
         Entity pointLight = Entity::createPointLightEntity();
-        pointLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
         pointLight.getTransformComponent()->position = glm::vec3(0.0f, -3.0f, 3.0f);
         entities.emplace(pointLight.getId(), std::move(pointLight));
     }

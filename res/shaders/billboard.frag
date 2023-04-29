@@ -38,7 +38,7 @@ float cosine(float x) {
 }
 
 void main() {
-    float dis = sqrt(dot(fragOffset, fragOffset)) * 2;
-    if(dis >= 1.0) discard;
+    float dis = sqrt(dot(fragOffset, fragOffset)) * 2.0;
+    if (dis >= 1.0) discard;
     outColor = vec4(push.color.rgb, 0.5 * cosine(PI * dis) + 0.5);
 }
