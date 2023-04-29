@@ -215,7 +215,7 @@ namespace Engine {
     }
 
     void Application::loadEntities() {
-        entities.reserve(5);
+        entities.reserve(6);
 
         std::shared_ptr<Model> sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
         Entity sphereFlat = Entity::createEntity();
@@ -247,6 +247,14 @@ namespace Engine {
         cube.addComponent(std::make_unique<ModelComponent>(cubeModel));
         cube.addComponent(std::make_unique<TransformComponent>(glm::vec3{-0.5f, -2.0f, 5.0f}));
         entities.emplace(cube.getId(), std::move(cube));
+
+        Procedural::MarchingCubes mc(device, 128, Procedural::MarchingCubes::testSurface, 0.0f);
+        mc.generateModel();
+        std::shared_ptr<Model> mcModel = mc.getModel();
+        Entity mcEntity = Entity::createEntity();
+        mcEntity.addComponent(std::make_unique<ModelComponent>(mcModel));
+        mcEntity.addComponent(std::make_unique<TransformComponent>(glm::vec3{2.5f, -2.0f, 5.0f}));
+        entities.emplace(mcEntity.getId(), std::move(mcEntity));
 
         Entity pointLight = Entity::createPointLightEntity();
         pointLight.getTransformComponent()->position = glm::vec3(0.0f, -3.0f, 3.0f);
