@@ -21,7 +21,6 @@ namespace Engine {
                                 VkShaderStageFlags stageFlags,
                                 uint32_t count = 1);
             std::unique_ptr<DescriptorSetLayout> build() const;
-
         private:
             Device &device;
             std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
@@ -33,7 +32,6 @@ namespace Engine {
         DescriptorSetLayout &operator=(const DescriptorSetLayout &) = delete;
 
         VkDescriptorSetLayout getDescriptorSetLayout() const { return descriptorSetLayout; }
-
     private:
         Device &device;
         VkDescriptorSetLayout descriptorSetLayout;
@@ -52,11 +50,10 @@ namespace Engine {
             Builder &setPoolFlags(VkDescriptorPoolCreateFlags flags);
             Builder &setMaxSets(uint32_t count);
             std::unique_ptr<DescriptorPool> build() const;
-
         private:
             Device &device;
             std::vector<VkDescriptorPoolSize> poolSizes{};
-            uint32_t maxSets = 1000;
+            uint32_t maxSets = 1024;
             VkDescriptorPoolCreateFlags poolFlags = 0;
         };
 
@@ -68,8 +65,8 @@ namespace Engine {
         DescriptorPool(const DescriptorPool &) = delete;
         DescriptorPool &operator=(const DescriptorPool &) = delete;
 
-        bool allocateDescriptor(
-                const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet &descriptor) const;
+        bool allocateDescriptor(const VkDescriptorSetLayout descriptorSetLayout,
+                                VkDescriptorSet &descriptor) const;
 
         void freeDescriptors(std::vector<VkDescriptorSet> &descriptors) const;
 
@@ -91,7 +88,6 @@ namespace Engine {
 
         bool build(VkDescriptorSet &set);
         void overwrite(VkDescriptorSet &set);
-
     private:
         DescriptorSetLayout &setLayout;
         DescriptorPool &pool;

@@ -5,7 +5,7 @@ namespace Engine {
                                                                            VkDescriptorType descriptorType,
                                                                            VkShaderStageFlags stageFlags,
                                                                            uint32_t count) {
-        assert(bindings.count(binding) == 0 && "That binding is already in use");
+        assert(bindings.count(binding) == 0 && "This binding is already in use!");
         VkDescriptorSetLayoutBinding layoutBinding{};
         layoutBinding.binding = binding;
         layoutBinding.descriptorType = descriptorType;
@@ -22,7 +22,7 @@ namespace Engine {
 // *************** Descriptor Set Layout *********************
 
     DescriptorSetLayout::DescriptorSetLayout(Device &device,
-                                             const std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding>& bindings) :
+                                             const std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> &bindings) :
                                              device{device}, bindings{bindings} {
         std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
         setLayoutBindings.reserve(bindings.size());
@@ -78,8 +78,11 @@ namespace Engine {
         descriptorPoolInfo.maxSets = maxSets;
         descriptorPoolInfo.flags = poolFlags;
 
-        if (vkCreateDescriptorPool(Device.device(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
-            VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
+        if (vkCreateDescriptorPool(Device.device(),
+                                   &descriptorPoolInfo,
+                                   nullptr,
+                                   &descriptorPool) != VK_SUCCESS)
+            throw std::runtime_error("failed to create descriptor pool!");
     }
 
     DescriptorPool::~DescriptorPool() {
@@ -121,7 +124,7 @@ namespace Engine {
 
         auto &bindingDescription = setLayout.bindings[binding];
 
-        assert(bindingDescription.descriptorCount == 1 && "Binding a single descriptor info, but the binding expects multiple");
+        assert(bindingDescription.descriptorCount == 1 && "Binding a single descriptor info, but the binding expects multiple!");
 
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -139,7 +142,7 @@ namespace Engine {
 
         auto &bindingDescription = setLayout.bindings[binding];
 
-        assert(bindingDescription.descriptorCount == 1 && "Binding a single descriptor info, but the binding expects multiple");
+        assert(bindingDescription.descriptorCount == 1 && "Binding a single descriptor info, but the binding expects multiple!");
 
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
