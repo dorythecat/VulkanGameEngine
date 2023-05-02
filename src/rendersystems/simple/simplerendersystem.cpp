@@ -32,7 +32,7 @@ namespace Engine {
         pipelineLayoutInfo.pushConstantRangeCount = 1;
         pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
         if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create pipeline layout!");
+            throw std::runtime_error("Failed to create the pipeline layout!");
     }
     void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
         assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout!");
@@ -46,7 +46,7 @@ namespace Engine {
                                               "../res/shaders/compiled/standard.frag.spv",
                                               pipelineConfig);
     }
-    void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo) {
+    void SimpleRenderSystem::render(FrameInfo &frameInfo) {
         pipeline->bind(frameInfo.commandBuffer);
 
         vkCmdBindDescriptorSets(frameInfo.commandBuffer,

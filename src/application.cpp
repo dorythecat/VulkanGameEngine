@@ -104,6 +104,7 @@ namespace Engine {
 
                 // !!!ORDER MATTERS HERE!!!
                 simpleRenderSystem.renderGameObjects(frameInfo);
+                simpleRenderSystem.render(frameInfo);
                 billboardRenderSystem.render(frameInfo);
 
                 drawImGUI(frameInfo);
