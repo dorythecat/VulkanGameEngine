@@ -149,7 +149,7 @@ namespace Engine {
     * @param index Used in offset calculation
     *
     */
-    void Buffer::writeToIndex(void *data, int index) {
+    void Buffer::writeToIndex(void *data, uint64_t index) {
         writeToBuffer(data, instanceSize, index * alignmentSize);
     }
 
@@ -159,7 +159,9 @@ namespace Engine {
     * @param index Used in offset calculation
     *
     */
-    VkResult Buffer::flushIndex(int index) {
+    VkResult Buffer::flushIndex(uint64_t index) {
+        assert(alignmentSize % device.properties.limits.nonCoherentAtomSize == 0 &&
+               "Cannot use LveBuffer::flushIndex if alignmentSize isn't a multiple of Device Limits nonCoherentAtomSize");
         return flush(alignmentSize, index * alignmentSize);
     }
 
@@ -170,7 +172,7 @@ namespace Engine {
     *
     * @return VkDescriptorBufferInfo for instance at index
     */
-    VkDescriptorBufferInfo Buffer::descriptorInfoForIndex(int index) {
+    VkDescriptorBufferInfo Buffer::descriptorInfoForIndex(uint64_t index) {
         return descriptorInfo(alignmentSize, index * alignmentSize);
     }
 
@@ -183,7 +185,7 @@ namespace Engine {
     *
     * @return VkResult of the invalidate call
     */
-    VkResult Buffer::invalidateIndex(int index) {
+    VkResult Buffer::invalidateIndex(uint64_t index) {
         return invalidate(alignmentSize, index * alignmentSize);
     }
 }

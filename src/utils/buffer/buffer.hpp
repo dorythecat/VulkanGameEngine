@@ -28,10 +28,10 @@ namespace Engine {
         VkDescriptorBufferInfo descriptorInfo(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
         VkResult invalidate(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 
-        void writeToIndex(void* data, int index);
-        VkResult flushIndex(int index);
-        VkDescriptorBufferInfo descriptorInfoForIndex(int index);
-        VkResult invalidateIndex(int index);
+        void writeToIndex(void* data, uint64_t index);
+        VkResult flushIndex(uint64_t index);
+        VkDescriptorBufferInfo descriptorInfoForIndex(uint64_t index);
+        VkResult invalidateIndex(uint64_t index);
 
         VkBuffer getBuffer() const { return buffer; }
         void* getMappedMemory() const { return mapped; }
