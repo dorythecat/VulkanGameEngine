@@ -11,11 +11,10 @@ namespace Engine {
         return VK_FALSE;
     }
 
-    VkResult CreateDebugUtilsMessengerEXT(
-            VkInstance instance,
-            const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
-            const VkAllocationCallbacks *pAllocator,
-            VkDebugUtilsMessengerEXT *pDebugMessenger) {
+    VkResult CreateDebugUtilsMessengerEXT(VkInstance instance,
+                                          const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
+                                          const VkAllocationCallbacks *pAllocator,
+                                          VkDebugUtilsMessengerEXT *pDebugMessenger) {
         auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
                 instance,
                 "vkCreateDebugUtilsMessengerEXT");
@@ -23,10 +22,9 @@ namespace Engine {
         else return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
 
-    void DestroyDebugUtilsMessengerEXT(
-            VkInstance instance,
-            VkDebugUtilsMessengerEXT debugMessenger,
-            const VkAllocationCallbacks *pAllocator) {
+    void DestroyDebugUtilsMessengerEXT(VkInstance instance,
+                                       VkDebugUtilsMessengerEXT debugMessenger,
+                                       const VkAllocationCallbacks *pAllocator) {
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
                 instance,
                 "vkDestroyDebugUtilsMessengerEXT");
@@ -59,7 +57,7 @@ namespace Engine {
 
         VkApplicationInfo appInfo = {};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "LittleVulkanEngine App"; // App name
+        appInfo.pApplicationName = "VulkanEngine"; // App name
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0); // App version
         appInfo.pEngineName = "No Engine"; // Engine name
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0); // Engine version
@@ -475,13 +473,12 @@ namespace Engine {
         region.imageOffset = {0, 0, 0};
         region.imageExtent = {width, height, 1};
 
-        vkCmdCopyBufferToImage(
-                commandBuffer,
-                buffer,
-                image,
-                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                1,
-                &region);
+        vkCmdCopyBufferToImage(commandBuffer,
+                               buffer,
+                               image,
+                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               1,
+                               &region);
         endSingleTimeCommands(commandBuffer);
     }
 
@@ -490,7 +487,7 @@ namespace Engine {
                                      VkImage &image,
                                      VkDeviceMemory &imageMemory) {
         if (vkCreateImage(_device, &imageInfo, nullptr, &image) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create image!");
+            throw std::runtime_error("Failed to create the image!");
 
         VkMemoryRequirements memRequirements;
         vkGetImageMemoryRequirements(_device, image, &memRequirements);
@@ -501,10 +498,10 @@ namespace Engine {
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
         if (vkAllocateMemory(_device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
-            throw std::runtime_error("Failed to allocate image memory!");
+            throw std::runtime_error("Failed to allocate the image memory!");
 
         if (vkBindImageMemory(_device, image, imageMemory, 0) != VK_SUCCESS)
-            throw std::runtime_error("Failed to bind image memory!");
+            throw std::runtime_error("Failed to bind the image memory!");
     }
 
     void Device::transitionImageLayout(VkImage image,
