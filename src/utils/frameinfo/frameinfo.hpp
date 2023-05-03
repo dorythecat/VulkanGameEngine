@@ -43,6 +43,7 @@ namespace Engine {
         VkCommandBuffer commandBuffer{};
         Camera &camera;
         VkDescriptorSet globalDescriptorSet{};
+        DescriptorPool &frameDescriptorPool;  // Descriptor pool, cleared each frame
         Entity::Map &entities;
     };
 }

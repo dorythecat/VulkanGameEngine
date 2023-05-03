@@ -24,6 +24,7 @@
 #include "utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp"
 #include "utils/descriptors/descriptors.hpp"
 #include "utils/texture/texture.hpp"
+#include "utils/entity/components/texture.hpp"
 
 // Procedural geometry
 #include "utils/procedural/quad/quad.hpp"
@@ -33,6 +34,7 @@
 // Render systems
 #include "rendersystems/simple/simplerendersystem.hpp"
 #include "rendersystems/billboard/billboardrendersystem.hpp"
+#include "rendersystems/texture/texturerendersystem.hpp"
 
 namespace Engine {
     class Application {
@@ -59,6 +61,7 @@ namespace Engine {
         Entity::Map entities;
 
         std::unique_ptr<DescriptorPool> globalPool{};
+        std::vector<std::unique_ptr<DescriptorPool>> framePools;
 
         // ImGUI
         void initImGUI();

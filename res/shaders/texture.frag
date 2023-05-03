@@ -16,6 +16,8 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
     int pointLightCount;
 } globalUbo;
 
+layout (set = 1, binding = 0) uniform sampler2D diffuseMap;
+
 layout (push_constant) uniform PushConstant {
     mat4 modelMatrix;
     mat4 normalMatrix;
@@ -36,23 +38,25 @@ void main() {
     vec3 cameraPosWorld = globalUbo.inverseViewMatrix[3].xyz;
     vec3 viewDir = normalize(cameraPosWorld - fragPos);
 
-    for(int i = 0; i < globalUbo.pointLightCount; i++) {
+    for (int i = 0; i < globalUbo.pointLightCount; i++) {
         PointLight light = globalUbo.pointLights[i];
         vec3 directionToLight = light.position.xyz - fragPos;
         float attenuation = 1.0 / dot(directionToLight, directionToLight); // distance squared
 
         directionToLight = normalize(directionToLight);
 
+        float cosAngIncidence = max(dot(surfaceNormal, directionToLight), 0.0);
         vec3 intensity = light.color.xyz * light.color.w * attenuation;
 
-        float cosAngIncidence = max(dot(surfaceNormal, directionToLight), 0.0);
         diffuse += intensity * cosAngIncidence;
 
+        // specular lighting
         vec3 halfwayDir = normalize(directionToLight + viewDir);
         float blinnTerm = pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), 32.0); //TODO(Dory): Make the exponent variable
         specular += intensity * blinnTerm;
     }
 
     //TODO(Dory): Make it so that you can choose if there's mettallic highlights or not
-    outColor = vec4(diffuse * fragColor + specular * fragColor, 1.0);
+    vec3 color = texture(diffuseMap, fragTexCoords).xyz;
+    outColor = vec4(diffuse * color + specular * fragColor, 1.0);
 }

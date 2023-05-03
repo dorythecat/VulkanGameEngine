@@ -5,13 +5,24 @@ namespace Engine {
         globalPool = DescriptorPool::Builder(device)
                 .setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
                 .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
-                .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, SwapChain::MAX_FRAMES_IN_FLIGHT)
                 .build();
+
+        framePools.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
+        auto framePoolBuilder = DescriptorPool::Builder(device)
+                .setMaxSets(1024)
+                .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1024)
+                .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024)
+                .setPoolFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
+        for (auto &framePool : framePools) framePool = framePoolBuilder.build();
         loadEntities();
     }
     Application::~Application() {
-        vkDeviceWaitIdle(device.device()); // Wait for all the resource to be freed before destroying them
-        globalPool = nullptr; // We need globalPool to be destroyed before the device is, this line of code ensures that happens.
+        vkDeviceWaitIdle(device.device()); // Wait for all the resources to be freed before destroying them
+
+        // We need our descriptor pools destroyed before the device is
+        globalPool = nullptr;
+        framePools.clear();
+
         destroyImGUI();
     }
 
@@ -30,20 +41,13 @@ namespace Engine {
         auto globalSetLayout = DescriptorSetLayout::Builder(device)
                 .addBinding(0,
                             VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
-                .addBinding(1,
-                            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                            VK_SHADER_STAGE_FRAGMENT_BIT).build();
-
-        Texture texture{device, "../res/textures/texture.jpg"};
+                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT).build();
 
         std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
         for (unsigned int i = 0; i < globalDescriptorSets.size(); i++) {
             VkDescriptorBufferInfo bufferInfo = uboBuffers[i]->descriptorInfo();
-            VkDescriptorImageInfo imageInfo = texture.getDescriptorImageInfo();
             DescriptorWriter(*globalSetLayout, *globalPool)
                 .writeBuffer(0, &bufferInfo)
-                .writeImage(1, &imageInfo)
                 .build(globalDescriptorSets[i]);
         }
 
@@ -53,6 +57,10 @@ namespace Engine {
         BillboardRenderSystem billboardRenderSystem{device,
                                                     renderer.getSwapChainRenderPass(),
                                                     globalSetLayout->getDescriptorSetLayout()};
+        TextureRenderSystem textureRenderSystem{device,
+                                                   renderer.getSwapChainRenderPass(),
+                                                   globalSetLayout->getDescriptorSetLayout()};
+
         Camera camera{};
         camera.setViewTarget(glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
 
@@ -83,11 +91,13 @@ namespace Engine {
 
             if (auto commandBuffer = renderer.beginFrame()) {
                 uint32_t frameIndex = renderer.getCurrentFrameIndex();
+                framePools[frameIndex]->resetPool();
                 FrameInfo frameInfo{frameIndex,
                                     deltaTime,
                                     commandBuffer,
                                     camera,
                                     globalDescriptorSets[frameIndex],
+                                    *framePools[frameIndex],
                                     entities};
 
                 // Update cycle
@@ -103,7 +113,7 @@ namespace Engine {
                 renderer.beginSwapChainRenderPass(frameInfo.commandBuffer);
 
                 // !!!ORDER MATTERS HERE!!!
-                simpleRenderSystem.renderGameObjects(frameInfo);
+                textureRenderSystem.render(frameInfo);
                 simpleRenderSystem.render(frameInfo);
                 billboardRenderSystem.render(frameInfo);
 
@@ -237,6 +247,7 @@ namespace Engine {
         std::shared_ptr<Model> quadModel = q.getModel();
         Entity quad = Entity::createEntity();
         quad.addComponent(std::make_unique<ModelComponent>(quadModel));
+        quad.addComponent(std::make_unique<TextureComponent>(std::make_shared<Texture>(device, "../res/textures/texture.jpg")));
         quad.addComponent(std::make_unique<TransformComponent>(glm::vec3{-2.5f, 0.0f, 5.0f},
                                                                 glm::vec3{5.0f, 5.0f, 5.0f}));
         entities.emplace(quad.getId(), std::move(quad));

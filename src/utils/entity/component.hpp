@@ -9,10 +9,12 @@
 namespace Engine {
     typedef uint8_t ComponentType_t; // 8 different components should be enough for now
 
+    // TODO: Implement a better component system
     enum ComponentType : ComponentType_t {
         TRANSFORM = 0,
         MODEL = 1,
         POINT_LIGHT = 2,
+        TEXTURE = 3,
     };
 
     class Component {

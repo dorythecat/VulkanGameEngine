@@ -1,24 +1,34 @@
-#include "simplerendersystem.hpp"
+#include "texturerendersystem.hpp"
+#include "../../utils/entity/components/model.hpp"
 
 namespace Engine {
-    SimpleRenderSystem::SimpleRenderSystem(Device &device,
-                                           VkRenderPass renderPass,
-                                           VkDescriptorSetLayout globalSetLayout) : device(device) {
+    TextureRenderSystem::TextureRenderSystem(Device &device,
+                                                VkRenderPass renderPass,
+                                                VkDescriptorSetLayout globalSetLayout)
+                                                : device {device} {
         createPipelineLayout(globalSetLayout);
         createPipeline(renderPass);
     }
-    SimpleRenderSystem::~SimpleRenderSystem() {
+    TextureRenderSystem::~TextureRenderSystem() {
         vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
     }
 
-    void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
+    void TextureRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
         // This is for push constants
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         pushConstantRange.offset = 0;
         pushConstantRange.size = sizeof(PushConstantData);
 
-        std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
+        renderSystemLayout = DescriptorSetLayout::Builder(device)
+                .addBinding(0,
+                            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                            VK_SHADER_STAGE_FRAGMENT_BIT).build();
+
+        std::vector<VkDescriptorSetLayout> descriptorSetLayouts{
+            globalSetLayout,
+            renderSystemLayout->getDescriptorSetLayout()
+        };
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -29,19 +39,21 @@ namespace Engine {
         if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
             throw std::runtime_error("Failed to create the pipeline layout!");
     }
-    void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
-        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout!");
+
+    void TextureRenderSystem::createPipeline(VkRenderPass renderPass) {
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfo(pipelineConfig);
         pipelineConfig.renderPass = renderPass;
         pipelineConfig.pipelineLayout = pipelineLayout;
         pipeline = std::make_unique<Pipeline>(device,
-                                              "../res/shaders/compiled/standard.vert.spv",
-                                              "../res/shaders/compiled/standard.frag.spv",
+                                              "../res/shaders/compiled/texture.vert.spv",
+                                              "../res/shaders/compiled/texture.frag.spv",
                                               pipelineConfig);
     }
-    void SimpleRenderSystem::render(FrameInfo &frameInfo) {
+
+    void TextureRenderSystem::render(FrameInfo &frameInfo) {
         pipeline->bind(frameInfo.commandBuffer);
 
         vkCmdBindDescriptorSets(frameInfo.commandBuffer,
@@ -54,8 +66,23 @@ namespace Engine {
                                 nullptr);
 
         for (auto &kv : frameInfo.entities) {
-            auto &ent = kv.second; // Extract the second element of the pair (the GameObject)
-            if (!ent.hasComponent(ComponentType::MODEL) || ent.hasComponent(ComponentType::TEXTURE)) continue;
+            auto &ent = kv.second;
+            if (!ent.hasComponent(ComponentType::MODEL) || !ent.hasComponent(ComponentType::TEXTURE)) continue;
+
+            VkDescriptorSet descriptorSet;
+            auto imageInfo = ent.getTextureComponent()->diffuseMap->getDescriptorImageInfo();
+            DescriptorWriter(*renderSystemLayout, frameInfo.frameDescriptorPool)
+                    .writeImage(0, &imageInfo)
+                    .build(descriptorSet);
+
+            vkCmdBindDescriptorSets(frameInfo.commandBuffer,
+                                    VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                    pipelineLayout,
+                                    1,
+                                    1,
+                                    &descriptorSet,
+                                    0,
+                                    nullptr);
 
             PushConstantData push{};
             push.modelMatrix = ent.getTransformComponent()->mat4();

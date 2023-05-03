@@ -13,6 +13,7 @@
 #include "components/transform.hpp"
 #include "components/point_light.hpp"
 #include "components/model.hpp"
+#include "components/texture.hpp"
 
 namespace Engine {
     class Entity {
@@ -46,15 +47,17 @@ namespace Engine {
             assert(hasComponent(ComponentType::TRANSFORM) && "Transform component does not exist for this entity!");
             return dynamic_cast<TransformComponent*>(components[ComponentType::TRANSFORM].get());
         }
-
         PointLightComponent *getPointLightComponent() {
             assert(hasComponent(ComponentType::POINT_LIGHT) && "Point light component does not exist for this entity!");
             return dynamic_cast<PointLightComponent*>(components[ComponentType::POINT_LIGHT].get());
         }
-
         ModelComponent *getModelComponent() {
             assert(hasComponent(ComponentType::MODEL) && "Model component does not exist for this entity!");
             return dynamic_cast<ModelComponent*>(components[ComponentType::MODEL].get());
+        }
+        TextureComponent *getTextureComponent() {
+            assert(hasComponent(ComponentType::TEXTURE) && "Texture component does not exist for this entity!");
+            return dynamic_cast<TextureComponent*>(components[ComponentType::TEXTURE].get());
         }
 
         static Entity createEntity();
