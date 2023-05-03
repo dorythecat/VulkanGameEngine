@@ -7,6 +7,8 @@
 #include <vulkan/vulkan.h>
 
 #include "../camera/camera.hpp"
+#include "../descriptors/descriptors.hpp"
+#include "../entity/entity.hpp"
 
 // Alignment requirements need to be met correctly in all buffers, else, weird, un-debuggable errors will occur almost surely
 // (See https://registry.khronos.org/vulkan/specs/1.3-extensions/html/chap15.html#interfaces-resources-layout)
@@ -25,7 +27,12 @@ namespace Engine {
 
         // Lightning
         PointLight pointLights[MAX_POINT_LIGHTS]; // 128 bytes
-        int pointLightCount = 0; // 4 bytes
+        uint8_t pointLightCount = 0; // 4 bytes
+    };
+
+    struct PushConstantData {
+        glm::mat4 modelMatrix{1.0f}; // 64 bytes
+        glm::mat4 normalMatrix{1.0f}; // 64 bytes
     };
 
     struct FrameInfo {

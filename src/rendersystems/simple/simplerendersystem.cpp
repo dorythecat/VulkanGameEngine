@@ -1,11 +1,6 @@
 #include "simplerendersystem.hpp"
 
 namespace Engine {
-    struct SimplePushConstantData {
-        glm::mat4 modelMatrix{1.0f};
-        glm::mat4 normalMatrix{1.0f};
-    };
-
     SimpleRenderSystem::SimpleRenderSystem(Device &device,
                                            VkRenderPass renderPass,
                                            VkDescriptorSetLayout globalSetLayout) : device(device) {
@@ -21,7 +16,7 @@ namespace Engine {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         pushConstantRange.offset = 0;
-        pushConstantRange.size = sizeof(SimplePushConstantData);
+        pushConstantRange.size = sizeof(PushConstantData);
 
         std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
 
@@ -62,7 +57,7 @@ namespace Engine {
             auto &ent = kv.second; // Extract the second element of the pair (the GameObject)
             if (!ent.hasComponent(ComponentType::MODEL)) continue;
 
-            SimplePushConstantData push{};
+            PushConstantData push{};
             push.modelMatrix = ent.getTransformComponent()->mat4();
             push.normalMatrix = ent.getTransformComponent()->normal();
 
@@ -70,7 +65,7 @@ namespace Engine {
                                pipelineLayout,
                                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
                                0,
-                               sizeof(SimplePushConstantData),
+                               sizeof(PushConstantData),
                                &push);
 
             ent.getModelComponent()->model->bind(frameInfo.commandBuffer);

@@ -8,6 +8,7 @@
 
 #include "../model/model.hpp"
 
+// Components
 #include "component.hpp"
 #include "components/transform.hpp"
 #include "components/point_light.hpp"

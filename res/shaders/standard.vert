@@ -40,5 +40,5 @@ void main() {
 
     fragColor = color;
 
-    fragTexCoord = vec2(texCoord.x, -texCoord.y); // IDK why but it works
+    fragTexCoord = vec2(texCoord.x, -texCoord.y);
 }

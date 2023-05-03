@@ -45,12 +45,11 @@ void main() {
 
         directionToLight = normalize(directionToLight);
 
-        float cosAngIncidence = max(dot(surfaceNormal, directionToLight), 0.0);
         vec3 intensity = light.color.xyz * light.color.w * attenuation;
 
+        float cosAngIncidence = max(dot(surfaceNormal, directionToLight), 0.0);
         diffuse += intensity * cosAngIncidence;
 
-        // specular lighting
         vec3 halfwayDir = normalize(directionToLight + viewDir);
         float blinnTerm = pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), 32.0); //TODO(Dory): Make the exponent variable
         specular += intensity * blinnTerm;
