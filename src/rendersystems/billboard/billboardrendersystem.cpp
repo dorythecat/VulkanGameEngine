@@ -49,7 +49,7 @@ namespace Engine {
                                               pipelineConfig);
     }
     void BillboardRenderSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo) {
-        uint16_t index = 0;
+        Entity::id_t index = 0;
         for (auto &kv : frameInfo.entities) {
             auto &ent = kv.second;
             if(!ent.hasComponent(ComponentType::POINT_LIGHT)) continue;
