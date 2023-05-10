@@ -29,12 +29,7 @@ option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 find_package(Vulkan REQUIRED COMPONENTS glslc)
 find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
 message(STATUS "Found Vulkan: $ENV{VULKAN_SDK}")
-
-if (NOT Vulkan_FOUND)
-    message(FATAL_ERROR "Could not find the Vulkan library!")
-else()
-    message(STATUS "Using the Vulkan library, located at: ${Vulkan_LIBRARIES}")
-endif()
+message(STATUS "Using the Vulkan library, located at: ${Vulkan_LIBRARIES}")
 
 set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/libs/imgui)
 set(IMGUI_SOURCES ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
