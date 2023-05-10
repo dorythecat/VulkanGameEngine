@@ -89,8 +89,8 @@ namespace Engine {
                                    uint32_t mipLevels = 1,
                                    uint32_t layerCount = 1);
     private:
-        const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-        const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+        const std::vector<const char *> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+        const std::vector<const char *> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
         VkDebugUtilsMessengerEXT debugMessenger;
         Window &window;
