@@ -58,7 +58,7 @@ namespace Engine::Procedural {
 
                     auto triangles = new triangle[5];
 
-                    uint8_t n = polygonise(isolevel, grid, triangles);
+                    uint8_t n = polygonise(grid, triangles);
                     if (n == 0) continue;
 
                     // Translate from triangles to vertices.
@@ -104,13 +104,10 @@ namespace Engine::Procedural {
                     } delete[] triangles;
                 }
             }
-        }
-
-        if (vertices.empty() || indices.empty()) return;
-        builder = *new Model::Builder{vertices, indices};
+        } builder = *new Model::Builder{vertices, indices};
     }
 
-    uint8_t MarchingCubes::polygonise(precision_t isolevel, cell grid, triangle *triangles) {
+    uint8_t MarchingCubes::polygonise(cell grid, triangle *triangles) {
         uint8_t cubeIndex = 0;
         if (grid.val[0] - isolevel < std::numeric_limits<precision_t>::epsilon()) cubeIndex |= 1;
         if (grid.val[1] - isolevel < std::numeric_limits<precision_t>::epsilon()) cubeIndex |= 2;
@@ -125,18 +122,18 @@ namespace Engine::Procedural {
 
         glm::vec3 vertices[12];
         uint16_t edge = edgeTable[cubeIndex];
-        if (edge & 1) vertices[0] = interpolateVector(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
-        if (edge & 2) vertices[1] = interpolateVector(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
-        if (edge & 4) vertices[2] = interpolateVector(isolevel, grid.p[2], grid.p[3], grid.val[2], grid.val[3]);
-        if (edge & 8) vertices[3] = interpolateVector(isolevel, grid.p[3], grid.p[0], grid.val[3], grid.val[0]);
-        if (edge & 16) vertices[4] = interpolateVector(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
-        if (edge & 32) vertices[5] = interpolateVector(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
-        if (edge & 64) vertices[6] = interpolateVector(isolevel, grid.p[6], grid.p[7], grid.val[6], grid.val[7]);
-        if (edge & 128) vertices[7] = interpolateVector(isolevel, grid.p[7], grid.p[4], grid.val[7], grid.val[4]);
-        if (edge & 256) vertices[8] = interpolateVector(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
-        if (edge & 512) vertices[9] = interpolateVector(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
-        if (edge & 1024) vertices[10] = interpolateVector(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
-        if (edge & 2048) vertices[11] = interpolateVector(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
+        if (edge & 1) vertices[0] = interpolateVector(grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
+        if (edge & 2) vertices[1] = interpolateVector(grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
+        if (edge & 4) vertices[2] = interpolateVector(grid.p[2], grid.p[3], grid.val[2], grid.val[3]);
+        if (edge & 8) vertices[3] = interpolateVector(grid.p[3], grid.p[0], grid.val[3], grid.val[0]);
+        if (edge & 16) vertices[4] = interpolateVector(grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
+        if (edge & 32) vertices[5] = interpolateVector(grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
+        if (edge & 64) vertices[6] = interpolateVector(grid.p[6], grid.p[7], grid.val[6], grid.val[7]);
+        if (edge & 128) vertices[7] = interpolateVector(grid.p[7], grid.p[4], grid.val[7], grid.val[4]);
+        if (edge & 256) vertices[8] = interpolateVector(grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
+        if (edge & 512) vertices[9] = interpolateVector(grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
+        if (edge & 1024) vertices[10] = interpolateVector(grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
+        if (edge & 2048) vertices[11] = interpolateVector(grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
 
         uint8_t n = 0;
         for (uint8_t i = 0; triTable[cubeIndex][i] >= 0; n++) {
@@ -146,19 +143,21 @@ namespace Engine::Procedural {
         } return n;
     }
 
-    precision_t MarchingCubes::interpolate(precision_t x, precision_t edge0, precision_t edge1) {
-        x = (x - edge0) / (edge1 - edge0);
+    precision_t MarchingCubes::clamp(precision_t x, precision_t edge0, precision_t edge1) {
         if (abs(x) < std::numeric_limits<precision_t>::epsilon()) return 0.0f;
         if (abs(x - 1.0f) < std::numeric_limits<precision_t>::epsilon()) return 1.0f;
         return x;
     }
 
-    glm::vec3 MarchingCubes::interpolateVector(precision_t isolevel, glm::vec3 p1, glm::vec3 p2, precision_t valp1, precision_t valp2) {
-        if (abs(isolevel - valp1) < std::numeric_limits<precision_t>::epsilon() ||
-            abs(valp1 - valp2) < std::numeric_limits<precision_t>::epsilon()) return p1;
-        if (abs(isolevel - valp2) < std::numeric_limits<precision_t>::epsilon()) return p2;
+    glm::vec3 MarchingCubes::interpolateVector(glm::vec3 p1, glm::vec3 p2, precision_t valp0, precision_t valp1) const {
+        precision_t x0 = isolevel - valp0;
+        precision_t x1 = valp1 - valp0;
 
-        precision_t mu = interpolate(isolevel, valp1, valp2);
+        if (abs(x0) <= std::numeric_limits<precision_t>::epsilon() ||
+            abs(x1) <= std::numeric_limits<precision_t>::epsilon()) return p1;
+        if (abs(isolevel - valp1) <= std::numeric_limits<precision_t>::epsilon()) return p2;
+
+        precision_t mu = clamp(x0 / x1, valp0, valp1);
 
         return {
             p1.x + mu * (p2.x - p1.x),
@@ -177,6 +176,6 @@ namespace Engine::Procedural {
 
         // Two metaballs
         precision_t a = x * x + y * y + z * z + 0.25f;
-        return 1.0f / 5.0f * (2.0f / std::sqrt(a + x) + 1.0f / std::sqrt(a - x)) - 1.0f;
+        return (2.0f / std::sqrt(a + x) + 1.0f / std::sqrt(a - x)) / 5.0f - 1.0f;
     }
 }
