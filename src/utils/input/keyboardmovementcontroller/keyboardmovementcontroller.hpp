@@ -28,7 +28,8 @@ namespace Engine {
         float moveSpeed = 3.0f;
         float lookSpeed = 1.5f;
 
-        void moveInPlaneXZ(GLFWwindow *window, float deltaTime, Entity &gameObject);
+        void move(GLFWwindow *window, float deltaTime, Entity &ent) const;
+        void look(GLFWwindow *window, float deltaTime, Entity &ent) const;
     };
 }
 

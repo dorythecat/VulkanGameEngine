@@ -85,7 +85,8 @@ namespace Engine {
 
             deltaTime = glm::min(deltaTime, FrameInfo::MAX_DELTA_TIME);
 
-            cameraController.moveInPlaneXZ(window.getWindow(), deltaTime, cameraEntity);
+            cameraController.move(window.getWindow(), deltaTime, cameraEntity);
+            cameraController.look(window.getWindow(), deltaTime, cameraEntity);
             camera.setViewXYZ(cameraEntity.getTransformComponent()->position,
                               cameraEntity.getTransformComponent()->rotation);
 

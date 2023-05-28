@@ -21,7 +21,7 @@
 #include "utils/device/device.hpp"
 #include "utils/entity/entity.hpp"
 #include "utils/renderer/renderer.hpp"
-#include "utils/input/keyboard_movement_controller/keyboardmovementcontroller.hpp"
+#include "utils/input/keyboardmovementcontroller/keyboardmovementcontroller.hpp"
 #include "utils/descriptors/descriptors.hpp"
 #include "utils/texture/texture.hpp"
 #include "utils/entity/components/texture.hpp"
