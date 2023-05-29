@@ -29,7 +29,6 @@ layout (location = 3) in vec2 texCoord;
 layout (location = 0) out vec3 fragColor;
 layout (location = 1) out vec3 fragPos;
 layout (location = 2) out vec3 fragNormal;
-layout (location = 3) out vec2 fragTexCoord;
 
 void main() {
     vec4 worldPos = push.modelMatrix * vec4(position, 1.0);
@@ -40,5 +39,5 @@ void main() {
 
     fragColor = color;
 
-    fragTexCoord = vec2(texCoord.x, -texCoord.y);
+    // We can ignore the UVs, since they're not used for this render system
 }

@@ -24,11 +24,11 @@ layout (push_constant) uniform PushConstant {
 layout (location = 0) in vec3 fragColor;
 layout (location = 1) in vec3 fragPos;
 layout (location = 2) in vec3 fragNormal;
-layout (location = 3) in vec2 fragTexCoords;
 
 layout (location = 0) out vec4 outColor;
 
 void main() {
+    // TODO(Dory): Add support for different ambient, diffuse, and specular multipliers
     vec3 diffuse = globalUbo.ambientLightColor.rgb * globalUbo.ambientLightColor.a;
     vec3 specular = vec3(0.0);
     vec3 surfaceNormal = normalize(fragNormal);
@@ -39,20 +39,15 @@ void main() {
     for(int i = 0; i < globalUbo.pointLightCount; i++) {
         PointLight light = globalUbo.pointLights[i];
         vec3 directionToLight = light.position.xyz - fragPos;
-        float attenuation = 1.0 / dot(directionToLight, directionToLight); // distance squared
+
+        vec3 intensity = light.color.xyz * light.color.w / dot(directionToLight, directionToLight);
 
         directionToLight = normalize(directionToLight);
-
-        vec3 intensity = light.color.xyz * light.color.w * attenuation;
-
-        float cosAngIncidence = max(dot(surfaceNormal, directionToLight), 0.0);
-        diffuse += intensity * cosAngIncidence;
-
         vec3 halfwayDir = normalize(directionToLight + viewDir);
-        float blinnTerm = pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), 32.0); //TODO(Dory): Make the exponent variable
-        specular += intensity * blinnTerm;
+
+        diffuse += intensity * max(dot(surfaceNormal, directionToLight), 0.0); // lambertian term
+        specular += intensity * pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), 32.0); // blinn-phong term
     }
 
-    //TODO(Dory): Make it so that you can choose if there's mettallic highlights or not
-    outColor = vec4(diffuse * fragColor + specular * fragColor, 1.0);
+    outColor = vec4((diffuse + specular) * fragColor, 1.0);
 }
