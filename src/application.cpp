@@ -10,8 +10,8 @@ namespace Engine {
         framePools.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
         auto framePoolBuilder = DescriptorPool::Builder(device)
                 .setMaxSets(1024)
-                .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1024)
                 .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024)
+                .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1024)
                 .setPoolFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
         for (auto &framePool : framePools) framePool = framePoolBuilder.build();
         loadEntities();

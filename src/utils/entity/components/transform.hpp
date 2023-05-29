@@ -19,7 +19,6 @@ namespace Engine {
                            position(position), scale(scale) {}
         TransformComponent(const glm::vec3 position, const glm::vec3 scale, const glm::vec3 rotation) :
                            position(position), scale(scale), rotation(rotation) {}
-
         ComponentType getComponentType() const override { return TRANSFORM; }
 
         // Matrix corresponds to Translate * Rx * Ry * Rz * Scale

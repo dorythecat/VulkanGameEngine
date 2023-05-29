@@ -9,7 +9,6 @@ namespace Engine {
         std::shared_ptr<Model> model;
 
         ModelComponent(std::shared_ptr<Model> model) : model(model) {}
-
         ComponentType getComponentType() const override { return MODEL; }
     };
 }
