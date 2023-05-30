@@ -33,8 +33,7 @@ layout (location = 2) in vec3 fragNormal;
 layout (location = 0) out vec4 outColor;
 
 void main() {
-    // TODO(Dory): Add support for different ambient, diffuse, and specular multipliers
-    vec3 diffuse = globalUbo.ambientLightColor.rgb * globalUbo.ambientLightColor.a;
+    vec3 diffuse = globalUbo.ambientStrength * globalUbo.ambientLightColor.rgb * globalUbo.ambientLightColor.a;
     vec3 specular = vec3(0.0);
     vec3 surfaceNormal = normalize(fragNormal);
 
@@ -50,8 +49,9 @@ void main() {
         directionToLight = normalize(directionToLight);
         vec3 halfwayDir = normalize(directionToLight + viewDir);
 
-        diffuse += intensity * max(dot(surfaceNormal, directionToLight), 0.0); // lambertian term
-        specular += intensity * pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), 32.0); // blinn-phong term
+        diffuse += globalUbo.diffuseStrength * intensity * max(dot(surfaceNormal, directionToLight), 0.0); // lambertian term
+        specular += globalUbo.specularStrength * intensity *
+                    pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), globalUbo.shininess); // blinn-phong term
     }
 
     outColor = vec4((diffuse + specular) * fragColor, 1.0);

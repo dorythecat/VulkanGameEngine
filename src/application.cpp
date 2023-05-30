@@ -106,6 +106,12 @@ namespace Engine {
                 ubo.projectionMatrix = frameInfo.camera.getProjectionMatrix();
                 ubo.viewMatrix = frameInfo.camera.getViewMatrix();
                 ubo.inverseViewMatrix = frameInfo.camera.getInverseViewMatrix();
+
+                ubo.ambientStrength = ambientStrength;
+                ubo.diffuseStrength = diffuseStrength;
+                ubo.specularStrength = specularStrength;
+                ubo.shininess = shininess;
+
                 billboardRenderSystem.update(frameInfo, ubo);
                 uboBuffers[frameInfo.frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameInfo.frameIndex]->flush();
@@ -206,14 +212,21 @@ namespace Engine {
         bool* windowOpen = new bool(true);
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
 
-        ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiCond_Appearing);
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Appearing);
         ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_Appearing);
+
         if (!ImGui::Begin("Hello, world!", windowOpen, windowFlags)) {
             ImGui::End();
             return;
         }
 
-        ImGui::Text("Hello, world!");
+        if (ImGui::CollapsingHeader("Lightning")) {
+            ImGui::SliderFloat("Ambient Strength", &ambientStrength, 0.0f, 1.0f);
+            ImGui::SliderFloat("Diffuse Strength", &diffuseStrength, 0.0f, 1.0f);
+            ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
+            ImGui::SliderFloat("Shininess", &shininess, 0.0f, 256.0f);
+        }
+
         ImGui::End();
 
         ImGui::Render();

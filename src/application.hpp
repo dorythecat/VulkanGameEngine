@@ -47,6 +47,12 @@ namespace Engine {
         static constexpr float NEAR_PLANE = 0.1f;
         static constexpr float FAR_PLANE = 100.0f;
 
+        // ImGUI control variables
+        float ambientStrength = 1.0f;
+        float diffuseStrength = 1.0f;
+        float specularStrength = 1.0f;
+        float shininess = 32.0f;
+
         Application();
         ~Application();
 
