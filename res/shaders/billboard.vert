@@ -28,6 +28,8 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
     float diffuseStrength;
     float specularStrength;
     float shininess;
+
+    bool texturesEnabled;
 } globalUbo;
 
 layout (push_constant) uniform PushConstants {

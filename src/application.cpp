@@ -112,6 +112,8 @@ namespace Engine {
                 ubo.specularStrength = specularStrength;
                 ubo.shininess = shininess;
 
+                ubo.texturesEnabled = texturesEnabled;
+
                 billboardRenderSystem.update(frameInfo, ubo);
                 uboBuffers[frameInfo.frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameInfo.frameIndex]->flush();
@@ -225,6 +227,10 @@ namespace Engine {
             ImGui::SliderFloat("Diffuse Strength", &diffuseStrength, 0.0f, 1.0f);
             ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
             ImGui::SliderFloat("Shininess", &shininess, 0.0f, 256.0f);
+        }
+
+        if (ImGui::CollapsingHeader("Textures")) {
+            ImGui::Checkbox("Enable Texturing", &texturesEnabled);
         }
 
         ImGui::End();

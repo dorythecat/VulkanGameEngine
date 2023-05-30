@@ -53,6 +53,8 @@ namespace Engine {
         float specularStrength = 1.0f;
         float shininess = 32.0f;
 
+        bool texturesEnabled = true;
+
         Application();
         ~Application();
 

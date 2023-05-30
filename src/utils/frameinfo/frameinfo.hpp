@@ -33,6 +33,8 @@ namespace Engine {
         float diffuseStrength = 1.0f; // 4 bytes
         float specularStrength = 1.0f; // 4 bytes
         float shininess = 32.0f; // 4 bytes
+
+        bool texturesEnabled = true; // 1 byte
     };
 
     struct PushConstantData {

@@ -19,6 +19,8 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
     float diffuseStrength;
     float specularStrength;
     float shininess;
+
+    bool texturesEnabled;
 } globalUbo;
 
 layout (set = 1, binding = 0) uniform sampler2D diffuseMap;
@@ -57,6 +59,6 @@ void main() {
                     pow(clamp(dot(surfaceNormal, halfwayDir), 0.0, 1.0), globalUbo.shininess); // blinn-phong term
     }
 
-    diffuse = diffuse * texture(diffuseMap, fragTexCoords).xyz;
+    if (globalUbo.texturesEnabled) diffuse *= texture(diffuseMap, fragTexCoords).xyz;
     outColor = vec4(diffuse + specular * fragColor, 1.0);
 }
