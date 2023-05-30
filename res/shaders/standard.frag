@@ -13,7 +13,7 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
     vec4 ambientLightColor;
 
     PointLight pointLights[8];
-    int pointLightCount;
+    uint pointLightCount;
 } globalUbo;
 
 layout (push_constant) uniform PushConstant {
