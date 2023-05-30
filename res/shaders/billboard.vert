@@ -23,6 +23,11 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
 
     PointLight pointLights[8];
     int pointLightCount;
+
+    float ambientStrength;
+    float diffuseStrength;
+    float specularStrength;
+    float shininess;
 } globalUbo;
 
 layout (push_constant) uniform PushConstants {

@@ -28,6 +28,11 @@ namespace Engine {
         // Lightning
         PointLight pointLights[MAX_POINT_LIGHTS]; // 128 bytes
         uint32_t pointLightCount = 0; // 4 bytes
+
+        float ambientStrength = 1.0f; // 4 bytes
+        float diffuseStrength = 1.0f; // 4 bytes
+        float specularStrength = 1.0f; // 4 bytes
+        float shininess = 32.0f; // 4 bytes
     };
 
     struct PushConstantData {
