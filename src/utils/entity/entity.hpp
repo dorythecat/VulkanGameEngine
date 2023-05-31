@@ -21,8 +21,6 @@ namespace Engine {
         typedef uint16_t id_t; // 65536 entities should do, at least for now
         typedef std::unordered_map<id_t, Entity> Map;
 
-        glm::vec3 color{};
-
         Entity(const Entity &) = delete;
         Entity &operator=(const Entity &) = delete;
         Entity(Entity &&) = default;
@@ -31,34 +29,13 @@ namespace Engine {
         ComponentType_t getComponentMask() const { return componentMask; }
         bool hasComponent(ComponentType type) const { return componentMask & (1 << type); }
 
-        void addComponent(std::unique_ptr<Component> component) {
-            ComponentType type = component->getComponentType();
-            assert(!hasComponent(type) && "Component already exists for this entity!");
-            components[type] = std::move(component);
-            componentMask |= static_cast<ComponentType_t>(1 << type);
-        }
-        void removeComponent(ComponentType type) {
-            assert(hasComponent(type) && "Component does not exist for this entity!");
-            components.erase(type);
-            componentMask &= static_cast<ComponentType_t>(~(1 << type));
-        }
+        void addComponent(std::unique_ptr<Component> component);
+        void removeComponent(ComponentType type);
 
-        TransformComponent *getTransformComponent() {
-            assert(hasComponent(ComponentType::TRANSFORM) && "Transform component does not exist for this entity!");
-            return dynamic_cast<TransformComponent*>(components[ComponentType::TRANSFORM].get());
-        }
-        PointLightComponent *getPointLightComponent() {
-            assert(hasComponent(ComponentType::POINT_LIGHT) && "Point light component does not exist for this entity!");
-            return dynamic_cast<PointLightComponent*>(components[ComponentType::POINT_LIGHT].get());
-        }
-        ModelComponent *getModelComponent() {
-            assert(hasComponent(ComponentType::MODEL) && "Model component does not exist for this entity!");
-            return dynamic_cast<ModelComponent*>(components[ComponentType::MODEL].get());
-        }
-        TextureComponent *getTextureComponent() {
-            assert(hasComponent(ComponentType::TEXTURE) && "Texture component does not exist for this entity!");
-            return dynamic_cast<TextureComponent*>(components[ComponentType::TEXTURE].get());
-        }
+        TransformComponent *getTransformComponent();
+        PointLightComponent *getPointLightComponent();
+        ModelComponent *getModelComponent();
+        TextureComponent *getTextureComponent();
 
         static Entity createEntity();
         static Entity createPointLightEntity(float intensity = 1.0f, float radius = 1.0f, glm::vec3 color = {1.0f, 1.0f, 1.0f});

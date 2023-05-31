@@ -7,8 +7,9 @@ namespace Engine {
     class PointLightComponent : public Component {
     public:
         float intensity;
+        glm::vec3 color;
 
-        PointLightComponent(float intensity) : intensity(intensity) {}
+        PointLightComponent(float intensity, glm::vec3 color) : intensity(intensity), color(color) {}
         ComponentType getComponentType() const override { return POINT_LIGHT; }
     };
 }

@@ -55,7 +55,8 @@ namespace Engine {
             if(!ent.hasComponent(ComponentType::POINT_LIGHT)) continue;
 
             ubo.pointLights[index].position = glm::vec4(ent.getTransformComponent()->position, 1.0f);
-            ubo.pointLights[index].color = glm::vec4(ent.color, ent.getPointLightComponent()->intensity);
+            ubo.pointLights[index].color = glm::vec4(ent.getPointLightComponent()->color,
+                                                     ent.getPointLightComponent()->intensity);
             index++;
         } ubo.pointLightCount = index;
     }
@@ -88,7 +89,8 @@ namespace Engine {
 
             PointLightPushConstant push{};
             push.position = glm::vec4(ent.getTransformComponent()->position, 1.0f);
-            push.color = glm::vec4(ent.color, ent.getPointLightComponent()->intensity);
+            push.color = glm::vec4(ent.getPointLightComponent()->color,
+                                   ent.getPointLightComponent()->intensity);
             push.radius = ent.getTransformComponent()->scale.x;
 
             vkCmdPushConstants(frameInfo.commandBuffer,

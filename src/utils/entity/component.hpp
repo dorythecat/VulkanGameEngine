@@ -6,10 +6,12 @@
 #include <map>
 #include <cassert>
 
+#include "entity.hpp"
+
 namespace Engine {
     typedef uint8_t ComponentType_t; // 8 different components should be enough for now
 
-    // TODO: Implement a better component system
+    // TODO(Dory): Implement a better component system
     enum ComponentType : ComponentType_t {
         TRANSFORM = 0,
         MODEL = 1,
@@ -17,8 +19,11 @@ namespace Engine {
         TEXTURE = 3,
     };
 
+    class Entity;
     class Component {
     public:
+        Entity *entity;
+
         Component() = default;
         virtual ~Component() = default;
 
