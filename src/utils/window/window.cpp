@@ -3,7 +3,7 @@
 
 namespace Engine {
     Window::Window(int width, int height, const char* title) :
-    width(width), height(height), window_title(title) {
+            width(width), height(height), window_title(title) {
         init();
     }
 
