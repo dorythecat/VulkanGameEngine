@@ -21,7 +21,7 @@ namespace Engine {
         }
 
         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-            throw std::runtime_error("Failed to acquire swap chain image!");
+            throw std::runtime_error("Failed to acquire the swap chain image!");
 
         isFrameStarted = true;
 
@@ -29,22 +29,22 @@ namespace Engine {
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-            throw std::runtime_error("Failed to begin recording command buffer!");
+            throw std::runtime_error("Failed to begin recording the command buffer!");
 
         return commandBuffer;
     }
     void Renderer::endFrame () {
-        assert(isFrameStarted && "Cannot end a frame before starting one!");
+        assert(isFrameStarted && "Cannot end a frame before we have started one!");
 
         auto commandBuffer = getCurrentCommandBuffer();
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-            throw std::runtime_error("Failed to record command buffer!");
+            throw std::runtime_error("Failed to record the command buffer!");
 
         auto result = swapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.wasWindowResized()) {
             window.resetWindowResizedFlag();
             recreateSwapChain();
-        } else if (result != VK_SUCCESS) throw std::runtime_error("Failed to present swap chain image!");
+        } else if (result != VK_SUCCESS) throw std::runtime_error("Failed to present the swap chain image!");
 
         isFrameStarted = false;
         currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
@@ -57,7 +57,7 @@ namespace Engine {
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = swapChain->getRenderPass();
-        renderPassInfo.framebuffer = swapChain->getFrameBuffer(static_cast<int>(currentImageIndex));
+        renderPassInfo.framebuffer = swapChain->getFrameBuffer(static_cast<uint32_t>(currentImageIndex));
 
         renderPassInfo.renderArea.offset = {0, 0};
         renderPassInfo.renderArea.extent = swapChain->getSwapChainExtent();
@@ -84,7 +84,6 @@ namespace Engine {
     void Renderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) const {
         assert(isFrameStarted && "Cannot end the render pass outside of a frame!");
         assert(commandBuffer == getCurrentCommandBuffer() && "Cannot end the render pass on a command buffer from another frame!");
-
         vkCmdEndRenderPass(commandBuffer);
     }
 
@@ -116,11 +115,10 @@ namespace Engine {
         }
     }
     void Renderer::freeCommandBuffers() {
-            vkFreeCommandBuffers(
-                    device.device(),
-                    device.getCommandPool(),
-                    static_cast<uint32_t>(commandBuffers.size()),
-                    commandBuffers.data());
+            vkFreeCommandBuffers(device.device(),
+                                 device.getCommandPool(),
+                                 static_cast<uint32_t>(commandBuffers.size()),
+                                 commandBuffers.data());
             commandBuffers.clear();
     }
 }

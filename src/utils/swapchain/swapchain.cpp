@@ -22,7 +22,7 @@ namespace Engine {
             swapChain = nullptr;
         }
 
-        for (unsigned int i = 0; i < depthImages.size(); i++) {
+        for (uint32_t i = 0; i < depthImages.size(); i++) {
             vkDestroyImageView(device.device(), depthImageViews[i], nullptr);
             vkDestroyImage(device.device(), depthImages[i], nullptr);
             vkFreeMemory(device.device(), depthImageMemorys[i], nullptr);
@@ -33,7 +33,7 @@ namespace Engine {
 
         vkDestroyRenderPass(device.device(), renderPass, nullptr);
 
-        // cleanup synchronization objects
+        // Cleanup synchronization objects
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device.device(), renderFinishedSemaphores[i], nullptr);
             vkDestroySemaphore(device.device(), imageAvailableSemaphores[i], nullptr);
@@ -41,7 +41,7 @@ namespace Engine {
         }
     }
 
-    void SwapChain::init () {
+    void SwapChain::init() {
         createSwapChain();
         createImageViews();
         createRenderPass();
@@ -56,13 +56,12 @@ namespace Engine {
                         VK_TRUE,
                         std::numeric_limits<uint64_t>::max());
 
-        VkResult result = vkAcquireNextImageKHR(device.device(),
-                                             swapChain,
-                                             std::numeric_limits<uint64_t>::max(),
-                                             imageAvailableSemaphores[currentFrame], // must be a not signaled semaphore
-                                             VK_NULL_HANDLE,
-                                             imageIndex);
-        return result;
+        return vkAcquireNextImageKHR(device.device(),
+                                     swapChain,
+                                     UINT64_MAX,
+                                     imageAvailableSemaphores[currentFrame], // must be a not signaled semaphore
+                                     VK_NULL_HANDLE,
+                                     imageIndex);
     }
     VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex) {
         if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
@@ -101,11 +100,8 @@ namespace Engine {
 
         presentInfo.pImageIndices = imageIndex;
 
-        auto result = vkQueuePresentKHR(device.presentQueue(), &presentInfo);
-
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-
-        return result;
+        return vkQueuePresentKHR(device.presentQueue(), &presentInfo);
     }
 
     void SwapChain::createSwapChain() {
@@ -152,7 +148,7 @@ namespace Engine {
         createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
         if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create swap chain!");
+            throw std::runtime_error("Failed to create the swap chain!");
 
         // we only specified a minimum number of images in the swap chain, so the implementation is
         // allowed to create a swap chain with more. That's why we'll first query the final number of
@@ -180,7 +176,7 @@ namespace Engine {
             viewInfo.subresourceRange.layerCount = 1;
 
             if (vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS)
-                throw std::runtime_error("Failed to create texture image view!");
+                throw std::runtime_error("Failed to create the texture image view!");
         }
     }
     void SwapChain::createRenderPass() {
@@ -240,16 +236,16 @@ namespace Engine {
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-        if (vkCreateRenderPass(device.device(),
-                               &renderPassInfo,
-                               nullptr,
-                               &renderPass) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create render pass!");
+        if (vkCreateRenderPass(device.device(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create the render pass!");
     }
     void SwapChain::createFramebuffers() {
         swapChainFramebuffers.resize(imageCount());
         for (size_t i = 0; i < imageCount(); i++) {
-            std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
+            std::array<VkImageView, 2> attachments = {
+                    swapChainImageViews[i],
+                    depthImageViews[i]
+            };
 
             VkFramebufferCreateInfo framebufferInfo = {};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -260,11 +256,8 @@ namespace Engine {
             framebufferInfo.height = swapChainExtent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(device.device(),
-                                    &framebufferInfo,
-                                    nullptr,
-                                    &swapChainFramebuffers[i]) != VK_SUCCESS)
-                throw std::runtime_error("Failed to create framebuffer!");
+            if (vkCreateFramebuffer(device.device(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
+                throw std::runtime_error("Failed to create the framebuffer!");
         }
     }
     void SwapChain::createDepthResources() {
@@ -307,11 +300,8 @@ namespace Engine {
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
 
-            if (vkCreateImageView(device.device(),
-                                  &viewInfo,
-                                  nullptr,
-                                  &depthImageViews[i]) != VK_SUCCESS)
-                throw std::runtime_error("Failed to create texture image view!");
+            if (vkCreateImageView(device.device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS)
+                throw std::runtime_error("Failed to create the texture image view!");
         }
     }
     void SwapChain::createSyncObjects() {
@@ -331,7 +321,7 @@ namespace Engine {
             if (vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) !=VK_SUCCESS ||
                 vkCreateSemaphore(device.device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) !=VK_SUCCESS ||
                 vkCreateFence(device.device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
-                throw std::runtime_error("Failed to create synchronization objects for a frame!");
+                throw std::runtime_error("Failed to create the synchronization objects for a frame!");
         }
     }
 
@@ -357,31 +347,21 @@ namespace Engine {
                     std::cout << "Present mode: Immediate" << std::endl; // Causes visible tearing
                     return availablePresentMode;
                 case VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:
-                    std::cout << "Present mode: VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR" << std::endl; // Don't know what this is
-                    break;
                 case VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:
-                    std::cout << "Present mode: VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR" << std::endl; // Don't know what this is
-                    break;
                 case VK_PRESENT_MODE_MAX_ENUM_KHR:
-                    std::cout << "Present mode: VK_PRESENT_MODE_MAX_ENUM_KHR" << std::endl; // Don't know what this is
-                    break;
+                default:
+                    break; // Not supported or unknown format
             }
-        }
-        // This should never happen, but this is partly to avoid Warning C4715 when compiling.
-        throw std::runtime_error("Failed to find supported presentation mode!");
+        } throw std::runtime_error("Failed to find a supported presentation mode!"); // Should never be reached
     }
     VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) return capabilities.currentExtent;
-        else {
-            VkExtent2D actualExtent = windowExtent;
-            actualExtent.width = std::max(capabilities.minImageExtent.width,
-                                          std::min(capabilities.maxImageExtent.width,
-                                                   actualExtent.width));
-            actualExtent.height = std::max(capabilities.minImageExtent.height,
-                                           std::min(capabilities.maxImageExtent.height,
-                                                    actualExtent.height));
-            return actualExtent;
-        }
+        VkExtent2D actualExtent = windowExtent;
+        actualExtent.width = std::max(capabilities.minImageExtent.width,
+                                      std::min(capabilities.maxImageExtent.width, actualExtent.width));
+        actualExtent.height = std::max(capabilities.minImageExtent.height,
+                                       std::min(capabilities.maxImageExtent.height, actualExtent.height));
+        return actualExtent;
     }
     VkFormat SwapChain::findDepthFormat() {
         return device.findSupportedFormat({VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},

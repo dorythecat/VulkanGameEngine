@@ -20,7 +20,8 @@ namespace Engine {
         glfwWindowHint(GLFW_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_VERSION_REVISION, 8);
 
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        // glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // https://github.com/Dorycraft/VulkanGameEngine/issues/4
 
         window = glfwCreateWindow(width, height, window_title, nullptr, nullptr);
 
@@ -36,7 +37,7 @@ namespace Engine {
     }
 
     void Window::framebufferResizeCallback(GLFWwindow* window, int width, int height){
-        auto win = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+        auto win = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
         win->framebufferResized = true;
         win->width = width;
         win->height = height;

@@ -95,7 +95,7 @@ namespace Engine {
                                       &pipelineInfo,
                                       nullptr,
                                       &graphicsPipeline) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create graphics pipeline");
+            throw std::runtime_error("Failed to create the graphics pipeline");
     }
 
     void Pipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule) {
@@ -105,7 +105,7 @@ namespace Engine {
         createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
         if (vkCreateShaderModule(device.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create shader module");
+            throw std::runtime_error("Failed to create the shader module");
     }
 
     void Pipeline::bind(VkCommandBuffer commandBuffer) {

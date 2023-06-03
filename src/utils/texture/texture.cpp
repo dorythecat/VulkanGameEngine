@@ -23,7 +23,7 @@ namespace Engine {
 
         if (!pixels) throw std::runtime_error("Failed to load the texture image!");
 
-        Buffer stagingBuffer{
+        Buffer stagingBuffer {
                 device,
                 imageSize,
                 1,

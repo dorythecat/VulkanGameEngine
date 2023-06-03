@@ -31,9 +31,9 @@ namespace Engine {
     class Device {
     public:
 #ifdef DEBUG
-        const bool enableValidationLayers = true;
+        constexpr static bool enableValidationLayers = true;
 #else
-        const bool enableValidationLayers = false;
+        constexpr static bool enableValidationLayers = false;
 #endif
 
         VkPhysicalDeviceProperties properties;
@@ -66,12 +66,11 @@ namespace Engine {
         VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
         // Buffer Helper Functions
-        void createBuffer(
-                VkDeviceSize size,
-                VkBufferUsageFlags usage,
-                VkMemoryPropertyFlags properties,
-                VkBuffer &buffer,
-                VkDeviceMemory &bufferMemory);
+        void createBuffer(VkDeviceSize size,
+                          VkBufferUsageFlags usage,
+                          VkMemoryPropertyFlags properties,
+                          VkBuffer &buffer,
+                          VkDeviceMemory &bufferMemory);
         VkCommandBuffer beginSingleTimeCommands();
         void endSingleTimeCommands(VkCommandBuffer commandBuffer);
         void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
@@ -89,8 +88,12 @@ namespace Engine {
                                    uint32_t mipLevels = 1,
                                    uint32_t layerCount = 1);
     private:
-        const std::vector<const char *> validationLayers = { "VK_LAYER_KHRONOS_validation" };
-        const std::vector<const char *> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+        const std::vector<const char*> validationLayers = {
+                "VK_LAYER_KHRONOS_validation"
+        };
+        const std::vector<const char*> deviceExtensions = {
+                VK_KHR_SWAPCHAIN_EXTENSION_NAME
+        };
 
         VkDebugUtilsMessengerEXT debugMessenger;
         Window &window;
@@ -98,21 +101,21 @@ namespace Engine {
         VkCommandPool _commandPool;
         VkInstance _instance;
         VkDevice _device;
-        VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
+        VkPhysicalDevice _physicalDevice = nullptr;
         VkSurfaceKHR _surface;
         VkQueue _graphicsQueue;
         VkQueue _presentQueue;
 
         void createInstance();
         void setupDebugMessenger();
-        void createSurface();
+        void createSurface() { window.createWindowSurface(_instance, &_surface); }
         void pickPhysicalDevice();
         void createLogicalDevice();
         void createCommandPool();
 
         // helper functions
         uint32_t rateDeviceSuitability(VkPhysicalDevice device);
-        std::vector<const char *> getRequiredExtensions() const;
+        static std::vector<const char*> getRequiredExtensions() ;
         bool checkValidationLayerSupport();
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) const;
         static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
@@ -120,6 +123,6 @@ namespace Engine {
         bool checkDeviceExtensionSupport(VkPhysicalDevice device);
         SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     };
-} // Engine
+}
 
 #endif

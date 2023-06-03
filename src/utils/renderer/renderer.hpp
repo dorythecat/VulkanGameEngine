@@ -23,12 +23,12 @@ namespace Engine {
         bool isFrameInProgress() const { return isFrameStarted; }
 
         VkCommandBuffer getCurrentCommandBuffer() const {
-            assert(isFrameStarted && "Cannot get command buffer outside of a render pass!");
+            assert(isFrameStarted && "Cannot get the current command buffer outside of a render pass!");
             return commandBuffers[currentFrameIndex];
         }
 
         uint32_t getCurrentFrameIndex() const {
-            assert(isFrameStarted && "Cannot get frame index outside of a render pass!");
+            assert(isFrameStarted && "Cannot get the current frame index outside of a render pass!");
             return currentFrameIndex;
         }
 

@@ -31,7 +31,7 @@ namespace Engine {
         if (func != nullptr) func(instance, debugMessenger, pAllocator);
     }
 
-// class member functions
+    // class member functions
     Device::Device(Window &window) : window{window} {
         createInstance();
         setupDebugMessenger();
@@ -77,7 +77,7 @@ namespace Engine {
             createInfo.ppEnabledLayerNames = validationLayers.data();
 
             populateDebugMessengerCreateInfo(debugCreateInfo);
-            createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+            createInfo.pNext = static_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo);
         } else {
             createInfo.enabledLayerCount = 0;
             createInfo.pNext = nullptr;
@@ -104,7 +104,7 @@ namespace Engine {
             scores[score] = device;
         }
 
-        if (scores.empty()) throw std::runtime_error("Failed to find a suitable GPU!");
+        if (scores.empty()) throw std::runtime_error("Failed to find a suitable device!");
         // Find the greatest index in the map
         auto best = std::max_element(scores.begin(),
                                      scores.end(),
@@ -168,10 +168,8 @@ namespace Engine {
         poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
         if (vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create command pool!");
+            throw std::runtime_error("Failed to create the command pool!");
     }
-
-    void Device::createSurface() { window.createWindowSurface(_instance, &_surface); }
 
     uint32_t Device::rateDeviceSuitability(VkPhysicalDevice device) {
         uint32_t score = 0;
@@ -240,7 +238,7 @@ namespace Engine {
         VkDebugUtilsMessengerCreateInfoEXT createInfo;
         populateDebugMessengerCreateInfo(createInfo);
         if (CreateDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
-            throw std::runtime_error("Failed to set up debug messenger!");
+            throw std::runtime_error("Failed to set up the debug messenger!");
     }
 
     bool Device::checkValidationLayerSupport() {
@@ -251,26 +249,17 @@ namespace Engine {
         vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
         for (const char *layerName : validationLayers) {
-            bool layerFound = false;
-
-            for (const auto &layerProperties : availableLayers) {
-                if (strcmp(layerName, layerProperties.layerName) == 0) {
-                    layerFound = true;
-                    break;
-                }
-            } if (!layerFound) return false;
-        } return true;
+            for (const auto &layerProperties : availableLayers)
+                if (strcmp(layerName, layerProperties.layerName) == 0) return true;
+        } return false;
     }
 
-    std::vector<const char *> Device::getRequiredExtensions() const {
+    std::vector<const char*> Device::getRequiredExtensions() {
         uint32_t glfwExtensionCount = 0;
         const char **glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
         std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
         if (enableValidationLayers) extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-
         return extensions;
     }
 
@@ -280,19 +269,18 @@ namespace Engine {
         std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-        std::cout << "available extensions:" << std::endl;
+        std::cout << "Available extensions:" << std::endl;
         std::unordered_set<std::string> available;
         for (const auto &extension : extensions) {
             std::cout << "\t" << extension.extensionName << std::endl;
             available.insert(extension.extensionName);
         }
 
-        std::cout << "required extensions:" << std::endl;
+        std::cout << "Required extensions:" << std::endl;
         auto requiredExtensions = getRequiredExtensions();
         for (const auto &required : requiredExtensions) {
             std::cout << "\t" << required << std::endl;
-            if (available.find(required) == available.end())
-                throw std::runtime_error("Missing required glfw extension!");
+            if (available.find(required) == available.end()) throw std::runtime_error("Missing a required glfw extension!");
         }
     }
 
@@ -301,17 +289,14 @@ namespace Engine {
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
         std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(
-                device,
-                nullptr,
-                &extensionCount,
-                availableExtensions.data());
+        vkEnumerateDeviceExtensionProperties(device,
+                                             nullptr,
+                                             &extensionCount,
+                                             availableExtensions.data());
 
         std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
-
         for (const auto &extension : availableExtensions)
             requiredExtensions.erase(extension.extensionName);
-
         return requiredExtensions.empty();
     }
 
@@ -326,20 +311,22 @@ namespace Engine {
 
         uint32_t i = 0;
         for (const auto &queueFamily : queueFamilies) {
-            if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            if (queueFamily.queueCount <= 0) {
+                i++;
+                continue;
+            }
+            if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
                 indices.graphicsFamilyHasValue = true;
             }
             VkBool32 presentSupport = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(device, i, _surface, &presentSupport);
-            if (queueFamily.queueCount > 0 && presentSupport) {
+            if (presentSupport) {
                 indices.presentFamily = i;
                 indices.presentFamilyHasValue = true;
             } if (indices.isComplete()) break;
             i++;
-        }
-
-        return indices;
+        } return indices;
     }
 
     SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device) {
@@ -348,7 +335,6 @@ namespace Engine {
 
         uint32_t formatCount;
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, _surface, &formatCount, nullptr);
-
         if (formatCount != 0) {
             details.formats.resize(formatCount);
             vkGetPhysicalDeviceSurfaceFormatsKHR(device, _surface, &formatCount, details.formats.data());
@@ -356,15 +342,14 @@ namespace Engine {
 
         uint32_t presentModeCount;
         vkGetPhysicalDeviceSurfacePresentModesKHR(device, _surface, &presentModeCount, nullptr);
+        if (presentModeCount == 0) return details;
 
-        if (presentModeCount != 0) {
-            details.presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(
-                    device,
-                    _surface,
-                    &presentModeCount,
-                    details.presentModes.data());
-        } return details;
+        details.presentModes.resize(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device,
+                                                  _surface,
+                                                  &presentModeCount,
+                                                  details.presentModes.data());
+        return details;
     }
 
     VkFormat Device::findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
@@ -374,16 +359,16 @@ namespace Engine {
 
             if ((tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) ||
                 (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)) return format;
-        } throw std::runtime_error("Failed to find supported format!");
+        } throw std::runtime_error("Failed to find any supported format!");
     }
 
     uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memProperties);
         for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-                return i;
-        throw std::runtime_error("Failed to find suitable memory type!");
+            if ((typeFilter & (1 << i)) &&
+                (memProperties.memoryTypes[i].propertyFlags & properties) == properties) return i;
+        throw std::runtime_error("Failed to find any suitable memory type!");
     }
 
     void Device::createBuffer(VkDeviceSize size,
@@ -398,7 +383,7 @@ namespace Engine {
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
         if (vkCreateBuffer(_device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create vertex buffer!");
+            throw std::runtime_error("Failed to create the vertex buffer!");
 
         VkMemoryRequirements memRequirements;
         vkGetBufferMemoryRequirements(_device, buffer, &memRequirements);
@@ -409,7 +394,7 @@ namespace Engine {
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
         if (vkAllocateMemory(_device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
-            throw std::runtime_error("Failed to allocate vertex buffer memory!");
+            throw std::runtime_error("Failed to allocate the vertex buffer memory!");
         vkBindBufferMemory(_device, buffer, bufferMemory, 0);
     }
 
@@ -538,36 +523,36 @@ namespace Engine {
         VkPipelineStageFlags sourceStage;
         VkPipelineStageFlags destinationStage;
 
-        if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-            newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-            barrier.srcAccessMask = 0;
-            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        switch (oldLayout) {
+            case VK_IMAGE_LAYOUT_UNDEFINED:
+                barrier.srcAccessMask = 0;
+                sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+                break;
+            case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+                barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                break;
+            default: throw std::invalid_argument("Unsupported image layout transition!");
+        }
 
-            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-                   newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
-            barrier.srcAccessMask = 0;
-            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-                   newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-            sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-                   newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
-            barrier.srcAccessMask = 0;
-            barrier.dstAccessMask =
-                    VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        } else throw std::invalid_argument("unsupported image layout transition!");
+        switch (newLayout) {
+            case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+            case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+                barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                break;
+            case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+                barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                break;
+            case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+                barrier.dstAccessMask =
+                        VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+                        VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+                destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+                break;
+            default: throw std::invalid_argument("Unsupported image layout transition!");
+        }
 
         vkCmdPipelineBarrier(commandBuffer,
                              sourceStage,
