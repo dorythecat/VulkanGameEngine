@@ -217,7 +217,7 @@ namespace Engine {
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Appearing);
         ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_Appearing);
 
-        if (!ImGui::Begin("Hello, world!", windowOpen, windowFlags)) {
+        if (!ImGui::Begin("Debug Menu", windowOpen, windowFlags)) {
             ImGui::End();
             return;
         }
