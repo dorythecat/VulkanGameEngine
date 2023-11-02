@@ -1,5 +1,5 @@
-#ifndef KEYBOARDMOVEMENTCONTROLLER_HPP
-#define KEYBOARDMOVEMENTCONTROLLER_HPP
+#ifndef MOVEMENTCONTROLLER_HPP
+#define MOVEMENTCONTROLLER_HPP
 
 #include "GLFW/glfw3.h"
 
@@ -8,7 +8,7 @@
 #include "../../entity/entity.hpp"
 
 namespace Engine {
-    class KeyboardMovementController {
+    class MovementController {
     public:
         struct KeyMappings {
             int moveLeft = GLFW_KEY_A;
@@ -17,16 +17,11 @@ namespace Engine {
             int moveBackward = GLFW_KEY_S;
             int moveUp = GLFW_KEY_SPACE;
             int moveDown = GLFW_KEY_LEFT_CONTROL;
-
-            int lookLeft = GLFW_KEY_LEFT;
-            int lookRight = GLFW_KEY_RIGHT;
-            int lookUp = GLFW_KEY_UP;
-            int lookDown = GLFW_KEY_DOWN;
         };
 
         KeyMappings keys{};
         float moveSpeed = 3.0f;
-        float lookSpeed = 1.5f;
+        float sensitivity = 0.1f;
 
         void move(GLFWwindow *window, float deltaTime, Entity &ent) const;
         void look(GLFWwindow *window, float deltaTime, Entity &ent) const;

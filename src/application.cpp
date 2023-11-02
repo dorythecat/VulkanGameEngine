@@ -44,7 +44,7 @@ namespace Engine {
                             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT).build();
 
         std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
-        for (unsigned int i = 0; i < globalDescriptorSets.size(); i++) {
+        for (uint32_t i = 0; i < globalDescriptorSets.size(); i++) {
             VkDescriptorBufferInfo bufferInfo = uboBuffers[i]->descriptorInfo();
             DescriptorWriter(*globalSetLayout, *globalPool)
                 .writeBuffer(0, &bufferInfo)
@@ -66,10 +66,14 @@ namespace Engine {
 
         auto cameraEntity = Entity::createEntity();
         cameraEntity.addComponent(std::make_unique<TransformComponent>(glm::vec3{0.0f, 0.0f, -2.5f}));
-        KeyboardMovementController cameraController{};
+        MovementController movementController{};
 
         initImGUI();
 
+        glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        if (glfwRawMouseMotionSupported()) glfwSetInputMode(window.getWindow(), GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
+        bool centered = true;
         float aspectRatio = 0.0f;
         auto currentTime = std::chrono::high_resolution_clock::now();
         while (!window.shouldClose()) {
@@ -77,9 +81,16 @@ namespace Engine {
 
             auto newTime = std::chrono::high_resolution_clock::now();
             float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+            deltaTime = glm::min(deltaTime, FrameInfo::MAX_DELTA_TIME);
             currentTime = newTime;
 
-            deltaTime = glm::min(deltaTime, FrameInfo::MAX_DELTA_TIME);
+            if (glfwGetKey(window.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS && centered) {
+                glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                centered = false;
+            } else if (glfwGetMouseButton(window.getWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !centered) {
+                glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                centered = true;
+            }
 
             if (aspectRatio != renderer.getAspectRatio()) {
                 aspectRatio = renderer.getAspectRatio();
@@ -90,10 +101,12 @@ namespace Engine {
             }
 
 
-            cameraController.move(window.getWindow(), deltaTime, cameraEntity);
-            cameraController.look(window.getWindow(), deltaTime, cameraEntity);
-            camera.setViewXYZ(cameraEntity.getTransformComponent()->position,
-                              cameraEntity.getTransformComponent()->rotation);
+            if (centered) {
+                movementController.move(window.getWindow(), deltaTime, cameraEntity);
+                movementController.look(window.getWindow(), deltaTime, cameraEntity);
+                camera.setViewXYZ(cameraEntity.getTransformComponent()->position,
+                                  cameraEntity.getTransformComponent()->rotation);
+            }
 
             if (auto commandBuffer = renderer.beginFrame()) {
                 uint32_t frameIndex = renderer.getCurrentFrameIndex();
@@ -187,8 +200,7 @@ namespace Engine {
         init_info.ImageCount = SwapChain::MAX_FRAMES_IN_FLIGHT;
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
         init_info.CheckVkResultFn = [](VkResult err) {
-            if (err != VK_SUCCESS)
-                throw std::runtime_error("ImGUI Vulkan error!");
+            if (err != VK_SUCCESS) throw std::runtime_error("ImGUI Vulkan error!");
         };
 
         ImGui_ImplGlfw_InitForVulkan(window.getWindow(), true);

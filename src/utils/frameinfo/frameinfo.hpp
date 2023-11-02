@@ -43,7 +43,7 @@ namespace Engine {
     };
 
     struct FrameInfo {
-        static constexpr float MAX_DELTA_TIME = 0.0333f; // 30 FPS
+        static constexpr float MAX_DELTA_TIME = 0.03333333f; // 30 FPS
 
         uint32_t frameIndex = 0;
         float frameTime = 0.0f;
