@@ -64,6 +64,7 @@ namespace Engine {
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(_physicalDevice); }
         VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+        VkSampleCountFlagBits getMaxUsableSampleCount();
 
         // Buffer Helper Functions
         void createBuffer(VkDeviceSize size,

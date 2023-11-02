@@ -193,27 +193,30 @@ namespace Engine {
             !supportedFeatures.samplerAnisotropy) return 0;
 
         switch (properties.deviceType) {
-            case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
-                score += 1000;
-                break;
-            case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
-                score += 500;
-                break;
-            case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
-                score += 250;
-                break;
-            case VK_PHYSICAL_DEVICE_TYPE_CPU:
-                score += 100;
-                break;
+            case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: score += 500; break;
+            case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: score += 200; break;
+            case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU: score += 100; break;
+            case VK_PHYSICAL_DEVICE_TYPE_CPU: break;
             case VK_PHYSICAL_DEVICE_TYPE_OTHER: throw std::runtime_error("Unknown device type!");
-            case VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM: throw std::runtime_error("Invalid device type!");
+            case VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM: throw std::runtime_error("Invalid device type!"); // Theoretically unreachable
         }
 
-        switch(properties.apiVersion) {
-            case VK_API_VERSION_1_0: score += 50; break;
-            case VK_API_VERSION_1_1: score += 100; break;
-            case VK_API_VERSION_1_2: score += 200; break;
+        switch (properties.apiVersion) {
             case VK_API_VERSION_1_3: score += 300; break;
+            case VK_API_VERSION_1_2: score += 200; break;
+            case VK_API_VERSION_1_1: score += 100; break;
+            case VK_API_VERSION_1_0: break;
+        }
+
+        switch (this->getMaxUsableSampleCount()) {
+            case VK_SAMPLE_COUNT_64_BIT: score += 500; break;
+            case VK_SAMPLE_COUNT_32_BIT: score += 200; break;
+            case VK_SAMPLE_COUNT_16_BIT: score += 100; break;
+            case VK_SAMPLE_COUNT_8_BIT: score += 50; break;
+            case VK_SAMPLE_COUNT_4_BIT: score += 20; break;
+            case VK_SAMPLE_COUNT_2_BIT: score += 10; break;
+            case VK_SAMPLE_COUNT_1_BIT: break;
+            case VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM: throw std::runtime_error("Invalid MSAA sample count value!"); // Theoretically unreachable
         }
 
         score += properties.limits.maxImageDimension2D;
@@ -300,6 +303,15 @@ namespace Engine {
         return requiredExtensions.empty();
     }
 
+    uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memProperties);
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+            if ((typeFilter & (1 << i)) &&
+                (memProperties.memoryTypes[i].propertyFlags & properties) == properties) return i;
+        throw std::runtime_error("Failed to find any suitable memory type!");
+    }
+
     QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) const {
         QueueFamilyIndices indices;
 
@@ -362,13 +374,15 @@ namespace Engine {
         } throw std::runtime_error("Failed to find any supported format!");
     }
 
-    uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-        VkPhysicalDeviceMemoryProperties memProperties;
-        vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memProperties);
-        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-            if ((typeFilter & (1 << i)) &&
-                (memProperties.memoryTypes[i].propertyFlags & properties) == properties) return i;
-        throw std::runtime_error("Failed to find any suitable memory type!");
+    VkSampleCountFlagBits Device::getMaxUsableSampleCount() {
+        VkSampleCountFlags counts = properties.limits.framebufferColorSampleCounts & properties.limits.framebufferDepthSampleCounts;
+        if (counts & VK_SAMPLE_COUNT_64_BIT) return VK_SAMPLE_COUNT_64_BIT;
+        if (counts & VK_SAMPLE_COUNT_32_BIT) return VK_SAMPLE_COUNT_32_BIT;
+        if (counts & VK_SAMPLE_COUNT_16_BIT) return VK_SAMPLE_COUNT_16_BIT;
+        if (counts & VK_SAMPLE_COUNT_8_BIT) return VK_SAMPLE_COUNT_8_BIT;
+        if (counts & VK_SAMPLE_COUNT_4_BIT) return VK_SAMPLE_COUNT_4_BIT;
+        if (counts & VK_SAMPLE_COUNT_2_BIT) return VK_SAMPLE_COUNT_2_BIT;
+        return VK_SAMPLE_COUNT_1_BIT;
     }
 
     void Device::createBuffer(VkDeviceSize size,
