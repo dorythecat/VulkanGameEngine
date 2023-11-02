@@ -68,13 +68,9 @@ namespace Engine {
         cameraEntity.addComponent(std::make_unique<TransformComponent>(glm::vec3{0.0f, 0.0f, -2.5f}));
         KeyboardMovementController cameraController{};
 
-        float aspectRatio = renderer.getAspectRatio();
-        // camera.setOrthographicProjection(aspectRatio, -1.0f, -1.0f, 1.0f);
-        // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
-        camera.setPerspectiveProjection(FOV, aspectRatio, NEAR_PLANE, FAR_PLANE);
-
         initImGUI();
 
+        float aspectRatio = 0.0f;
         auto currentTime = std::chrono::high_resolution_clock::now();
         while (!window.shouldClose()) {
             glfwPollEvents();
@@ -84,6 +80,15 @@ namespace Engine {
             currentTime = newTime;
 
             deltaTime = glm::min(deltaTime, FrameInfo::MAX_DELTA_TIME);
+
+            if (aspectRatio != renderer.getAspectRatio()) {
+                aspectRatio = renderer.getAspectRatio();
+
+                // camera.setOrthographicProjection(aspectRatio, -1.0f, -1.0f, 1.0f);
+                // camera.setOrthographicProjection(-aspectRatio, aspectRatio, -1.0f, 1.0f, -1.0f, 1.0f);
+                camera.setPerspectiveProjection(FOV, aspectRatio, NEAR_PLANE, FAR_PLANE);
+            }
+
 
             cameraController.move(window.getWindow(), deltaTime, cameraEntity);
             cameraController.look(window.getWindow(), deltaTime, cameraEntity);
