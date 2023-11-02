@@ -1,5 +1,7 @@
 #include "pipeline.hpp"
 
+#include "../frameinfo/frameinfo.hpp"
+
 namespace Engine {
     Pipeline::Pipeline(Device &device,
                        const std::string &vertShaderPath,
@@ -88,6 +90,25 @@ namespace Engine {
 
         pipelineInfo.basePipelineIndex = -1;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+        // Specialization constants
+        struct {
+            uint32_t maxPointLights = MAX_POINT_LIGHTS;
+        } specializationConstants;
+
+        std::array<VkSpecializationMapEntry, 1> specializationMapEntries{};
+        specializationMapEntries[0].constantID = 0;
+        specializationMapEntries[0].offset = 0;
+        specializationMapEntries[0].size = sizeof(specializationConstants.maxPointLights);
+
+        VkSpecializationInfo specializationInfo{};
+        specializationInfo.dataSize = sizeof(specializationConstants);
+        specializationInfo.mapEntryCount = static_cast<uint32_t>(specializationMapEntries.size());
+        specializationInfo.pMapEntries = specializationMapEntries.data();
+        specializationInfo.pData = &specializationConstants;
+
+        shaderStages[0].pSpecializationInfo = &specializationInfo;
+        shaderStages[1].pSpecializationInfo = &specializationInfo;
 
         if (vkCreateGraphicsPipelines(device.device(),
                                       VK_NULL_HANDLE,

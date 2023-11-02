@@ -14,6 +14,8 @@ struct PointLight {
     vec4 color;
 };
 
+layout (constant_id = 0) const uint MAX_POINT_LIGHTS = 8;
+
 layout (set = 0, binding = 0) uniform GlobalUbo {
     mat4 projMatrix;
     mat4 viewMatrix;
@@ -21,8 +23,8 @@ layout (set = 0, binding = 0) uniform GlobalUbo {
 
     vec4 ambientLightColor;
 
-    PointLight pointLights[8];
-    int pointLightCount;
+    PointLight pointLights[MAX_POINT_LIGHTS];
+    uint pointLightCount;
 
     float ambientStrength;
     float diffuseStrength;
