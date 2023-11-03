@@ -11,6 +11,8 @@
 
 #include "../device/device.hpp"
 
+#include "../image/image.hpp"
+
 namespace Engine {
     class SwapChain {
     public:
@@ -55,8 +57,7 @@ namespace Engine {
         std::vector<VkFramebuffer> swapChainFramebuffers;
         VkRenderPass renderPass;
 
-        std::vector<VkImage> depthImages;
-        std::vector<VkDeviceMemory> depthImageMemorys;
+        std::vector<std::unique_ptr<Image>> depthImages;
         std::vector<VkImageView> depthImageViews;
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;

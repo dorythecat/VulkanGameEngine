@@ -16,9 +16,8 @@
 #include "../buffer/buffer.hpp"
 
 // TODO(Dory): Add support for importing .stl and .3mf files
-// This are the ones I care about, rest can be added later, or never, I don't care, LULZ
+// This are the ones I care about, rest can be added later
 
-// TODO(Dory): Add support for textures
 // TODO(Dory): Add support for tangents and bitangents
 namespace Engine {
     class Model {

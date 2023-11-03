@@ -40,6 +40,7 @@ namespace Engine {
         Device &device;
 
         VkImage image;
+        VkImageView imageView = nullptr;
         VkDeviceMemory imageMemory;
 
         uint32_t width;

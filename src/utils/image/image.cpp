@@ -22,6 +22,7 @@ namespace Engine {
     }
 
     Image::~Image() {
+        if (imageView != nullptr) vkDestroyImageView(device.device(), imageView, nullptr);
         vkDestroyImage(device.device(), image, nullptr);
         vkFreeMemory(device.device(), imageMemory, nullptr);
     }
@@ -233,7 +234,6 @@ namespace Engine {
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
-        VkImageView imageView;
         if (vkCreateImageView(device.device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
             throw std::runtime_error("Failed to create the texture image view!");
 
