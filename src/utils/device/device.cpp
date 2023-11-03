@@ -133,7 +133,7 @@ namespace Engine {
 
         VkPhysicalDeviceFeatures deviceFeatures = {};
         deviceFeatures.samplerAnisotropy = VK_TRUE;
-        // deviceFeatures.fillModeNonSolid = VK_TRUE; // Enable wireframe rendering support
+        deviceFeatures.fillModeNonSolid = VK_TRUE; // Enable wireframe mode support
 
         VkDeviceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -371,7 +371,7 @@ namespace Engine {
 
             if ((tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) ||
                 (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)) return format;
-        } throw std::runtime_error("Failed to find any supported format!");
+        } throw std::runtime_error("Failed to find any supported formats!");
     }
 
     VkSampleCountFlagBits Device::getMaxUsableSampleCount() {
