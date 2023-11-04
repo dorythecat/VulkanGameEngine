@@ -19,10 +19,11 @@ namespace Engine {
         Image(Device &device,
               uint32_t width,
               uint32_t height,
+              VkSampleCountFlagBits numSamples,
               VkFormat format,
               VkImageTiling tiling,
               VkImageUsageFlags usage,
-              VkMemoryPropertyFlags properties);
+              VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         ~Image();
 
         Image(const Image &) = delete;
@@ -35,7 +36,7 @@ namespace Engine {
         void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
         void copyBufferToImage(VkBuffer buffer);
         void generateMipmaps();
-        VkImageView createImageView();
+        VkImageView createImageView(VkImageAspectFlags aspectFlags);
     private:
         Device &device;
 
@@ -45,6 +46,7 @@ namespace Engine {
 
         uint32_t width;
         uint32_t height;
+        VkSampleCountFlagBits numSamples;
 
         VkFormat format;
         VkImageTiling tiling;

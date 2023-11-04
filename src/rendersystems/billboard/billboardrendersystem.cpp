@@ -39,6 +39,7 @@ namespace Engine {
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfo(pipelineConfig);
         Pipeline::enableAlphaBlending(pipelineConfig);
+        Pipeline::setSampleCount(pipelineConfig, device.getDesiredSampleCount());
         pipelineConfig.attributeDescriptions.clear();
         pipelineConfig.bindingDescriptions.clear();
         pipelineConfig.renderPass = renderPass;

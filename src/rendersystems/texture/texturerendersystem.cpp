@@ -45,6 +45,7 @@ namespace Engine {
 
         PipelineConfigInfo pipelineConfig{};
         Pipeline::defaultPipelineConfigInfo(pipelineConfig);
+        Pipeline::setSampleCount(pipelineConfig, device.getDesiredSampleCount());
         pipelineConfig.renderPass = renderPass;
         pipelineConfig.pipelineLayout = pipelineLayout;
         pipeline = std::make_unique<Pipeline>(device,

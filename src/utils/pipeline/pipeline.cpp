@@ -222,4 +222,7 @@ namespace Engine {
     void Pipeline::enableWireframe(PipelineConfigInfo &configInfo) {
         configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_LINE;
     }
+    void Pipeline::setSampleCount(PipelineConfigInfo &configInfo, VkSampleCountFlagBits sampleCount) {
+        configInfo.multisampleInfo.rasterizationSamples = sampleCount;
+    }
 }

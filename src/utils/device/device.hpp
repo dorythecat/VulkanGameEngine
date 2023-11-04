@@ -1,6 +1,8 @@
 #ifndef GAME_ENGINE_DEVICE_HPP
 #define GAME_ENGINE_DEVICE_HPP
 
+#define DESIRED_SAMPLE_COUNT VK_SAMPLE_COUNT_8_BIT
+
 #include <vector>
 #include <cstring>
 #include <iostream>
@@ -64,7 +66,9 @@ namespace Engine {
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(_physicalDevice); }
         VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
         VkSampleCountFlagBits getMaxUsableSampleCount();
+        VkSampleCountFlagBits getDesiredSampleCount() { return std::min(DESIRED_SAMPLE_COUNT, getMaxUsableSampleCount()); }
 
         // Buffer Helper Functions
         void createBuffer(VkDeviceSize size,

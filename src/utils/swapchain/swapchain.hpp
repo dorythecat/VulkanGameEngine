@@ -57,6 +57,8 @@ namespace Engine {
         std::vector<VkFramebuffer> swapChainFramebuffers;
         VkRenderPass renderPass;
 
+        std::vector<std::unique_ptr<Image>> colorImages;
+        std::vector<VkImageView> colorImageViews;
         std::vector<std::unique_ptr<Image>> depthImages;
         std::vector<VkImageView> depthImageViews;
         std::vector<VkImage> swapChainImages;
@@ -77,6 +79,7 @@ namespace Engine {
         void init();
         void createSwapChain();
         void createImageViews();
+        void createColorResources();
         void createDepthResources();
         void createRenderPass();
         void createFramebuffers();

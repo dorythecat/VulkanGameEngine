@@ -50,6 +50,7 @@ namespace Engine {
         static void enableBackfaceCulling(PipelineConfigInfo& configInfo);
         static void enableAlphaBlending(PipelineConfigInfo& configInfo);
         static void enableWireframe(PipelineConfigInfo& configInfo);
+        static void setSampleCount(PipelineConfigInfo& configInfo, VkSampleCountFlagBits sampleCount);
     private:
         Device& device;
         VkPipeline graphicsPipeline;

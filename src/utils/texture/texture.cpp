@@ -3,7 +3,7 @@
 namespace Engine {
     Texture::Texture(Device &device, const char *texturePath) : device(device), texturePath(texturePath) {
         createTextureImage();
-        textureImageView = textureImage->createImageView();
+        textureImageView = textureImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
         createTextureSampler();
     }
 
@@ -40,10 +40,10 @@ namespace Engine {
                 device,
                 static_cast<uint32_t>(texWidth),
                 static_cast<uint32_t>(texHeight),
+                VK_SAMPLE_COUNT_1_BIT,
                 VK_FORMAT_R8G8B8A8_SRGB,
                 VK_IMAGE_TILING_OPTIMAL,
-                VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+                VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
         textureImage->transitionImageLayout(VK_IMAGE_LAYOUT_UNDEFINED,
                                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
         textureImage->copyBufferToImage(stagingBuffer.getBuffer());
@@ -77,7 +77,7 @@ namespace Engine {
             throw std::runtime_error("Failed to create the texture sampler!");
     }
 
-    VkDescriptorImageInfo Texture::getDescriptorImageInfo () const {
+    VkDescriptorImageInfo Texture::getDescriptorImageInfo() const {
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         imageInfo.imageView = textureImageView;

@@ -209,11 +209,13 @@ namespace Engine {
         }
 
         switch (this->getMaxUsableSampleCount()) {
-            case VK_SAMPLE_COUNT_64_BIT: score += 500; break;
-            case VK_SAMPLE_COUNT_32_BIT: score += 200; break;
-            case VK_SAMPLE_COUNT_16_BIT: score += 100; break;
-            case VK_SAMPLE_COUNT_8_BIT: score += 50; break;
-            case VK_SAMPLE_COUNT_4_BIT: score += 20; break;
+            // Anything about 8x is overkill, and isn't usually supported by consumer GPUs
+            // We grade it anyways, just in case
+            case VK_SAMPLE_COUNT_64_BIT: score += 1000; break;
+            case VK_SAMPLE_COUNT_32_BIT: score += 500; break;
+            case VK_SAMPLE_COUNT_16_BIT: score += 250; break;
+            case VK_SAMPLE_COUNT_8_BIT: score += 100; break;
+            case VK_SAMPLE_COUNT_4_BIT: score += 50; break;
             case VK_SAMPLE_COUNT_2_BIT: score += 10; break;
             case VK_SAMPLE_COUNT_1_BIT: break;
             case VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM: throw std::runtime_error("Invalid MSAA sample count value!"); // Theoretically unreachable
@@ -376,9 +378,10 @@ namespace Engine {
 
     VkSampleCountFlagBits Device::getMaxUsableSampleCount() {
         VkSampleCountFlags counts = properties.limits.framebufferColorSampleCounts & properties.limits.framebufferDepthSampleCounts;
-        if (counts & VK_SAMPLE_COUNT_64_BIT) return VK_SAMPLE_COUNT_64_BIT;
-        if (counts & VK_SAMPLE_COUNT_32_BIT) return VK_SAMPLE_COUNT_32_BIT;
-        if (counts & VK_SAMPLE_COUNT_16_BIT) return VK_SAMPLE_COUNT_16_BIT;
+        // Anything about 8x is overkill, and isn't usually supported by consumer GPUs
+        // if (counts & VK_SAMPLE_COUNT_64_BIT) return VK_SAMPLE_COUNT_64_BIT;
+        // if (counts & VK_SAMPLE_COUNT_32_BIT) return VK_SAMPLE_COUNT_32_BIT;
+        // if (counts & VK_SAMPLE_COUNT_16_BIT) return VK_SAMPLE_COUNT_16_BIT;
         if (counts & VK_SAMPLE_COUNT_8_BIT) return VK_SAMPLE_COUNT_8_BIT;
         if (counts & VK_SAMPLE_COUNT_4_BIT) return VK_SAMPLE_COUNT_4_BIT;
         if (counts & VK_SAMPLE_COUNT_2_BIT) return VK_SAMPLE_COUNT_2_BIT;
