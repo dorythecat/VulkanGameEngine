@@ -207,16 +207,7 @@ namespace Engine {
         ImGui_ImplVulkan_Init(&init_info, renderer.getSwapChainRenderPass());
 
         VkCommandBuffer commandBuffer = device.beginSingleTimeCommands();
-
         ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-
-        VkSubmitInfo end_info = {};
-        end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        end_info.commandBufferCount = 1;
-        end_info.pCommandBuffers = &commandBuffer;
-        vkEndCommandBuffer(commandBuffer);
-        vkQueueSubmit(device.graphicsQueue(), 1, &end_info, VK_NULL_HANDLE);
-
         device.endSingleTimeCommands(commandBuffer);
 
         vkDeviceWaitIdle(device.device());
