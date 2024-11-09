@@ -20,10 +20,12 @@ namespace Engine {
 
         SwapChain(Device &deviceRef, VkExtent2D windowExtent);
         SwapChain(Device &deviceRef, VkExtent2D windowExtent, std::shared_ptr<SwapChain> previous);
-        ~SwapChain();
+        ~SwapChain() { del(); }
 
         SwapChain(const SwapChain &) = delete;
         SwapChain& operator=(const SwapChain &) = delete;
+
+        void del();
 
         VkFramebuffer getFrameBuffer(uint32_t index) { return swapChainFramebuffers[index]; }
         VkRenderPass getRenderPass() const { return renderPass; }

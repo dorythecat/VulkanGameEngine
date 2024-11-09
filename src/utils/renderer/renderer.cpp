@@ -7,8 +7,9 @@ namespace Engine {
         recreateSwapChain();
         createCommandBuffers();
     }
-    Renderer::~Renderer() {
+    void Renderer::del() {
         freeCommandBuffers();
+        swapChain->del();
     }
 
     VkCommandBuffer Renderer::beginFrame () {

@@ -62,6 +62,8 @@ namespace Engine {
 
         void run();
     private:
+        DeletionQueue _maindelqueue;
+
         Window window{WIDTH, HEIGHT, "Vulkan test window"};
         Device device{window};
         Renderer renderer{window, device};

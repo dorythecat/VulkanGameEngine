@@ -1,4 +1,5 @@
 #include "device.hpp"
+#include "../../application.hpp"
 
 namespace Engine {
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -41,13 +42,12 @@ namespace Engine {
         createCommandPool();
     }
 
-    Device::~Device() {
+    void Device::del() {
+        _delqueue.flush();
         vkDestroyCommandPool(_device, _commandPool, nullptr);
         vkDestroyDevice(_device, nullptr);
-
-        if (enableValidationLayers) DestroyDebugUtilsMessengerEXT(_instance, debugMessenger, nullptr);
-
         vkDestroySurfaceKHR(_instance, _surface, nullptr);
+        if (enableValidationLayers) DestroyDebugUtilsMessengerEXT(_instance, debugMessenger, nullptr);
         vkDestroyInstance(_instance, nullptr);
     }
 
@@ -400,7 +400,7 @@ namespace Engine {
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
         if (vkCreateBuffer(_device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
-            throw std::runtime_error("Failed to create the vertex buffer!");
+            throw std::runtime_error("Failed to create the buffer!");
 
         VkMemoryRequirements memRequirements;
         vkGetBufferMemoryRequirements(_device, buffer, &memRequirements);
@@ -411,7 +411,7 @@ namespace Engine {
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
         if (vkAllocateMemory(_device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
-            throw std::runtime_error("Failed to allocate the vertex buffer memory!");
+            throw std::runtime_error("Failed to allocate the buffer memory!");
         vkBindBufferMemory(_device, buffer, bufferMemory, 0);
     }
 

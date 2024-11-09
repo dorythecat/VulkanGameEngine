@@ -14,10 +14,12 @@ namespace Engine {
     class Renderer {
     public:
         Renderer(Window &window, Device &device);
-        ~Renderer();
+        ~Renderer() { del(); }
 
         Renderer(const Renderer&) = delete;
         Renderer& operator=(const Renderer&) = delete;
+
+        void del();
 
         VkRenderPass getSwapChainRenderPass() const { return swapChain->getRenderPass(); }
         bool isFrameInProgress() const { return isFrameStarted; }

@@ -24,7 +24,7 @@ namespace Engine {
               VkImageTiling tiling,
               VkImageUsageFlags usage,
               VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-        ~Image();
+        ~Image() { del(); }
 
         Image(const Image &) = delete;
         Image operator=(const Image &) = delete;
@@ -32,6 +32,8 @@ namespace Engine {
         Image& operator=(Image &&) = delete;
 
         uint32_t getMipLevels() const { return mipLevels; }
+
+        void del();
 
         void transitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
         void copyBufferToImage(VkBuffer buffer);

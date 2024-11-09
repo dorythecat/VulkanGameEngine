@@ -24,7 +24,7 @@ namespace Engine {
         createImage();
     }
 
-    Image::~Image() {
+    void Image::del() {
         if (imageView != nullptr) vkDestroyImageView(device.device(), imageView, nullptr);
         vkDestroyImage(device.device(), image, nullptr);
         vkFreeMemory(device.device(), imageMemory, nullptr);

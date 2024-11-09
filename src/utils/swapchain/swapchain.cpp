@@ -12,10 +12,14 @@ namespace Engine {
 
         oldSwapChain = nullptr; // Clean up, since we no longer need it, and we can free its memory.
     }
-    SwapChain::~SwapChain() {
+    void SwapChain::del() {
         for (auto imageView : swapChainImageViews)
             vkDestroyImageView(device.device(), imageView, nullptr);
-        swapChainImageViews.clear();
+
+        for (size_t i = 0; i < imageCount(); i++) {
+            colorImages[i]->del();
+            depthImages[i]->del();
+        }
 
         if (swapChain != nullptr) {
             vkDestroySwapchainKHR(device.device(), swapChain, nullptr);

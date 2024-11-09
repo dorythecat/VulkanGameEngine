@@ -23,6 +23,11 @@ namespace Engine {
         globalPool = nullptr;
         framePools.clear();
 
+        _maindelqueue.flush();
+
+        renderer.del();
+        device.del();
+
         destroyImGUI();
     }
 
@@ -178,6 +183,10 @@ namespace Engine {
         VkDescriptorPool imguiPool;
         if (vkCreateDescriptorPool(device.device(), &pool_info, nullptr, &imguiPool) != VK_SUCCESS)
             throw std::runtime_error("Failed to create the ImGUI descriptor pool!");
+
+        _maindelqueue.push_function([=, this]() {
+            vkDestroyDescriptorPool(device.device(), imguiPool, nullptr);
+        });
 
 
         IMGUI_CHECKVERSION();

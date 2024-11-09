@@ -13,6 +13,7 @@
 #include <vulkan/vulkan.h>
 
 #include "../window/window.hpp"
+#include "../utils.hpp"
 
 namespace Engine {
     struct SwapChainSupportDetails {
@@ -41,12 +42,14 @@ namespace Engine {
         VkPhysicalDeviceProperties properties;
 
         explicit Device(Window &window);
-        ~Device();
+        ~Device() { del(); }
 
         Device(const Device &) = default;
         Device& operator=(const Device &) = delete;
         Device(Device &&) = delete;
         Device& operator=(Device &&) = delete;
+
+        void del();
 
         VkCommandPool getCommandPool() const { return _commandPool; }
         VkInstance instance() { return _instance; }
@@ -99,6 +102,8 @@ namespace Engine {
         const std::vector<const char*> deviceExtensions = {
                 VK_KHR_SWAPCHAIN_EXTENSION_NAME
         };
+
+        DeletionQueue _delqueue;
 
         VkDebugUtilsMessengerEXT debugMessenger;
         Window &window;
