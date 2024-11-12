@@ -13,13 +13,11 @@ namespace std {
 
 namespace Engine::Procedural {
     void Cube::generateModel() {
-        std::unordered_map<Model::Vertex, uint32_t> uniqueVertices{};
-
         // Reserve space for the vertices and indices. This is done to avoid reallocations, which should give us better performance.
         uint32_t reserveSpace = 6 * resolution * resolution + 2;
         vertices.reserve(reserveSpace);
-        indices.reserve(reserveSpace);
-        uniqueVertices.reserve(reserveSpace);
+        indices.reserve(6 * reserveSpace);
+        std::unordered_map<Model::Vertex, uint32_t> uniqueVertices(reserveSpace);
 
         // Precomputed values for the loops.
         float step = 1.0f / static_cast<float>(resolution);

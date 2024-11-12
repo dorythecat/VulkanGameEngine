@@ -13,13 +13,11 @@ namespace std {
 
 namespace Engine::Procedural {
     void MarchingCubes::generateModel() {
-        std::unordered_map<Model::Vertex, uint32_t> uniqueVertices{};
-
         // Reserve space for the vertices and indices. This is done to avoid reallocations, which should give us better performance.
         uint32_t reserveSpace = resolution * resolution * resolution;
         vertices.reserve(reserveSpace);
         indices.reserve(reserveSpace);
-        uniqueVertices.reserve(reserveSpace);
+        std::unordered_map<Model::Vertex, uint32_t> uniqueVertices(reserveSpace);
 
         // Precomputed values for the loops.
         precision_t step = 2.0f / static_cast<precision_t>(resolution);
