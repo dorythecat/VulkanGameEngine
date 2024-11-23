@@ -1,38 +1,27 @@
 #ifndef TEXTURERENDERSYSTEM_HPP
 #define TEXTURERENDERSYSTEM_HPP
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
-
-#include <array>
-#include <cassert>
-#include <stdexcept>
-#include "../../utils/frameinfo/frameinfo.hpp"
-#include "../../utils/pipeline/pipeline.hpp"
+#include "../rendersystem.hpp"
 
 namespace Engine {
-    class TextureRenderSystem {
+    class TextureRenderSystem : RenderSystem {
     public:
         TextureRenderSystem(Device &device,
                             VkRenderPass renderPass,
-                            VkDescriptorSetLayout globalSetLayout);
-        ~TextureRenderSystem();
+                            VkDescriptorSetLayout globalSetLayout) :
+                RenderSystem(device,
+                             renderPass,
+                             globalSetLayout) { init(); }
 
-        TextureRenderSystem(const TextureRenderSystem&) = delete;
-        TextureRenderSystem& operator=(const TextureRenderSystem&) = delete;
-
-        void render(FrameInfo &frameInfo);
+        void render(FrameInfo &frameInfo) override;
+        using RenderSystem::toggleWireframe;
     private:
-        Device &device;
-        std::unique_ptr<Pipeline> pipeline;
-        VkPipelineLayout pipelineLayout;
+        const std::string vertPath() override { return "../res/shaders/compiled/texture.vert.spv"; }
+        const std::string fragPath() override { return "../res/shaders/compiled/texture.frag.spv"; }
 
         std::unique_ptr<DescriptorSetLayout> renderSystemLayout;
 
-        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
-        void createPipeline(VkRenderPass renderPass);
+        void createPipelineLayout() override;
     };
 }
 

@@ -1,41 +1,29 @@
 #ifndef BILLBOARDRENDERSYSTEM_HPP
 #define BILLBOARDRENDERSYSTEM_HPP
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
-
-#include <memory>
-#include <vector>
-#include <array>
-#include <map>
 #include <ranges>
 
-#include "../../utils/device/device.hpp"
-#include "../../utils/pipeline/pipeline.hpp"
-#include "../../utils/entity/entity.hpp"
-#include "../../utils/camera/camera.hpp"
-#include "../../utils/frameinfo/frameinfo.hpp"
+#include "../rendersystem.hpp"
 
 namespace Engine {
-    class BillboardRenderSystem {
+    class BillboardRenderSystem : RenderSystem {
     public:
-        BillboardRenderSystem(Device &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
-        ~BillboardRenderSystem();
-
-        BillboardRenderSystem(const BillboardRenderSystem&) = delete;
-        BillboardRenderSystem& operator=(const BillboardRenderSystem&) = delete;
+        BillboardRenderSystem(Device &device,
+                              VkRenderPass renderPass,
+                              VkDescriptorSetLayout globalSetLayout) :
+                RenderSystem(device,
+                             renderPass,
+                             globalSetLayout) {
+            alphaBlending = true;
+            init();
+        }
 
         void update(FrameInfo &frameInfo, GlobalUbo &ubo);
-        void render(FrameInfo &frameInfo);
+        void render(FrameInfo &frameInfo) override;
+        // We don't include the wireframe function here cause that'd be stupid
     private:
-        Device &device;
-        std::unique_ptr<Pipeline> pipeline;
-        VkPipelineLayout pipelineLayout;
-
-        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
-        void createPipeline(VkRenderPass renderPass);
+        const std::string vertPath() override { return "../res/shaders/compiled/billboard.vert.spv"; }
+        const std::string fragPath() override { return "../res/shaders/compiled/billboard.frag.spv"; }
     };
 }
 

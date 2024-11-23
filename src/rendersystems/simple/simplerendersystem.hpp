@@ -1,40 +1,23 @@
 #ifndef SIMPLERENDERSYSTEM_HPP
 #define SIMPLERENDERSYSTEM_HPP
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
-
-#include <memory>
-#include <vector>
-#include <array>
-
-#include "../../utils/device/device.hpp"
-#include "../../utils/pipeline/pipeline.hpp"
-#include "../../utils/entity/entity.hpp"
-#include "../../utils/camera/camera.hpp"
-#include "../../utils/frameinfo/frameinfo.hpp"
+#include "../rendersystem.hpp"
 
 namespace Engine {
-    class SimpleRenderSystem {
+    class SimpleRenderSystem : RenderSystem {
     public:
         SimpleRenderSystem(Device &device,
                            VkRenderPass renderPass,
-                           VkDescriptorSetLayout globalSetLayout);
-        ~SimpleRenderSystem();
+                           VkDescriptorSetLayout globalSetLayout) :
+                RenderSystem(device,
+                             renderPass,
+                             globalSetLayout) { init(); }
 
-        SimpleRenderSystem(const SimpleRenderSystem&) = delete;
-        SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
-
-        void render(FrameInfo &frameInfo);
+        void render(FrameInfo &frameInfo) override;
+        using RenderSystem::toggleWireframe;
     private:
-        Device &device;
-        std::unique_ptr<Pipeline> pipeline;
-        VkPipelineLayout pipelineLayout;
-
-        void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
-        void createPipeline(VkRenderPass renderPass);
+        const std::string vertPath() override { return "../res/shaders/compiled/standard.vert.spv"; }
+        const std::string fragPath() override { return "../res/shaders/compiled/standard.frag.spv"; }
     };
 }
 

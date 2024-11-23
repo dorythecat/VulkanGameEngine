@@ -2,18 +2,7 @@
 #include "../../utils/entity/components/model.hpp"
 
 namespace Engine {
-    TextureRenderSystem::TextureRenderSystem(Device &device,
-                                                VkRenderPass renderPass,
-                                                VkDescriptorSetLayout globalSetLayout)
-                                                : device {device} {
-        createPipelineLayout(globalSetLayout);
-        createPipeline(renderPass);
-    }
-    TextureRenderSystem::~TextureRenderSystem() {
-        vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
-    }
-
-    void TextureRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
+    void TextureRenderSystem::createPipelineLayout() {
         // This is for push constants
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -38,20 +27,6 @@ namespace Engine {
         pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
         if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
             throw std::runtime_error("Failed to create the pipeline layout!");
-    }
-
-    void TextureRenderSystem::createPipeline(VkRenderPass renderPass) {
-        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
-
-        PipelineConfigInfo pipelineConfig{};
-        Pipeline::defaultPipelineConfigInfo(pipelineConfig);
-        Pipeline::setSampleCount(pipelineConfig, device.getDesiredSampleCount());
-        pipelineConfig.renderPass = renderPass;
-        pipelineConfig.pipelineLayout = pipelineLayout;
-        pipeline = std::make_unique<Pipeline>(device,
-                                              "../res/shaders/compiled/texture.vert.spv",
-                                              "../res/shaders/compiled/texture.frag.spv",
-                                              pipelineConfig);
     }
 
     void TextureRenderSystem::render(FrameInfo &frameInfo) {

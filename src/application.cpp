@@ -111,6 +111,10 @@ namespace Engine {
                 movementController.look(window.getWindow(), deltaTime, cameraEntity);
                 camera.setViewXYZ(cameraEntity.getTransformComponent()->position,
                                   cameraEntity.getTransformComponent()->rotation);
+                if (glfwGetKey(window.getWindow(), GLFW_KEY_F5) == GLFW_PRESS) {
+                    simpleRenderSystem.toggleWireframe();
+                    textureRenderSystem.toggleWireframe();
+                }
             }
 
             if (auto commandBuffer = renderer.beginFrame()) {
