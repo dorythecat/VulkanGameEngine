@@ -283,7 +283,7 @@ namespace Engine {
                                                                        glm::vec3{0.5f, 0.5f, 0.5f}));
         entities.emplace(sphereSmooth.getId(), std::move(sphereSmooth));
 
-        Procedural::Quad q(device, 128);
+        Procedural::Terrain q(device, 2, {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f});
         q.generateModel();
         std::shared_ptr<Model> quadModel = q.getModel();
         Entity quad = Entity::createEntity();

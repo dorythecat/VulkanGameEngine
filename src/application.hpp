@@ -29,6 +29,7 @@
 #include "utils/procedural/quad/quad.hpp"
 #include "utils/procedural/cube/cube.hpp"
 #include "utils/procedural/marchingcubes/marchingcubes.hpp"
+#include "utils/procedural/terrain/terrain.hpp"
 
 // Render systems
 #include "rendersystems/simple/simplerendersystem.hpp"
