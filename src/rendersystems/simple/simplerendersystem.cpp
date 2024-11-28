@@ -13,7 +13,7 @@ namespace Engine {
                                 0,
                                 nullptr);
 
-        for (auto &ent : frameInfo.entities | std::views::values) {
+        for (Entity &ent : frameInfo.entities | std::views::values) {
             if (!ent.hasComponent(MODEL) || ent.hasComponent(TEXTURE)) continue;
 
             PushConstantData push{};

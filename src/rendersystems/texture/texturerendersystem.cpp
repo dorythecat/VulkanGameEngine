@@ -14,7 +14,7 @@ namespace Engine {
                             VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                             VK_SHADER_STAGE_FRAGMENT_BIT).build();
 
-        std::vector<VkDescriptorSetLayout> descriptorSetLayouts{
+        const std::vector descriptorSetLayouts {
             globalSetLayout,
             renderSystemLayout->getDescriptorSetLayout()
         };
@@ -41,7 +41,7 @@ namespace Engine {
                                 0,
                                 nullptr);
 
-        for (auto &ent : frameInfo.entities | std::views::values) {
+        for (Entity &ent : frameInfo.entities | std::views::values) {
             if (!ent.hasComponent(MODEL) || !ent.hasComponent(TEXTURE)) continue;
 
             VkDescriptorSet descriptorSet;
