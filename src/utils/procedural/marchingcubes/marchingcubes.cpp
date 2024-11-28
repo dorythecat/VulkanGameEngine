@@ -1,15 +1,13 @@
 #include "marchingcubes.hpp"
 
-namespace std {
-    template<>
-    struct hash<Engine::Model::Vertex> {
-        inline size_t operator()(Engine::Model::Vertex const &vertex) const {
-            size_t seed = 0;
-            hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.texCoord);
-            return seed;
-        }
-    };
-}
+template<>
+struct std::hash<Engine::Model::Vertex> {
+    size_t operator()(Engine::Model::Vertex const &vertex) const noexcept {
+        size_t seed = 0;
+        hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.texCoord);
+        return seed;
+    }
+};
 
 namespace Engine::Procedural {
     void MarchingCubes::generateModel() {
@@ -61,7 +59,9 @@ namespace Engine::Procedural {
 
                     // Translate from triangles to vertices.
                     for (uint8_t i = 0; i < n; i++) {
-                        glm::vec3 normal = glm::normalize(glm::cross(triangles[i].p[1] - triangles[i].p[0], triangles[i].p[2] - triangles[i].p[0]));
+                        glm::vec3 normal = normalize(cross(
+                            triangles[i].p[1] - triangles[i].p[0],
+                            triangles[i].p[2] - triangles[i].p[0]));
                         
                         Model::Vertex vertex1{};
                         vertex1.position = triangles[i].p[0];
@@ -81,17 +81,17 @@ namespace Engine::Procedural {
                         vertex3.normal = normal;
                         vertex3.texCoord = { 0.0f, 0.0f };
 
-                        if (uniqueVertices.count(vertex1) == 0) {
+                        if (!uniqueVertices.contains(vertex1)) {
                             uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
                             vertices.push_back(vertex1);
                         }
 
-                        if (uniqueVertices.count(vertex2) == 0) {
+                        if (!uniqueVertices.contains(vertex2)) {
                             uniqueVertices[vertex2] = static_cast<uint32_t>(vertices.size());
                             vertices.push_back(vertex2);
                         }
 
-                        if (uniqueVertices.count(vertex3) == 0) {
+                        if (!uniqueVertices.contains(vertex3)) {
                             uniqueVertices[vertex3] = static_cast<uint32_t>(vertices.size());
                             vertices.push_back(vertex3);
                         }
@@ -102,10 +102,10 @@ namespace Engine::Procedural {
                     } delete[] triangles;
                 }
             }
-        } builder = *new Model::Builder{vertices, indices};
+        } builder = Model::Builder(vertices, indices);
     }
 
-    uint8_t MarchingCubes::polygonise(cell grid, triangle *triangles) {
+    uint8_t MarchingCubes::polygonise(const cell &grid, triangle *triangles) const {
         uint8_t cubeIndex = 0;
         if (grid.val[0] - isolevel < std::numeric_limits<precision_t>::epsilon()) cubeIndex |= 1;
         if (grid.val[1] - isolevel < std::numeric_limits<precision_t>::epsilon()) cubeIndex |= 2;
@@ -119,7 +119,7 @@ namespace Engine::Procedural {
         if (cubeIndex == 0 || cubeIndex == 255) return 0; // Cube is entirely in or out of the surface
 
         glm::vec3 vertices[12];
-        uint16_t edge = edgeTable[cubeIndex];
+        const uint16_t edge = edgeTable[cubeIndex];
         if (edge & 1) vertices[0] = interpolateVector(grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
         if (edge & 2) vertices[1] = interpolateVector(grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
         if (edge & 4) vertices[2] = interpolateVector(grid.p[2], grid.p[3], grid.val[2], grid.val[3]);
@@ -141,22 +141,18 @@ namespace Engine::Procedural {
         } return n;
     }
 
-    precision_t MarchingCubes::clamp(precision_t x, precision_t edge0, precision_t edge1) {
-        if (abs(x) < std::numeric_limits<precision_t>::epsilon()) return 0.0f;
-        if (abs(x - 1.0f) < std::numeric_limits<precision_t>::epsilon()) return 1.0f;
-        return x;
-    }
-
-    glm::vec3 MarchingCubes::interpolateVector(glm::vec3 p1, glm::vec3 p2, precision_t valp0, precision_t valp1) const {
-        precision_t x0 = isolevel - valp0;
-        precision_t x1 = valp1 - valp0;
+    glm::vec3 MarchingCubes::interpolateVector(const glm::vec3 p1,
+                                               const glm::vec3 p2,
+                                               const precision_t valp0,
+                                               const precision_t valp1) const {
+        const precision_t x0 = isolevel - valp0;
+        const precision_t x1 = valp1 - valp0;
 
         if (abs(x0) <= std::numeric_limits<precision_t>::epsilon() ||
             abs(x1) <= std::numeric_limits<precision_t>::epsilon()) return p1;
         if (abs(isolevel - valp1) <= std::numeric_limits<precision_t>::epsilon()) return p2;
 
-        precision_t mu = clamp(x0 / x1, valp0, valp1);
-
+        const precision_t mu = x0 / x1;
         return {
             p1.x + mu * (p2.x - p1.x),
             p1.y + mu * (p2.y - p1.y),
@@ -164,7 +160,12 @@ namespace Engine::Procedural {
         };
     }
 
-    precision_t MarchingCubes::testSurface(precision_t x, precision_t y, precision_t z) {
+    precision_t MarchingCubes::testSurface(const precision_t x,
+                                           const precision_t y,
+                                           const precision_t z) {
+        // NOTE: For everything but the metaballs, the triangle orientation seems inverted, so maybe enabling
+        // back face culling is a good idea?
+
         // return x * x + y * y + z * z - 1.0f; // Sphere
 
         // Torus
@@ -173,7 +174,7 @@ namespace Engine::Procedural {
         // return b * b - a;
 
         // Two metaballs
-        precision_t a = x * x + y * y + z * z + 0.25f;
+        const precision_t a = x * x + y * y + z * z + 0.25f;
         return (2.0f / std::sqrt(a + x) + 1.0f / std::sqrt(a - x)) / 5.0f - 1.0f;
     }
 }

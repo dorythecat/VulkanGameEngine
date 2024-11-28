@@ -44,9 +44,8 @@ namespace Engine::Procedural {
         precision_t (*surface)(precision_t, precision_t, precision_t);
         precision_t isolevel;
 
-        uint8_t polygonise(cell grid, triangle *triangles);
+        uint8_t polygonise(const cell &grid, triangle *triangles) const;
 
-        static precision_t clamp(precision_t x, precision_t edge0 = 0.0f, precision_t edge1 = 1.0f);
         glm::vec3 interpolateVector(glm::vec3 p1, glm::vec3 p2, precision_t valp0, precision_t valp1) const;
     };
 }

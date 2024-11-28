@@ -43,10 +43,15 @@ namespace Engine {
             std::vector<Vertex> vertices{};
             std::vector<uint32_t> indices{};
 
+            Builder() = default;
+            Builder(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices) :
+            vertices(vertices), indices(indices) {}
+            ~Builder() = default;
+
             void loadModel(const std::string &path);
         };
 
-        Model(Device &device, const Model::Builder &builder);
+        Model(const Device &device, const Builder &builder);
         ~Model();
 
         Model(const Model&) = delete;
@@ -54,7 +59,7 @@ namespace Engine {
 
         static std::unique_ptr<Model> createModelFromFile(Device &device, const std::string &path);
 
-        void bind(VkCommandBuffer commandBuffer);
+        void bind(VkCommandBuffer commandBuffer) const;
         void draw(VkCommandBuffer commandBuffer) const;
     private:
         Device device;

@@ -1,15 +1,13 @@
 #include "cube.hpp"
 
-namespace std {
-    template<>
-    struct hash<Engine::Model::Vertex> {
-        inline size_t operator()(Engine::Model::Vertex const &vertex) const {
-            size_t seed = 0;
-            hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.texCoord);
-            return seed;
-        }
-    };
-}
+template<>
+struct std::hash<Engine::Model::Vertex> {
+    size_t operator()(Engine::Model::Vertex const &vertex) const noexcept {
+        size_t seed = 0;
+        hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.texCoord);
+        return seed;
+    }
+};
 
 namespace Engine::Procedural {
     void Cube::generateModel() {
@@ -60,22 +58,22 @@ namespace Engine::Procedural {
                 vertex4.texCoord = {x1Step,
                                     y1Step};
 
-                if (uniqueVertices.count(vertex1) == 0) {
+                if (!uniqueVertices.contains(vertex1)) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex1);
                 }
 
-                if (uniqueVertices.count(vertex2) == 0) {
+                if (!uniqueVertices.contains(vertex2)) {
                     uniqueVertices[vertex2] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex2);
                 }
 
-                if (uniqueVertices.count(vertex3) == 0) {
+                if (!uniqueVertices.contains(vertex3)) {
                     uniqueVertices[vertex3] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex3);
                 }
 
-                if (uniqueVertices.count(vertex4) == 0) {
+                if (!uniqueVertices.contains(vertex4)) {
                     uniqueVertices[vertex4] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex4);
                 }
@@ -120,22 +118,22 @@ namespace Engine::Procedural {
                 vertex4p.texCoord = {x1Step,
                                      y1Step};
 
-                if (uniqueVertices.count(vertex1p) == 0) {
+                if (!uniqueVertices.contains(vertex1p)) {
                     uniqueVertices[vertex1p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex1p);
                 }
 
-                if (uniqueVertices.count(vertex2p) == 0) {
+                if (!uniqueVertices.contains(vertex2p)) {
                     uniqueVertices[vertex2p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex2p);
                 }
 
-                if (uniqueVertices.count(vertex3p) == 0) {
+                if (!uniqueVertices.contains(vertex3p)) {
                     uniqueVertices[vertex3p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex3p);
                 }
 
-                if (uniqueVertices.count(vertex4p) == 0) {
+                if (!uniqueVertices.contains(vertex4p)) {
                     uniqueVertices[vertex4p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex4p);
                 }
@@ -185,22 +183,22 @@ namespace Engine::Procedural {
                 vertex4.texCoord = {x1Step,
                                     z1Step};
 
-                if (uniqueVertices.count(vertex1) == 0) {
+                if (!uniqueVertices.contains(vertex1)) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex1);
                 }
 
-                if (uniqueVertices.count(vertex2) == 0) {
+                if (!uniqueVertices.contains(vertex2)) {
                     uniqueVertices[vertex2] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex2);
                 }
 
-                if (uniqueVertices.count(vertex3) == 0) {
+                if (!uniqueVertices.contains(vertex3)) {
                     uniqueVertices[vertex3] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex3);
                 }
 
-                if (uniqueVertices.count(vertex4) == 0) {
+                if (!uniqueVertices.contains(vertex4)) {
                     uniqueVertices[vertex4] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex4);
                 }
@@ -244,22 +242,22 @@ namespace Engine::Procedural {
                 vertex4p.texCoord = {x1Step,
                                      z1Step};
 
-                if (uniqueVertices.count(vertex1p) == 0) {
+                if (!uniqueVertices.contains(vertex1p)) {
                     uniqueVertices[vertex1p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex1p);
                 }
 
-                if (uniqueVertices.count(vertex2p) == 0) {
+                if (!uniqueVertices.contains(vertex2p)) {
                     uniqueVertices[vertex2p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex2p);
                 }
 
-                if (uniqueVertices.count(vertex3p) == 0) {
+                if (!uniqueVertices.contains(vertex3p)) {
                     uniqueVertices[vertex3p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex3p);
                 }
 
-                if (uniqueVertices.count(vertex4p) == 0) {
+                if (!uniqueVertices.contains(vertex4p)) {
                     uniqueVertices[vertex4p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex4p);
                 }
@@ -314,22 +312,22 @@ namespace Engine::Procedural {
                 vertex4.texCoord = {y1Step,
                                     z1Step};
 
-                if (uniqueVertices.count(vertex1) == 0) {
+                if (!uniqueVertices.contains(vertex1)) {
                     uniqueVertices[vertex1] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex1);
                 }
 
-                if (uniqueVertices.count(vertex2) == 0) {
+                if (!uniqueVertices.contains(vertex2)) {
                     uniqueVertices[vertex2] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex2);
                 }
 
-                if (uniqueVertices.count(vertex3) == 0) {
+                if (!uniqueVertices.contains(vertex3)) {
                     uniqueVertices[vertex3] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex3);
                 }
 
-                if (uniqueVertices.count(vertex4) == 0) {
+                if (!uniqueVertices.contains(vertex4)) {
                     uniqueVertices[vertex4] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex4);
                 }
@@ -373,22 +371,22 @@ namespace Engine::Procedural {
                 vertex4p.texCoord = {y1Step,
                                      z1Step};
 
-                if (uniqueVertices.count(vertex1p) == 0) {
+                if (!uniqueVertices.contains(vertex1p)) {
                     uniqueVertices[vertex1p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex1p);
                 }
 
-                if (uniqueVertices.count(vertex2p) == 0) {
+                if (!uniqueVertices.contains(vertex2p)) {
                     uniqueVertices[vertex2p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex2p);
                 }
 
-                if (uniqueVertices.count(vertex3p) == 0) {
+                if (!uniqueVertices.contains(vertex3p)) {
                     uniqueVertices[vertex3p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex3p);
                 }
 
-                if (uniqueVertices.count(vertex4p) == 0) {
+                if (!uniqueVertices.contains(vertex4p)) {
                     uniqueVertices[vertex4p] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex4p);
                 }
@@ -405,6 +403,6 @@ namespace Engine::Procedural {
             }
         }
 
-        builder = *new Model::Builder{vertices, indices};
+        builder = Model::Builder(vertices, indices);
     }
 }

@@ -3,19 +3,17 @@
 
 #include "model.hpp"
 
-namespace std {
-    template<>
-    struct hash<Engine::Model::Vertex> {
-        inline size_t operator()(Engine::Model::Vertex const &vertex) const {
-            size_t seed = 0;
-            hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.texCoord);
-            return seed;
-        }
-    };
-}
+template<>
+struct std::hash<Engine::Model::Vertex> {
+    size_t operator()(Engine::Model::Vertex const &vertex) const noexcept {
+        size_t seed = 0;
+        hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.texCoord);
+        return seed;
+    }
+};
 
 namespace Engine {
-    Model::Model(Device &device, const Model::Builder &builder) : device(device) {
+    Model::Model(const Device &device, const Model::Builder &builder) : device(device) {
         createVertexBuffer(builder.vertices);
         createIndexBuffer(builder.indices);
     }
@@ -27,7 +25,7 @@ namespace Engine {
         std::vector<tinyobj::material_t> materials;
         std::string warn, err;
 
-        if(!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str()))
+        if(!LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str()))
             throw std::runtime_error(warn + err);
 
         vertices.clear();
@@ -37,11 +35,11 @@ namespace Engine {
         indices.reserve(attrib.vertices.size());
 
         std::unordered_map<Vertex, uint32_t> uniqueVertices{};
-        for(const auto &shape : shapes) {
-            for(const auto &index : shape.mesh.indices) {
+        for (const tinyobj::shape_t &shape : shapes) {
+            for (const auto &[vertex_index, normal_index, texcoord_index] : shape.mesh.indices) {
                 Vertex vertex{};
-                if(index.vertex_index >= 0) {
-                    uint32_t offset = 3 * static_cast<uint32_t>(index.vertex_index);
+                if (vertex_index >= 0) {
+                    uint32_t offset = 3 * static_cast<uint32_t>(vertex_index);
                     vertex.position = {
                             attrib.vertices[offset],
                             attrib.vertices[offset + 1],
@@ -55,8 +53,8 @@ namespace Engine {
                     };
                 }
 
-                if(index.normal_index >= 0) {
-                    uint32_t offset = 3 * static_cast<uint32_t>(index.normal_index);
+                if (normal_index >= 0) {
+                    uint32_t offset = 3 * static_cast<uint32_t>(normal_index);
                     vertex.normal = {
                             attrib.normals[offset],
                             attrib.normals[offset + 1],
@@ -64,19 +62,18 @@ namespace Engine {
                     };
                 }
 
-                if(index.texcoord_index >= 0) {
-                    uint32_t offset = 2 * static_cast<uint32_t>(index.texcoord_index);
+                if (texcoord_index >= 0) {
+                    uint32_t offset = 2 * static_cast<uint32_t>(texcoord_index);
                     vertex.texCoord = {
                             attrib.texcoords[offset],
                             attrib.texcoords[offset + 1]
                     };
                 }
 
-                if(uniqueVertices.count(vertex) == 0) {
+                if (!uniqueVertices.contains(vertex)) {
                     uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex);
-                }
-                indices.push_back(uniqueVertices[vertex]);
+                } indices.push_back(uniqueVertices[vertex]);
             }
         }
     }
@@ -117,7 +114,7 @@ namespace Engine {
     void Model::createIndexBuffer(const std::vector<uint32_t> &indices) {
         indexCount = static_cast<uint32_t>(indices.size());
         hasIndexBuffer = indexCount > 0;
-        if(!hasIndexBuffer) return;
+        if (!hasIndexBuffer) return;
         assert(indexCount >= 3 && "Index count must be of at least 3!");
 
         uint32_t indexSize = sizeof(indices[0]);
@@ -143,14 +140,14 @@ namespace Engine {
         device.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), indexSize * indexCount);
     }
 
-    void Model::bind(VkCommandBuffer commandBuffer) {
-        VkBuffer buffers[] = { vertexBuffer->getBuffer() };
-        VkDeviceSize offsets[] = { 0 };
+    void Model::bind(const VkCommandBuffer commandBuffer) const {
+        const VkBuffer buffers[] = { vertexBuffer->getBuffer() };
+        constexpr VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
-        if(hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+        if (hasIndexBuffer) vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
     }
-    void Model::draw(VkCommandBuffer commandBuffer) const {
-        if(hasIndexBuffer) vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+    void Model::draw(const VkCommandBuffer commandBuffer) const {
+        if (hasIndexBuffer) vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
         else vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
     }
 
