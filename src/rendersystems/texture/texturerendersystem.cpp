@@ -41,9 +41,8 @@ namespace Engine {
                                 0,
                                 nullptr);
 
-        for (auto &kv : frameInfo.entities) {
-            auto &ent = kv.second;
-            if (!ent.hasComponent(ComponentType::MODEL) || !ent.hasComponent(ComponentType::TEXTURE)) continue;
+        for (auto &ent : frameInfo.entities | std::views::values) {
+            if (!ent.hasComponent(MODEL) || !ent.hasComponent(TEXTURE)) continue;
 
             VkDescriptorSet descriptorSet;
             auto imageInfo = ent.getTextureComponent()->diffuseMap->getDescriptorImageInfo();

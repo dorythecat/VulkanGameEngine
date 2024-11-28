@@ -6,29 +6,26 @@ namespace Engine {
         glm::vec4 color{};
         float radius = 0.0f;
     };
-    void BillboardRenderSystem::update(FrameInfo &frameInfo, GlobalUbo &ubo) {
-        Entity::id_t index = 0;
-        for (auto &kv : frameInfo.entities) {
-            auto &ent = kv.second;
-            if(!ent.hasComponent(ComponentType::POINT_LIGHT)) continue;
+    void BillboardRenderSystem::update(const FrameInfo &frameInfo, GlobalUbo &ubo) {
+        Entity::id_t i = 0;
+        for (auto &ent : frameInfo.entities | std::views::values) {
+            if(!ent.hasComponent(POINT_LIGHT)) continue;
 
-            ubo.pointLights[index].position = glm::vec4(ent.getTransformComponent()->position, 1.0f);
-            ubo.pointLights[index].color = glm::vec4(ent.getPointLightComponent()->color,
-                                                     ent.getPointLightComponent()->intensity);
-            index++;
-        } ubo.pointLightCount = index;
+            ubo.pointLights[i].position = glm::vec4(ent.getTransformComponent()->position, 1.0f);
+            ubo.pointLights[i++].color = glm::vec4(ent.getPointLightComponent()->color,
+                                                   ent.getPointLightComponent()->intensity);
+        } ubo.pointLightCount = i;
     }
     void BillboardRenderSystem::render(FrameInfo &frameInfo) {
         // Sort the objects from back to front, for alpha blending to work correctly
         // TODO(Dory): Implement Order-Independent rendering so that this isn't necessary
         std::map<float, Entity::id_t> sorted;
-        for (auto &kv : frameInfo.entities) {
-            auto &ent = kv.second;
-            if(!ent.hasComponent(ComponentType::POINT_LIGHT)) continue;
+        for (auto &ent: frameInfo.entities | std::views::values) {
+            if (!ent.hasComponent(POINT_LIGHT)) continue;
 
             // We really don't care if the distance is squared, we just care about the order so we can save a sqrt operation
             glm::vec3 offset = frameInfo.camera.getPosition() - ent.getTransformComponent()->position;
-            float distance = glm::dot(offset, offset);
+            float distance = dot(offset, offset);
             sorted[distance] = ent.getId();
         }
 
@@ -42,8 +39,8 @@ namespace Engine {
                                 &frameInfo.globalDescriptorSet,
                                 0,
                                 nullptr);
-        for (auto & kv : std::ranges::reverse_view(sorted)) {
-            auto &ent = frameInfo.entities.at(kv.second);
+        for (auto &val : std::ranges::reverse_view(sorted) | std::views::values) {
+            auto &ent = frameInfo.entities.at(val);
 
             PointLightPushConstant push{};
             push.position = glm::vec4(ent.getTransformComponent()->position, 1.0f);

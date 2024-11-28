@@ -1,8 +1,6 @@
 #ifndef BILLBOARDRENDERSYSTEM_HPP
 #define BILLBOARDRENDERSYSTEM_HPP
 
-#include <ranges>
-
 #include "../rendersystem.hpp"
 
 namespace Engine {
@@ -18,9 +16,9 @@ namespace Engine {
             init();
         }
 
-        void update(FrameInfo &frameInfo, GlobalUbo &ubo);
+        static void update(const FrameInfo &frameInfo, GlobalUbo &ubo);
         void render(FrameInfo &frameInfo) override;
-        // We don't include the wireframe function here cause that'd be stupid
+        // We don't include the wireframe function here because that wouldn't really be useful anyways
     private:
         const std::string vertPath() override { return "../res/shaders/compiled/billboard.vert.spv"; }
         const std::string fragPath() override { return "../res/shaders/compiled/billboard.frag.spv"; }

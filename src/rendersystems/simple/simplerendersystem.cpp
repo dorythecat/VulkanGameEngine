@@ -13,9 +13,8 @@ namespace Engine {
                                 0,
                                 nullptr);
 
-        for (auto &kv : frameInfo.entities) {
-            auto &ent = kv.second; // Extract the second element of the pair (the GameObject)
-            if (!ent.hasComponent(ComponentType::MODEL) || ent.hasComponent(ComponentType::TEXTURE)) continue;
+        for (auto &ent : frameInfo.entities | std::views::values) {
+            if (!ent.hasComponent(MODEL) || ent.hasComponent(TEXTURE)) continue;
 
             PushConstantData push{};
             push.modelMatrix = ent.getTransformComponent()->mat4();
