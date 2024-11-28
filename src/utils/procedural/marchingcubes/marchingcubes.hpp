@@ -42,14 +42,17 @@ namespace Engine::Procedural {
 
         void generateModel() override;
 
-        static precision_t testSurface(precision_t x, precision_t y, precision_t z);
+        [[nodiscard]] static precision_t testSurface(precision_t x, precision_t y, precision_t z);
     private:
         precision_t (*surface)(precision_t, precision_t, precision_t);
         precision_t isolevel;
 
         uint8_t polygonise(const cell &grid, triangle *triangles) const;
 
-        glm::vec3 interpolateVector(glm::vec3 p1, glm::vec3 p2, precision_t valp0, precision_t valp1) const;
+        [[nodiscard]] glm::vec3 interpolateVector(glm::vec3 p1,
+                                                  glm::vec3 p2,
+                                                  precision_t valp0,
+                                                  precision_t valp1) const;
     };
 }
 

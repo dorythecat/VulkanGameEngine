@@ -4,7 +4,7 @@
 #include "../rendersystem.hpp"
 
 namespace Engine {
-    class SimpleRenderSystem : RenderSystem {
+    class SimpleRenderSystem final : RenderSystem {
     public:
         SimpleRenderSystem(Device &device,
                            VkRenderPass renderPass,
@@ -16,8 +16,8 @@ namespace Engine {
         void render(FrameInfo &frameInfo) override;
         using RenderSystem::toggleWireframe;
     private:
-        const std::string vertPath() override { return "../res/shaders/compiled/standard.vert.spv"; }
-        const std::string fragPath() override { return "../res/shaders/compiled/standard.frag.spv"; }
+        constexpr std::string vertPath() override { return "../res/shaders/compiled/standard.vert.spv"; }
+        constexpr std::string fragPath() override { return "../res/shaders/compiled/standard.frag.spv"; }
     };
 }
 

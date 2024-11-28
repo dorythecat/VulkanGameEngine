@@ -57,7 +57,7 @@ namespace Engine {
         Model(const Model&) = delete;
         Model& operator=(const Model&) = delete;
 
-        static std::unique_ptr<Model> createModelFromFile(Device &device, const std::string &path);
+        [[nodiscard]] static std::unique_ptr<Model> createModelFromFile(Device &device, const std::string &path);
 
         void bind(VkCommandBuffer commandBuffer) const;
         void draw(VkCommandBuffer commandBuffer) const;

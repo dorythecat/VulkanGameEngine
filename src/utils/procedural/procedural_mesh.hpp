@@ -24,7 +24,7 @@ namespace Engine::Procedural {
 
         virtual void generateModel() = 0;
 
-        std::unique_ptr<Model> getModel() { return std::make_unique<Model>(device, builder); }
+        [[nodiscard]] std::unique_ptr<Model> getModel() { return std::make_unique<Model>(device, builder); }
     protected:
         Device &device;
 

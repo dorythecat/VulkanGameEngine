@@ -4,7 +4,7 @@
 #include "../rendersystem.hpp"
 
 namespace Engine {
-    class TextureRenderSystem : RenderSystem {
+    class TextureRenderSystem final : RenderSystem {
     public:
         TextureRenderSystem(Device &device,
                             VkRenderPass renderPass,
@@ -16,8 +16,8 @@ namespace Engine {
         void render(FrameInfo &frameInfo) override;
         using RenderSystem::toggleWireframe;
     private:
-        const std::string vertPath() override { return "../res/shaders/compiled/texture.vert.spv"; }
-        const std::string fragPath() override { return "../res/shaders/compiled/texture.frag.spv"; }
+        constexpr std::string vertPath() override { return "../res/shaders/compiled/texture.vert.spv"; }
+        constexpr std::string fragPath() override { return "../res/shaders/compiled/texture.frag.spv"; }
 
         std::unique_ptr<DescriptorSetLayout> renderSystemLayout;
 

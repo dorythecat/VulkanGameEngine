@@ -4,7 +4,7 @@
 #include "../rendersystem.hpp"
 
 namespace Engine {
-    class BillboardRenderSystem : RenderSystem {
+    class BillboardRenderSystem final : RenderSystem {
     public:
         BillboardRenderSystem(Device &device,
                               VkRenderPass renderPass,
@@ -20,8 +20,8 @@ namespace Engine {
         void render(FrameInfo &frameInfo) override;
         // We don't include the wireframe function here because that wouldn't really be useful anyways
     private:
-        const std::string vertPath() override { return "../res/shaders/compiled/billboard.vert.spv"; }
-        const std::string fragPath() override { return "../res/shaders/compiled/billboard.frag.spv"; }
+        constexpr std::string vertPath() override { return "../res/shaders/compiled/billboard.vert.spv"; }
+        constexpr std::string fragPath() override { return "../res/shaders/compiled/billboard.frag.spv"; }
     };
 }
 

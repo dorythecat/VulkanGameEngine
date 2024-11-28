@@ -26,7 +26,7 @@ namespace Engine {
                      device(device),
                      renderPass(renderPass),
                      globalSetLayout(globalSetLayout) {}
-        ~RenderSystem() {
+        virtual ~RenderSystem() {
             vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
         }
 
@@ -52,8 +52,8 @@ namespace Engine {
         std::unique_ptr<Pipeline> pipeline;
         VkPipelineLayout pipelineLayout;
 
-        virtual const std::string vertPath() = 0;
-        virtual const std::string fragPath() = 0;
+        virtual std::string vertPath() = 0;
+        virtual std::string fragPath() = 0;
 
         bool wireframe = false;
         bool alphaBlending = false;

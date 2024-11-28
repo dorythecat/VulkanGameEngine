@@ -6,12 +6,12 @@
 #include "../../texture/texture.hpp"
 
 namespace Engine {
-    class TextureComponent : public Component {
+    class TextureComponent final : public Component {
     public:
         std::shared_ptr<Texture> diffuseMap;
 
-        TextureComponent(std::shared_ptr<Texture> diffuseMap) : diffuseMap(diffuseMap) {}
-        ComponentType getComponentType() const override { return TEXTURE; }
+        explicit TextureComponent(const std::shared_ptr<Texture> &diffuseMap) : diffuseMap(diffuseMap) {}
+        [[nodiscard]] ComponentType getComponentType() const override { return TEXTURE; }
     };
 }
 

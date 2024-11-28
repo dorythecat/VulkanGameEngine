@@ -33,14 +33,14 @@ namespace Engine {
         VkDescriptorBufferInfo descriptorInfoForIndex(uint64_t index);
         VkResult invalidateIndex(uint64_t index);
 
-        VkBuffer getBuffer() const { return buffer; }
-        void* getMappedMemory() const { return mapped; }
-        uint32_t getInstanceCount() const { return instanceCount; }
-        VkDeviceSize getInstanceSize() const { return instanceSize; }
-        VkDeviceSize getAlignmentSize() const { return alignmentSize; }
-        VkBufferUsageFlags getUsageFlags() const { return usageFlags; }
-        VkMemoryPropertyFlags getMemoryPropertyFlags() const { return memoryPropertyFlags; }
-        VkDeviceSize getBufferSize() const { return bufferSize; }
+        [[nodiscard]] VkBuffer getBuffer() const { return buffer; }
+        [[nodiscard]] void* getMappedMemory() const { return mapped; }
+        [[nodiscard]] uint32_t getInstanceCount() const { return instanceCount; }
+        [[nodiscard]] VkDeviceSize getInstanceSize() const { return instanceSize; }
+        [[nodiscard]] VkDeviceSize getAlignmentSize() const { return alignmentSize; }
+        [[nodiscard]] VkBufferUsageFlags getUsageFlags() const { return usageFlags; }
+        [[nodiscard]] VkMemoryPropertyFlags getMemoryPropertyFlags() const { return memoryPropertyFlags; }
+        [[nodiscard]] VkDeviceSize getBufferSize() const { return bufferSize; }
 
     private:
         static VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment);

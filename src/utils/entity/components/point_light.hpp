@@ -4,13 +4,13 @@
 #include "../component.hpp"
 
 namespace Engine {
-    class PointLightComponent : public Component {
+    class PointLightComponent final : public Component {
     public:
         float intensity;
         glm::vec3 color;
 
-        PointLightComponent(float intensity, glm::vec3 color) : intensity(intensity), color(color) {}
-        ComponentType getComponentType() const override { return POINT_LIGHT; }
+        PointLightComponent(const float intensity, const glm::vec3 color) : intensity(intensity), color(color) {}
+        [[nodiscard]] ComponentType getComponentType() const override { return POINT_LIGHT; }
     };
 }
 

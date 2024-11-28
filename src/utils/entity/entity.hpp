@@ -26,8 +26,8 @@ namespace Engine {
         Entity(Entity &&) = default;
         Entity &operator=(Entity &&) = default;
 
-        ComponentType_t getComponentMask() const { return componentMask; }
-        bool hasComponent(ComponentType type) const { return componentMask & (1 << type); }
+        [[nodiscard]] ComponentType_t getComponentMask() const { return componentMask; }
+        [[nodiscard]] bool hasComponent(ComponentType type) const { return componentMask & 1 << type; }
 
         void addComponent(std::unique_ptr<Component> component);
         void removeComponent(ComponentType type);
@@ -38,15 +38,19 @@ namespace Engine {
         TextureComponent *getTextureComponent();
 
         static Entity createEntity();
-        static Entity createPointLightEntity(float intensity = 1.0f, float radius = 1.0f, glm::vec3 color = {1.0f, 1.0f, 1.0f});
+        static Entity createPointLightEntity(float intensity = 1.0f,
+                                             float radius = 1.0f,
+                                             glm::vec3 color = {1.0f, 1.0f, 1.0f});
 
-        id_t getId() const { return id; }
+        [[nodiscard]] id_t getId() const { return id; }
     private:
         id_t id;
         ComponentType_t componentMask = 0;
         std::map<ComponentType, std::unique_ptr<Component>> components;
 
-        Entity(id_t id) : id(id) {}
+        // DO NOT MAKE THIS EXPLICIT
+        // It will cause compile-time trouble
+        Entity(const id_t id) : id(id) {}
     };
 }
 

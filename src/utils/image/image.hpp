@@ -31,7 +31,7 @@ namespace Engine {
         Image(Image &&) = delete;
         Image& operator=(Image &&) = delete;
 
-        uint32_t getMipLevels() const { return mipLevels; }
+        [[nodiscard]] uint32_t getMipLevels() const { return mipLevels; }
 
         void del();
 

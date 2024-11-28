@@ -17,10 +17,12 @@ namespace Engine {
         Window& operator=(const Window&) = delete;
 
         bool shouldClose() const;
-        VkExtent2D getExtent() const { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
-        bool wasWindowResized() const { return framebufferResized; }
+        [[nodiscard]] VkExtent2D getExtent() const {
+            return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        }
+        [[nodiscard]] bool wasWindowResized() const { return framebufferResized; }
         void resetWindowResizedFlag() { framebufferResized = false; }
-        GLFWwindow* getWindow() const { return window; }
+        [[nodiscard]] GLFWwindow* getWindow() const { return window; }
 
         void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
     private:

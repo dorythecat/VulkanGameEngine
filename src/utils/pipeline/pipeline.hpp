@@ -22,8 +22,8 @@ namespace Engine {
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo{};
         std::vector<VkDynamicState> dynamicStateEnables;
         VkPipelineDynamicStateCreateInfo dynamicStateInfo{};
-        VkPipelineLayout pipelineLayout = NULL;
-        VkRenderPass renderPass = NULL;
+        VkPipelineLayout pipelineLayout = nullptr;
+        VkRenderPass renderPass = nullptr;
         uint32_t subpass = 0;
 
         PipelineConfigInfo() = default;

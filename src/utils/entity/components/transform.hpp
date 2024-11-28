@@ -6,37 +6,38 @@
 #include "../component.hpp"
 
 namespace Engine {
-    class TransformComponent : public Component {
+    class TransformComponent final : public Component {
     public:
         glm::vec3 position{0.0f, 0.0f, 0.0f};
         glm::vec3 scale{1.0f, 1.0f, 1.0f};
         glm::vec3 rotation{0.0f, 0.0f, 0.0f};
 
         TransformComponent() = default;
-        TransformComponent(const glm::vec3 position) :
-                           position(position) {}
+
+        explicit TransformComponent(const glm::vec3 position) :
+                                    position(position) {}
         TransformComponent(const glm::vec3 position, const glm::vec3 scale) :
                            position(position), scale(scale) {}
         TransformComponent(const glm::vec3 position, const glm::vec3 scale, const glm::vec3 rotation) :
                            position(position), scale(scale), rotation(rotation) {}
-        ComponentType getComponentType() const override { return TRANSFORM; }
+        [[nodiscard]] ComponentType getComponentType() const override { return TRANSFORM; }
 
         // Matrix corresponds to Translate * Rx * Ry * Rz * Scale
         // Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
         // https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
-        glm::mat4 mat4() const {
+       [[nodiscard]]  glm::mat4 mat4() const {
             glm::mat4 mat{1.0f};
-            mat = glm::translate(mat, position);
-            mat = glm::rotate(mat, rotation.x, {1.0f, 0.0f, 0.0f});
-            mat = glm::rotate(mat, rotation.y, {0.0f, 1.0f, 0.0f});
-            mat = glm::rotate(mat, rotation.z, {0.0f, 0.0f, 1.0f});
+            mat = translate(mat, position);
+            mat = rotate(mat, rotation.x, {1.0f, 0.0f, 0.0f});
+            mat = rotate(mat, rotation.y, {0.0f, 1.0f, 0.0f});
+            mat = rotate(mat, rotation.z, {0.0f, 0.0f, 1.0f});
             mat = glm::scale(mat, scale);
             return mat;
         }
 
         // The normal matrix is the inverse transpose of the model matrix
         // This can also be defined as R * S^-1
-        glm::mat3 normal() const {
+        [[nodiscard]] glm::mat3 normal() const {
                 const float s1 = glm::sin(rotation.x);
                 const float c1 = glm::cos(rotation.x);
 
@@ -62,17 +63,17 @@ namespace Engine {
                 const float zc2 = zinv * c2;
 
                 return glm::mat3{{
-                        xinv * c2 * c3,
-                                xc1 * s3 + xs1 * c3s2,
-                                xs1 * s3 - xc1 * c3s2,
+                    xinv * c2 * c3,
+                    xc1 * s3 + xs1 * c3s2,
+                    xs1 * s3 - xc1 * c3s2,
                     }, {
                         yinv * -c2 * s3,
-                                yc1 * c3 - ys1 * s3s2,
-                                ys1 * c3 + yc1 * s3s2,
+                        yc1 * c3 - ys1 * s3s2,
+                        ys1 * c3 + yc1 * s3s2,
                     }, {
                         zinv * s2,
                         zc2 * -s1,
-                                zc2 * c1,
+                        zc2 * c1,
                     }};
         }
     };

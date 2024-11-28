@@ -21,25 +21,25 @@ namespace Engine {
 
         void del();
 
-        VkRenderPass getSwapChainRenderPass() const { return swapChain->getRenderPass(); }
-        bool isFrameInProgress() const { return isFrameStarted; }
+        [[nodiscard]] VkRenderPass getSwapChainRenderPass() const { return swapChain->getRenderPass(); }
+        [[nodiscard]] bool isFrameInProgress() const { return isFrameStarted; }
 
-        VkCommandBuffer getCurrentCommandBuffer() const {
+        [[nodiscard]] VkCommandBuffer getCurrentCommandBuffer() const {
             assert(isFrameStarted && "Cannot get the current command buffer outside of a render pass!");
             return commandBuffers[currentFrameIndex];
         }
 
-        uint32_t getCurrentFrameIndex() const {
+        [[nodiscard]] uint32_t getCurrentFrameIndex() const {
             assert(isFrameStarted && "Cannot get the current frame index outside of a render pass!");
             return currentFrameIndex;
         }
 
-        VkCommandBuffer beginFrame();
+        [[nodiscard]] VkCommandBuffer beginFrame();
         void endFrame();
 
         void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
-        float getAspectRatio() const { return swapChain->extentAspectRatio(); }
+        [[nodiscard]] float getAspectRatio() const { return swapChain->extentAspectRatio(); }
 
         void endSwapChainRenderPass(VkCommandBuffer commandBuffer) const;
     private:

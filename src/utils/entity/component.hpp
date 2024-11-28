@@ -32,7 +32,7 @@ namespace Engine {
         Component(Component &&) = default;
         Component &operator=(Component &&) = default;
 
-        virtual ComponentType getComponentType() const = 0;
+        [[nodiscard]] virtual ComponentType getComponentType() const = 0;
     };
 }
 

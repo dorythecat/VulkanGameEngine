@@ -24,7 +24,7 @@ namespace Engine {
         Texture(Texture &&) = delete;
         Texture& operator=(Texture &&) = delete;
 
-        VkDescriptorImageInfo getDescriptorImageInfo() const;
+        [[nodiscard]] VkDescriptorImageInfo getDescriptorImageInfo() const;
     private:
         Device &device;
         std::unique_ptr<Image> textureImage;
