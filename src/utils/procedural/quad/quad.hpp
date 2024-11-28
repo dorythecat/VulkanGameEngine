@@ -8,9 +8,9 @@
 #include "../procedural_mesh.hpp"
 
 namespace Engine::Procedural {
-    class Quad : public ProceduralMesh {
+    class Quad final : public ProceduralMesh {
     public:
-        Quad(Device &device, uint32_t resolution) : ProceduralMesh(device, resolution) {}
+        Quad(Device &device, const uint32_t resolution) : ProceduralMesh(device, resolution) {}
 
         void generateModel() override;
     };

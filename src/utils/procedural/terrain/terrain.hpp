@@ -9,9 +9,9 @@
 #include "../procedural_mesh.hpp"
 
 namespace Engine::Procedural {
-    class Terrain : public ProceduralMesh {
+    class Terrain final : public ProceduralMesh {
     public:
-        Terrain(Device &device, uint32_t resolution, const std::vector<float> values) :
+        Terrain(Device &device, const uint32_t resolution, const std::vector<float> &values) :
             ProceduralMesh(device, resolution), values(values) {}
 
         void generateModel() override;

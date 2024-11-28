@@ -8,9 +8,9 @@
 #include "../procedural_mesh.hpp"
 
 namespace Engine::Procedural {
-    class Cube : public ProceduralMesh {
+    class Cube final : public ProceduralMesh {
     public:
-        Cube(Device &device, uint32_t resolution) : ProceduralMesh(device, resolution) {}
+        Cube(Device &device, const uint32_t resolution) : ProceduralMesh(device, resolution) {}
 
         void generateModel() override;
     };

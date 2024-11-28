@@ -22,7 +22,7 @@ typedef struct {
 } cell;
 
 namespace Engine::Procedural {
-    class MarchingCubes : public ProceduralMesh {
+    class MarchingCubes final : public ProceduralMesh {
     public:
         // For this algorithm, we take the standard inputs, plus a surface function whose inputs are in the range 0..1,
         // centered at (0, 0, 0), and an "isolevel”, or threshold.
@@ -30,7 +30,10 @@ namespace Engine::Procedural {
         // Technically speaking, we could make the surface function take in a vec3,
         // but I don't know if it would really be that much cleaner or flexible, so...
 
-        MarchingCubes(Device &device, uint32_t resolution, precision_t (*surface)(precision_t, precision_t, precision_t), precision_t isolevel) :
+        MarchingCubes(Device &device,
+                      const uint32_t resolution,
+                      precision_t (*surface)(precision_t, precision_t, precision_t),
+                      const precision_t isolevel) :
         ProceduralMesh(device, resolution), surface(surface), isolevel(isolevel) {
             // Some specific sanity checks
             assert(surface != nullptr && "Surface function must be defined!"); // Otherwise, we won't have a surface to render!

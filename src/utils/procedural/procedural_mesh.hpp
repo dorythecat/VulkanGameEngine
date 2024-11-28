@@ -9,7 +9,7 @@
 namespace Engine::Procedural {
     class ProceduralMesh {
     public:
-        ProceduralMesh(Device &device, uint32_t resolution) : device(device), resolution(resolution) {
+        ProceduralMesh(Device &device, const uint32_t resolution) : device(device), resolution(resolution) {
             // Some sanity checks.
             assert(resolution > 0 && "Resolution must be greater than 0!");
 
@@ -17,7 +17,7 @@ namespace Engine::Procedural {
             vertices.clear();
             indices.clear();
         }
-        ~ProceduralMesh() = default;
+        virtual ~ProceduralMesh() = default;
 
         ProceduralMesh(const ProceduralMesh&) = delete;
         ProceduralMesh& operator=(const ProceduralMesh&) = delete;
