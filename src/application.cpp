@@ -8,7 +8,8 @@ namespace Engine {
                 .build();
 
         framePools.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
-        auto framePoolBuilder = DescriptorPool::Builder(device)
+        const DescriptorPool::Builder framePoolBuilder =
+            DescriptorPool::Builder(device)
                 .setMaxSets(1024)
                 .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024)
                 .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1024)
@@ -232,8 +233,8 @@ namespace Engine {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        bool* windowOpen = new bool(true);
-        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
+        const auto windowOpen = new bool(true);
+        constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
 
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Appearing);
         ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_Appearing);
@@ -269,14 +270,14 @@ namespace Engine {
     void Application::loadEntities() {
         entities.reserve(6);
 
-        std::shared_ptr<Model> sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
+        std::shared_ptr sphereFlatModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_flat.obj");
         Entity sphereFlat = Entity::createEntity();
         sphereFlat.addComponent(std::make_unique<ModelComponent>(sphereFlatModel));
         sphereFlat.addComponent(std::make_unique<TransformComponent>(glm::vec3{2.5f, 0.0f, 5.0f},
                                                                        glm::vec3{0.5f, 0.5f, 0.5f}));
         entities.emplace(sphereFlat.getId(), std::move(sphereFlat));
 
-        std::shared_ptr<Model> sphereSmoothModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_smooth.obj");
+        std::shared_ptr sphereSmoothModel = Model::createModelFromFile(device, "../res/models/sphere/sphere_smooth.obj");
         Entity sphereSmooth = Entity::createEntity();
         sphereSmooth.addComponent(std::make_unique<ModelComponent>(sphereSmoothModel));
         sphereSmooth.addComponent(std::make_unique<TransformComponent>(glm::vec3{-2.5f, 0.0f, 5.0f},
@@ -285,7 +286,7 @@ namespace Engine {
 
         Procedural::Terrain q(device, 2, {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f});
         q.generateModel();
-        std::shared_ptr<Model> quadModel = q.getModel();
+        std::shared_ptr quadModel = q.getModel();
         Entity quad = Entity::createEntity();
         quad.addComponent(std::make_unique<ModelComponent>(quadModel));
         quad.addComponent(std::make_unique<TextureComponent>(std::make_shared<Texture>(device, "../res/textures/texture.jpg")));
@@ -295,7 +296,7 @@ namespace Engine {
 
         Procedural::Cube c(device, 128);
         c.generateModel();
-        std::shared_ptr<Model> cubeModel = c.getModel();
+        std::shared_ptr cubeModel = c.getModel();
         Entity cube = Entity::createEntity();
         cube.addComponent(std::make_unique<ModelComponent>(cubeModel));
         cube.addComponent(std::make_unique<TransformComponent>(glm::vec3{-0.5f, -2.0f, 5.0f}));
@@ -303,7 +304,7 @@ namespace Engine {
 
         Procedural::MarchingCubes mc(device, 128, Procedural::MarchingCubes::testSurface, 0.0f);
         mc.generateModel();
-        std::shared_ptr<Model> mcModel = mc.getModel();
+        std::shared_ptr mcModel = mc.getModel();
         Entity mcEntity = Entity::createEntity();
         mcEntity.addComponent(std::make_unique<ModelComponent>(mcModel));
         mcEntity.addComponent(std::make_unique<TransformComponent>(glm::vec3{2.5f, -2.0f, 5.0f}));

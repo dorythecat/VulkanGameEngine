@@ -14,12 +14,12 @@ namespace Engine {
 
     void Texture::createTextureImage () {
         int texWidth, texHeight, texChannels;
-        stbi_uc* pixels = stbi_load(texturePath,
+        stbi_uc *pixels = stbi_load(texturePath,
                                     &texWidth,
                                     &texHeight,
                                     &texChannels,
                                     STBI_rgb_alpha);
-        VkDeviceSize imageSize = 4 * static_cast<VkDeviceSize>(texWidth) * static_cast<VkDeviceSize>(texHeight);
+        const VkDeviceSize imageSize = 4 * static_cast<VkDeviceSize>(texWidth) * static_cast<VkDeviceSize>(texHeight);
 
         if (!pixels) throw std::runtime_error("Failed to load the texture image!");
 
