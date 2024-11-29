@@ -8,7 +8,7 @@ namespace Engine {
     };
     void BillboardRenderSystem::update(const FrameInfo &frameInfo, GlobalUbo &ubo) {
         Entity::id_t i = 0;
-        for (Entity &ent : frameInfo.entities | std::views::values) {
+        for (Entity &ent : std::views::values(frameInfo.entities)) {
             if(!ent.hasComponent(POINT_LIGHT)) continue;
 
             ubo.pointLights[i].position = glm::vec4(ent.getTransformComponent()->position, 1.0f);
@@ -20,7 +20,7 @@ namespace Engine {
         // Sort the objects from back to front, for alpha blending to work correctly
         // TODO(Dory): Implement Order-Independent rendering so that this isn't necessary
         std::map<float, Entity::id_t> sorted;
-        for (Entity &ent: frameInfo.entities | std::views::values) {
+        for (Entity &ent: std::views::values(frameInfo.entities)) {
             if (!ent.hasComponent(POINT_LIGHT)) continue;
 
             // We really don't care if the distance is squared, we just care about the order so we can save a sqrt operation
@@ -39,7 +39,7 @@ namespace Engine {
                                 &frameInfo.globalDescriptorSet,
                                 0,
                                 nullptr);
-        for (Entity::id_t &val : std::ranges::reverse_view(sorted) | std::views::values) {
+        for (Entity::id_t &val : std::views::values(std::ranges::reverse_view(sorted))) {
             Entity &ent = frameInfo.entities.at(val);
 
             PointLightPushConstant push{};
